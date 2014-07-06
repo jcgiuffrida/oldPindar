@@ -1,0 +1,21 @@
+[2013-03-16 09:26:46] START
+[2013-03-16 09:26:46] EDIT welcome/controllers/default.py: 2
+[2014-06-18 23:30:13] EDIT Pindar/controllers/default.py: 0
+[2014-06-18 23:35:35] EDIT Pindar/controllers/default.py: 0
+[2014-06-18 23:36:01] EDIT Pindar/views/default/index.html: -26
+[2014-06-18 23:37:33] EDIT Pindar/views/default/index.html: 0
+[2014-06-18 23:37:35] EDIT Pindar/controllers/default.py: -1
+[2014-06-18 23:42:22] EDIT Pindar/views/default/index.html: 0
+[2014-06-18 23:42:44] EDIT Pindar/views/default/index.html: 0
+[2014-07-06 16:00:20] EDIT Pindar/controllers/default.py: 3
+[2014-07-06 16:00:54] EDIT Pindar/controllers/default.py: 0
+[2014-07-06 16:00:56] EDIT Pindar/controllers/default.py: 0
+[2014-07-06 16:01:10] EDIT Pindar/controllers/default.py: 0
+[2014-07-06 16:02:54] EDIT Pindar/views/default/index.html: -4
+[2014-07-06 16:03:27] EDIT Pindar/views/default/index.html: -1
+[2014-07-06 16:07:36] EDIT Pindar/controllers/default.py: 3
+[2014-07-06 16:08:10] CREATE default/second.html: 0
+[2014-07-06 16:08:36] CREATE default/results.html: 0
+[2014-07-06 16:31:36] EDIT Pindar/models/db.py: 16
+[2014-07-06 16:31:39] EDIT Pindar/models/db.py: 0
+[2014-07-06 17:00:49] EDIT Pindar/models/db.py: 0
