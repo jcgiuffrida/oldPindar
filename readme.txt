@@ -10,15 +10,16 @@ A free and open-source tool to explore, collect, and analyse the world’s quote
 
 Contact Information
 
-*
+* jcgiuffri@gmail.com
+* mrbeskin@gmail.com
 
 Web Site
 
-*
+* 
 
 Notice
 
-*
+* 
 
 /*
  * The following is text that is copied from the Google Doc.
@@ -26,104 +27,92 @@ Notice
  * taking shape.
  */
 
-Phase I (minimum viable product)
-Management
-GitHub repo
-web2py, perhaps with PythonAnywhere
-Color scheme I think that we should keep this neutral for now 
-Migrate existing quotes (~300)
-Backend
-MySQL database
-Tables: quotes, authors, works, users, ratings, tags
-Authors: including dates
-Works: including year published
+
+1) Create basic MySQL database with web2py backbone
+MySQL database: see 6/23 email
+allow user to add quotes
+allow user to view quotes (e.g. first 20)
+allow user to search quotes (basic text search of all fields combined)
+populate with existing quotes
+2) User management
+user registration forms: email/password
+user login
+basic profile page
+account deletion (does NOT delete their quotes)
+3) Validation of quotes, authors, and works
+basic validation: non-null, non-duplicate, minimum length
+for authors, use birth date or wikipedia page to differentiate
+for quotes, use N-length strings (exact duplicates)
+ask user whether they are duplicates
+Allow multi-author books
+Tied to each individual author
+Allow music bands as authors
+Add translators
+4) Better user manipulation of database
+propose edits to quotes
+we would moderate
+flag quotes as offensive, duplicate, or false
+rate quotes (one dimension or two? style/content)
+tag quotes (user-generated tags)
+5) More detailed/flexible quotes
 Every author automatically has a work named “Unknown” or “Unsourced”
-Scalable to at least 10 GB
-User Management
-User registration (email/password or Google/Facebook)
-Validation
-Avoid duplicate authors and works
-Consider a minimum author fame status, such as a Wikipedia page
-Text of quotes should allow special characters (Unicode)
+Add “Anonymous” as an author - always unique
 Text of quotes should allow italics or stylization
-Frontend
-Homepage: show random list of quotes
-Quote presentation
-Text, author, and work shown by default
-Buttons to rate, edit, flag
-“More information” shows additional information about the quote, year of the work, and user-submitted notes
-AJAX pagination or infinite scroll
-Higher-rated quotes should tend to rise to top, but some randomness is desirable
-“About” page
-User login and account management
-Forms
-Add quotes
-Add authors and works
-Basic validation (non-null, non-duplicate, length)
-Functionality
-Edit quotes (who should moderate?) talk about this Thursday -M
-Flag quotes as offensive, duplicate, or false
-Rate quotes for content and style
-Search
+Text of quotes should allow special characters (Unicode)
+Allow comments on quotes
+Allow notes on quotes (by original submitter) - e.g. chapter name, context
+More languages (may need to install fonts)
+6) Advanced search functionality
 By text, author, work, tag
 Filter by rating, language
-Search while typing
-Option to search verbatim
-Suggestion: Spotify-style multi-field search
-Features
-Multiple languages (start with just English and Spanish)
+Sort by rating, date submitted, date of work
+Pagination (AJAX? infinite scroll?)
+suggestion: Spotify-style multi-field search
+fuzzy string matching for deduplication and search
+7) Site Structure
+Consistent headers on all pages
+Homepage: random list of quotes
+higher-rated quotes should tend to rise to top, with some randomness
+“About” page
 Unique pages and URLs for individual quotes, authors, and works
-Simple duplicate detection: fuzzy string matching
-User-generated tags of quotes
-Plugins
-JQuery stars, for ratings
-http://eligeske.com/jquery/jquery-star-comment-rating/
-JQuery Typing for instant search
-https://github.com/lucaluca/jquery-typing
-Responsive searchbox
-http://yensdesign.com/2009/01/improving-search-boxes-with-jquery/
-May need to install fonts for other languages (Arabic, Greek, Chinese, etc)
-
-
-
-
-Phase II (More Intelligent Functionality)
-Better Quote Management
-Smarter de-duplication
-e.g. short quotes contained in longer quotes: keep both? 
-Automatic duplicate recognition based on user flagging and string matching
-Interlingual capability
-Determine what quotes are translations of each other
+8) Better, prettier UX
+OpenID
+Unified, basic style
+Add CSS to all the forms
+Attractive quote presentation
+Text, author, and work shown by default
+“More information” button shows notes, comments, and information such as the year of the work, dates of the author, ratings
+9) Links between quotes
+Short quotes contained in longer quotes: keep both?
+Interlingual capability: link quotes that are translations of each other
 Mark which quotes are original and which are translations
 Offer Google Translate translations if none available
-Connections
-Allow users to identify quotes which reference or allude to each other
-Automatically identify full string matches (quotes quoting quotes)
-Display “related quotes” in a sidebar
+“This quote is related to this other one”: user-submitted connections: influence, allusions, etc
+Display “related quotes” in a sidebar next to each quote
 Show related quotes and comments on hover
-Add notes to quotes (e.g. context, analysis of the quote)
-Better User Engagement
-Add a user scoring system visible to users, e.g. gamification
+10) User curation of quotes
 Users can collect “favorite” quotes
 Social media sharing functionality
 Encourage users to collect and share their favorites
 Weight ratings based on user reputation
 Users can only rate each quote once (can modify past ratings)
-User profile pages showing quotes submitted and favorited
-Additional Considerations
-Add “Anonymous” as an author
-how to manage the dating?
-Allow multi-author books
-Tied to each individual author
-Allow music bands as authors
-Add translators
-Logo again, I am prone to getting this done right by a friend maybe
-Copyright issues?
+User profile pages showing quotes submitted and favorites
+Add a user scoring system visible to users, e.g. gamification
+11) Improved design and UX
+Logo (by someone else)
+color scheme
+search while typing
+Stars or icons for ratings
 
 
 
 
-Phase III (More Analytics)
+
+
+
+
+
+12) Analytics
 Quote generation
 Automatic quote population from a poem or work
 How to separate wheat from chaff?
