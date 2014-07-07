@@ -69,3 +69,45 @@ CREATE TABLE post(
     body TEXT
 );
 success!
+timestamp: 2014-07-06T22:32:22.431000
+CREATE TABLE page(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title CHAR(512),
+    body TEXT,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-07-06T22:32:22.466000
+ALTER TABLE post ADD created_on TIMESTAMP;
+timestamp: 2014-07-06T22:32:22.476000
+ALTER TABLE post ADD page_id INTEGER REFERENCES page (id) ON DELETE CASCADE;
+timestamp: 2014-07-06T22:32:22.490000
+ALTER TABLE post ADD created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE;
+success!
+timestamp: 2014-07-06T22:32:22.524000
+CREATE TABLE document(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_id INTEGER REFERENCES page (id) ON DELETE CASCADE,
+    name CHAR(512),
+    file CHAR(512),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
