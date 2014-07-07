@@ -14,13 +14,8 @@ def index():
     """
     This is the test form for the SQL database connection
     """
-    form = SQLFORM.factory(Field('visitor_name',
-                                 label= 'what is your name?',
-                                 requires=IS_NOT_EMPTY()))
-    if form.process().accepted:
-        session.visitor_name = form.vars.visitor_name
-        redirect(URL('results'))
-    return dict(form = form)
+    images = db().select(db.image.ALL, orderby=db.image.title)
+    return dict(images=images)
 
 def results():
     name = request.vars.visitor_name or redirect(URL('first'))

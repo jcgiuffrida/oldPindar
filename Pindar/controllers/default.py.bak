@@ -22,6 +22,9 @@ def index():
         redirect(URL('results'))
     return dict(form = form)
 
+def results():
+    name = request.vars.visitor_name or redirect(URL('first'))
+    return dict(name=name)
 
 def user():
     """
