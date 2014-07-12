@@ -37,7 +37,7 @@ def show():
 def edit():
      """edit an existing wiki page"""
      this_page = db.page(request.args(0,cast=int)) or redirect(URL('index'))
-     form = SQLFORM(db.page, this_page).process(
+     form = SQLFORM(db.QUOTE, this_page).process(
          next = URL('show',args=request.args))
      return dict(form=form)
 
