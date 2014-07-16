@@ -79,62 +79,26 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> rows=db(db.mytable.myfield=='value').select(db.mytable.ALL)
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
-db = DAL('sqlite://storage.sqlite')
+db = DAL('mysql://root:Pindar2014@localhost/pindardb')
 
 from gluon.tools import *
 auth = Auth(db)
 auth.define_tables()
 crud = Crud(db)
 
-#basic outline for DAL text quote interface
-db.define_table('QUOTE',
-    Field('Q_ID'),
-    Field('ORIGIN'),
-    Field('BODY', 'TEXT'),
+db.define_table('page',
+    Field('title'),
+    Field('body', 'text'),
     Field('created_on', 'datetime', default=request.now),
     Field('created_by', 'reference auth_user', default=auth.user_id),
-    )
-
-#basic outline for DAL author interface
-db.define_table('Author',
-    Field('A_ID'),
-    Field('FNAME'),
-    Field('LNAME'),
-    Field('AKA'),
-    Field('B_YEAR'),
-    Field('D_YEAR'),
-    Field('M_YEAR'),
-    )
-
-#basic outline for DAL work interface
-db.define_table('WORK',
-    Field('TITLE'),
-    Field('YEAR'),
-    Field('LANGUAGE'),
     format='%(title)s')
 
-#basic outline for DAL chapter interface
-db.define_table('CHAPTER',
-    Field('C_ID'),
-    Field('TITLE'),
-    Field('NATIVE_TITLE'),
-    )
-
-''' 
-Please note that user connection is still native to wiki and must be expanded for specific 
-Pindar functionality. All preceding tables should allow me to create forms, but will need more
-work to ensure proper integration and database management. 
-'''
-
-
-#Artifact from web2py wiki - allows comment posts - - keeping in for now
 db.define_table('post',
     Field('page_id', 'reference page'),
     Field('body', 'text'),
     Field('created_on', 'datetime', default=request.now),
     Field('created_by', 'reference auth_user', default=auth.user_id))
 
-#artifact for documents from wiki
 db.define_table('document',
     Field('page_id', 'reference page'),
     Field('name'),
@@ -157,6 +121,7 @@ db.document.name.requires = IS_NOT_IN_DB(db, 'document.name')
 db.document.page_id.readable = db.document.page_id.writable = False
 db.document.created_by.readable = db.document.created_by.writable = False
 db.document.created_on.readable = db.document.created_on.writable = False
+
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
