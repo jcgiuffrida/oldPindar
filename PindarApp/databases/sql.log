@@ -1,4 +1,4 @@
-timestamp: 2014-07-15T20:56:24.031000
+timestamp: 2014-07-18T14:05:51.945000
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -10,21 +10,21 @@ CREATE TABLE auth_user(
     registration_id CHAR(512)
 );
 success!
-timestamp: 2014-07-15T20:56:24.057000
+timestamp: 2014-07-18T14:05:52.223000
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2014-07-15T20:56:24.085000
+timestamp: 2014-07-18T14:05:52.382000
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2014-07-15T20:56:24.121000
+timestamp: 2014-07-18T14:05:52.556000
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
@@ -33,7 +33,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2014-07-15T20:56:24.152000
+timestamp: 2014-07-18T14:05:52.833000
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +43,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2014-07-15T20:56:24.189000
+timestamp: 2014-07-18T14:05:53.032000
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
@@ -53,95 +53,53 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2014-07-15T20:57:53.052000
-CREATE TABLE auth_user(
-    id INT AUTO_INCREMENT NOT NULL,
-    first_name VARCHAR(128),
-    last_name VARCHAR(128),
-    email VARCHAR(512),
-    password VARCHAR(512),
-    registration_key VARCHAR(512),
-    reset_password_key VARCHAR(512),
-    registration_id VARCHAR(512),
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2014-07-19T14:41:58.888000
+CREATE TABLE quote(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text CHAR(512),
+    work_id CHAR(512),
+    submitter_id CHAR(512),
+    language_id CHAR(512),
+    deleted_flag CHAR(512)
+);
 success!
-timestamp: 2014-07-15T20:57:53.075000
-CREATE TABLE auth_group(
-    id INT AUTO_INCREMENT NOT NULL,
-    role VARCHAR(512),
-    description LONGTEXT,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2014-07-19T14:41:59.048000
+CREATE TABLE author(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    f_name CHAR(512),
+    l_name CHAR(512),
+    aka CHAR(512),
+    b_year CHAR(512),
+    d_year CHAR(512)
+);
 success!
-timestamp: 2014-07-15T20:57:53.102000
-CREATE TABLE auth_membership(
-    id INT AUTO_INCREMENT NOT NULL,
-    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
-    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2014-07-19T14:41:59.205000
+CREATE TABLE work(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    author_id CHAR(512),
+    year CHAR(512),
+    language CHAR(512)
+);
 success!
-timestamp: 2014-07-15T20:57:53.148000
-CREATE TABLE auth_permission(
-    id INT AUTO_INCREMENT NOT NULL,
-    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
-    name VARCHAR(512),
-    table_name VARCHAR(512),
-    record_id INT,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2014-07-19T16:45:58.051000
+ALTER TABLE quote ADD body TEXT UNIQUE;
+timestamp: 2014-07-19T16:46:20.090000
+ALTER TABLE quote ADD body TEXT UNIQUE;
+timestamp: 2014-07-19T16:47:29.356000
+CREATE TABLE person(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512)
+);
 success!
-timestamp: 2014-07-15T20:57:53.235000
-CREATE TABLE auth_event(
-    id INT AUTO_INCREMENT NOT NULL,
-    time_stamp DATETIME,
-    client_ip VARCHAR(512),
-    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
-    origin VARCHAR(512),
-    description LONGTEXT,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2014-07-19T16:47:29.536000
+ALTER TABLE quote ADD body TEXT UNIQUE;
+timestamp: 2014-07-19T16:48:02.233000
+ALTER TABLE quote ADD body TEXT;
 success!
-timestamp: 2014-07-15T20:57:53.272000
-CREATE TABLE auth_cas(
-    id INT AUTO_INCREMENT NOT NULL,
-    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
-    created_on DATETIME,
-    service VARCHAR(512),
-    ticket VARCHAR(512),
-    renew CHAR(1),
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
+timestamp: 2014-07-19T16:48:02.453000
+ALTER TABLE author ADD m_name CHAR(512);
 success!
-timestamp: 2014-07-15T20:57:53.304000
-CREATE TABLE page(
-    id INT AUTO_INCREMENT NOT NULL,
-    title VARCHAR(512),
-    body LONGTEXT,
-    created_on DATETIME,
-    created_by INT, INDEX created_by__idx (created_by), FOREIGN KEY (created_by) REFERENCES auth_user (id) ON DELETE CASCADE,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2014-07-15T20:57:53.332000
-CREATE TABLE post(
-    id INT AUTO_INCREMENT NOT NULL,
-    page_id INT, INDEX page_id__idx (page_id), FOREIGN KEY (page_id) REFERENCES page (id) ON DELETE CASCADE,
-    body LONGTEXT,
-    created_on DATETIME,
-    created_by INT, INDEX created_by__idx (created_by), FOREIGN KEY (created_by) REFERENCES auth_user (id) ON DELETE CASCADE,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2014-07-15T20:57:53.362000
-CREATE TABLE document(
-    id INT AUTO_INCREMENT NOT NULL,
-    page_id INT, INDEX page_id__idx (page_id), FOREIGN KEY (page_id) REFERENCES page (id) ON DELETE CASCADE,
-    name VARCHAR(512),
-    file VARCHAR(512),
-    created_on DATETIME,
-    created_by INT, INDEX created_by__idx (created_by), FOREIGN KEY (created_by) REFERENCES auth_user (id) ON DELETE CASCADE,
-    PRIMARY KEY (id)
-) ENGINE=InnoDB CHARACTER SET utf8;
 success!
