@@ -79,86 +79,49 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> rows=db(db.mytable.myfield=='value').select(db.mytable.ALL)
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
-
-db = DAL('sqlite://storage.sqlite',
-         check_reserved=['mysql'])
+db = DAL('mysql://root:pindar2014@localhost/pindardb')
 
 from gluon.tools import *
 auth = Auth(db)
 auth.define_tables()
 crud = Crud(db)
 
+db.define_table('page',
+    Field('title'),
+    Field('body', 'text'),
+    Field('created_on', 'datetime', default=request.now),
+    Field('created_by', 'reference auth_user', default=auth.user_id),
+    format='%(title)s')
 
-'''
-QUOTES
-*ID (int) UNIQUE, NOT NULL
-TEXT (varchar(4096)) NOT NULL  (this would allow for about 700 words)
-WORK_ID (int)
-SUBMITTER_ID (int)
-DATE (date)
-LANGUAGE_ID (int)
-DELETED_FLAG (bool)
-'''
-#test
-db.define_table('person', Field('name', requires=IS_NOT_EMPTY()))
+db.define_table('post',
+    Field('page_id', 'reference page'),
+    Field('body', 'text'),
+    Field('created_on', 'datetime', default=request.now),
+    Field('created_by', 'reference auth_user', default=auth.user_id))
 
+db.define_table('document',
+    Field('page_id', 'reference page'),
+    Field('name'),
+    Field('file', 'upload'),
+    Field('created_on', 'datetime', default=request.now),
+    Field('created_by', 'reference auth_user', default=auth.user_id),
+    format='%(name)s')
 
-db.define_table('quote',
-            Field('body', 'text', required=True),
-            Field('work_id', db.work),
-            #Field('submitter_id'), #get from session
-            #Field('language_id'),
-            Field('deleted_flag', 'boolean')
-            )
+db.page.title.requires = IS_NOT_IN_DB(db, 'page.title')
+db.page.body.requires = IS_NOT_EMPTY()
+db.page.created_by.readable = db.page.created_by.writable = False
+db.page.created_on.readable = db.page.created_on.writable = False
 
+db.post.body.requires = IS_NOT_EMPTY()
+db.post.page_id.readable = db.post.page_id.writable = False
+db.post.created_by.readable = db.post.created_by.writable = False
+db.post.created_on.readable = db.post.created_on.writable = False
 
-'''
-AUTHORS
-*ID (int) UNIQUE, NOT NULL
-FNAME (varchar(128))
-LNAME (varchar(128))
-AKA (varchar(256))  ("as known as")
-B_YEAR (int)
-D_YEAR (int)
-MNAME (varchar(64))
+db.document.name.requires = IS_NOT_IN_DB(db, 'document.name')
+db.document.page_id.readable = db.document.page_id.writable = False
+db.document.created_by.readable = db.document.created_by.writable = False
+db.document.created_on.readable = db.document.created_on.writable = False
 
-
-force unique: FNAME + LNAME + MNAME + B_YEAR; AKA + B_YEAR
-'''
-db.define_table('author',
-            Field('f_name'),
-            Field('l_name'),
-            Field('aka'),
-            Field('b_year', 'integer'),
-            Field('d_year', 'integer'),
-            Field('m_name'))
-
-
-'''
-WORKS
-*ID (int) UNIQUE, NOT NULL
-NAME (varchar(512))
-AUTHOR_ID (int)
-YEAR (int)
-LANGUAGE (int)  (original language)
-
-force unique: NAME + AUTHOR_ID
-'''
-
-db.define_table('work',
-            Field('name'),
-            Field('author_id', db.author),
-            Field('year', 'integer'),
-            Field('language'))
-
-'''
-CHAPTERS
-*ID (int) UNIQUE, NOT NULL
-NAME (varchar(512))
-WORK_ID (int)
-
-force unique: NAME + WORK_ID
-'''
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)

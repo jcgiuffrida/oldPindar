@@ -24,7 +24,7 @@ g3
 (dp9
 S'version'
 p10
-S'NT 6.3'
+S'NT 6.1'
 p11
 sS'name'
 p12
@@ -44,7 +44,7 @@ g1
 g3
 (dp18
 g10
-S'36.0.1985.125'
+S'35.0.1916.153'
 p19
 sg12
 S'Chrome'
