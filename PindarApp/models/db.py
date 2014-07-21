@@ -138,7 +138,7 @@ LANGUAGE_ID (int)
 DELETED_FLAG (bool)
 '''
 #test
-db.define_table('person', Field('name', requires=IS_NOT_EMPTY()))
+#db.define_table('person', Field('name', requires=IS_NOT_EMPTY()))
 
 
 db.define_table('quote',

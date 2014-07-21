@@ -25,10 +25,11 @@ def index():
     """
     ***for testing purposes only***
     
-    function to list quote data on the main page
+    function to list data on the main page
    
     """
-    return dict(quotes=SQLFORM.grid(db.quote))
+    return dict(quotes=SQLFORM.grid(db.quote), authors=SQLFORM.grid(db.author), 
+    	works=SQLFORM.grid(db.work))
 
 
 
