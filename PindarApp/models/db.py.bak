@@ -83,11 +83,13 @@ use_janrain(auth, filename='private/janrain.key')
 db = DAL('sqlite://storage.sqlite',
          check_reserved=['mysql'])
 
+
+'''
 from gluon.tools import *
 auth = Auth(db)
 auth.define_tables()
 crud = Crud(db)
-
+'''
 
 '''
 QUOTES
@@ -105,7 +107,7 @@ db.define_table('person', Field('name', requires=IS_NOT_EMPTY()))
 
 db.define_table('quote',
             Field('body', 'text', required=True),
-            #Field('work_id', db.work),
+            Field('work_id', db.work),
             #Field('submitter_id'), #get from session
             #Field('language_id'),
             Field('deleted_flag', 'boolean')

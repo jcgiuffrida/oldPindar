@@ -10,24 +10,26 @@
 #########################################################################
 
 def quote_form(): #test
+    
+    form1 = SQLFORM(db.quote)
+    
+    form2 = SQLFORM(db.author)
+    
+    form3 = SQLFORM(db.work)
 
-    form = SQLFORM(db.quote)
 
-
-
-    return dict(form=form)
+    return dict(form1=form1, form2=form2, form3=form3)
 
 
 def index():
     """
-    example action using the internationalization operator T and flash
-    rendered by views/default/index.html or views/generic.html
-
-    if you need a simple wiki simply replace the two lines below with:
-    return auth.wiki()
+    ***for testing purposes only***
+    
+    function to list quote data on the main page
+   
     """
-    response.flash = T("Welcome to web2py!")
-    return dict(message=T('Hello World'))
+    return dict(quotes=SQLFORM.grid(db.quote))
+
 
 
 def user():
