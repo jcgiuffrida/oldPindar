@@ -143,7 +143,7 @@ DELETED_FLAG (bool)
 
 db.define_table('quote',
             Field('body', 'text', required=True),
-            Field('work_id', db.work),
+            Field('work_id', 'reference work'),
             #Field('submitter_id'), #get from session
             #Field('language_id'),
             Field('deleted_flag', 'boolean')
