@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 
 #########################################################################
 ## This scaffolding model makes your app work on Google App Engine too
@@ -89,76 +90,87 @@ auth.define_tables()
 crud = Crud(db)
 
 
-'''
-AUTHORS
-*ID (int) UNIQUE, NOT NULL
-FNAME (varchar(128))
-LNAME (varchar(128))
-AKA (varchar(256))  ("as known as")
-B_YEAR (int)
-D_YEAR (int)
-MNAME (varchar(64))
 
 
-force unique: FNAME + LNAME + MNAME + B_YEAR; AKA + B_YEAR
-'''
-db.define_table('author',
-            Field('f_name'),
-            Field('l_name'),
-            Field('aka'),
-            Field('b_year', 'integer'),
-            Field('d_year', 'integer'),
-            Field('m_name'))
+db.define_table('LANGUAGE',
+			Field('LanguageCode', 'string', length=3),
+			Field('EnglishName', 'string', length=64),
+			Field('NativeName', 'string', length=64))
 
 
-'''
-WORKS
-*ID (int) UNIQUE, NOT NULL
-NAME (varchar(512))
-AUTHOR_ID (int)
-YEAR (int)
-LANGUAGE (int)  (original language)
-
-force unique: NAME + AUTHOR_ID
-'''
-
-db.define_table('work',
-            Field('name'),
-            Field('author_id', db.author),
-            Field('year', 'integer'),
-            Field('language'))
-'''
-QUOTES
-*ID (int) UNIQUE, NOT NULL
-TEXT (varchar(4096)) NOT NULL  (this would allow for about 700 words)
-WORK_ID (int)
-SUBMITTER_ID (int)
-DATE (date)
-LANGUAGE_ID (int)
-DELETED_FLAG (bool)
-'''
-#test
-#db.define_table('person', Field('name', requires=IS_NOT_EMPTY()))
+db.define_table('USER',
+			Field('UserName', 'string', length=32, required=True),
+			Field('DateJoined', 'datetime', default=datetime.now()),
+			Field('PrimaryLanguageID', 'integer', 'reference LANGUAGE'),
+			Field('UserBiography', 'text'),
+			Field('IsDeleted', 'boolean'))
 
 
-db.define_table('quote',
-            Field('body', 'text', required=True),
-            Field('work_id', 'reference work'),
-            #Field('submitter_id'), #get from session
-            #Field('language_id'),
-            Field('deleted_flag', 'boolean')
-            )
+db.define_table('QUOTE',
+            Field('Text', 'text', required=True),
+            Field('SubmitterID', 'reference USER', required=True),
+            Field('SubmissionDate', 'datetime', default=datetime.now()),
+            Field('QuoteLanguageID', 'reference LANGUAGE', required=True),
+            Field('IsOriginalLanguage', 'boolean'),
+            Field('IsDeleted', 'boolean', default=False),
+            Field('Note', 'text'))
+
+
+db.define_table('WORK',
+            Field('YearPublished', 'integer'),
+            Field('YearWritten', 'integer'),
+            Field('IsHidden', 'boolean', default=False))
+
+
+db.define_table('WORK_TR',
+			Field('WorkID', 'reference WORK', required=True),
+			Field('LanguageID', 'reference LANGUAGE', required=True),
+			Field('WorkName', 'string', length=1024, required=True),
+			Field('WorkSubtitle', 'string', length=1024),
+			Field('WorkDescription', 'text'),
+			Field('WikipediaLink', 'string', length=256),
+			Field('WorkNote', 'text'),
+			Field('SubmitterID', 'reference USER', required=True),
+			Field('SubmissionDate', 'datetime', default=datetime.now()))
+
+
+db.define_table('AUTHOR',
+			Field('YearBorn', 'integer'),
+			Field('YearDied', 'integer'),
+			Field('IsHidden', 'boolean', default=False))
+			
+
+db.define_table('AUTHOR_TR',
+			Field('AuthorID', 'reference AUTHOR', required=True),
+			Field('LanguageID', 'reference LANGUAGE', required=True),
+			Field('FirstName', 'string', length=128),
+			Field('MiddleName', 'string', length=128),
+			Field('LastName', 'string', length=128),
+			Field('AKA', 'list:string'),
+			Field('DisplayName', 'string', length=512),
+			Field('Biography', 'text'),
+			Field('WikipediaLink', 'string', length=256),
+			Field('SubmitterID', 'reference USER', required=True),
+			Field('SubmissionDate', 'datetime', default=datetime.now()))
+
+
+db.define_table('QUOTE_WORK',
+			Field('QuoteID', 'reference QUOTE', required=True),
+			Field('WorkID', 'reference WORK', required=True))
+
+
+db.define_table('WORK_AUTHOR',
+			Field('WorkID', 'reference WORK', required=True),
+			Field('AuthorID', 'reference AUTHOR', required=True))
+
+
+db.define_table('TRANSLATION',
+			Field('OriginalQuoteID', 'reference QUOTE'),
+			Field('TranslatedQuoteID', 'reference QUOTE'),
+			Field('TranslatorID', 'reference AUTHOR'))
 
 
 
-'''
-CHAPTERS
-*ID (int) UNIQUE, NOT NULL
-NAME (varchar(512))
-WORK_ID (int)
 
-force unique: NAME + WORK_ID
-'''
-
-## after defining tables, uncomment below to enable auditing
+## after defining tables, uncomment below to enable auditing and storing old copies
 # auth.enable_record_versioning(db)

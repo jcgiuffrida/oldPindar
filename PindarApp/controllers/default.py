@@ -9,16 +9,22 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-def quote_form(): #test
+def quote_form(): #test SQL query
+    quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & (db.QUOTE_WORK.WorkID==db.WORK._id) & (db.WORK._id==db.WORK_TR.WorkID) & (db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID)).select()
+    answer = ''
+    for quote in quotes:
+    	answer = str(answer + quote.QUOTE.Text + '<br/>' + quote.WORK_TR.WorkName + '<br/><br/><br/>')
     
-    form1 = SQLFORM(db.quote)
+    # select all translations (and original) of a given quote
+    originalid = 9
     
-    form2 = SQLFORM(db.author)
+    quotes = db((db.QUOTE._id==originalid) | ((db.QUOTE._id==db.TRANSLATION.TranslatedQuoteID) & (db.TRANSLATION.OriginalQuoteID==originalid))).select()
     
-    form3 = SQLFORM(db.work)
-
-
-    return dict(form1=form1, form2=form2, form3=form3)
+    answer += answer + 'Translations: <br/>'
+    for quote in quotes:
+    	answer = str(answer + quote.QUOTE.Text + '<br/>')
+    
+    return answer
 
 
 def index():
@@ -28,8 +34,10 @@ def index():
     function to list data on the main page
    
     """
-    return dict(quotes=SQLFORM.grid(db.quote), authors=SQLFORM.grid(db.author), 
-    	works=SQLFORM.grid(db.work))
+    return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR), 
+    	authors_tr=SQLFORM.grid(db.AUTHOR_TR), works=SQLFORM.grid(db.WORK),
+    	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.USER), 
+    	languages=SQLFORM.grid(db.LANGUAGE), translations=SQLFORM.grid(db.TRANSLATION))
 
 
 
