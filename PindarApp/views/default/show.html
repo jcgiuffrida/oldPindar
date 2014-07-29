@@ -1,2 +1,13 @@
 {{extend 'layout.html'}}
-<h1>This is the default/show.html template</h1>
+<h1>{{=header1}}</h1>
+{{=results1}}
+<br/><br/>
+<h1>{{=header2}}</h1>
+{{ for row in results2: }}
+	{{ =row.QUOTE.Text }}<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">
+	{{ =row.AUTHOR_TR.DisplayName }}, <a href="show/view/WORK_TR/1"><em>
+	{{ =row.WORK_TR.WorkName }}</em></a></span><br/><br/>
+	{{ pass}}
+
+<hr>
+{{=response.toolbar()}}

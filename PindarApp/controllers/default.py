@@ -9,22 +9,41 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-def quote_form(): #test SQL query
-    quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & (db.QUOTE_WORK.WorkID==db.WORK._id) & (db.WORK._id==db.WORK_TR.WorkID) & (db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID)).select()
-    answer = ''
-    for quote in quotes:
-    	answer = str(answer + quote.QUOTE.Text + '<br/>' + quote.WORK_TR.WorkName + '<br/><br/><br/>')
-    
-    # select all translations (and original) of a given quote
-    originalid = 9
-    
-    quotes = db((db.QUOTE._id==originalid) | ((db.QUOTE._id==db.TRANSLATION.TranslatedQuoteID) & (db.TRANSLATION.OriginalQuoteID==originalid))).select()
-    
-    answer += answer + 'Translations: <br/>'
-    for quote in quotes:
-    	answer = str(answer + quote.QUOTE.Text + '<br/>')
-    
-    return answer
+def show(): 
+   """
+   test SQL query and display
+   """
+   query1 = ((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+   	(db.WORK._id==db.WORK_TR.WorkID) & 
+   	(db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID) & 
+   	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id))
+   query2 = db((db.WORK_TR.LanguageID==1) & 
+   	(db.AUTHOR_TR.LanguageID==1) & 
+   	(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+   	(db.WORK._id==db.WORK_TR.WorkID) & 
+   	(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+   	(db.QUOTE.Text.like('%every%'))).select(db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, groupby=db.QUOTE.Text)
+   	
+   return dict(results1=SQLFORM.grid(query1, 
+    	fields=[db.QUOTE.Text, db.LANGUAGE.EnglishName, db.WORK_TR.WorkName], 
+    	headers={'QUOTE.Text': 'Text', 
+    			'LANGUAGE.EnglishName': 'Language', 
+    			'WORK_TR.WorkName': 'Source'},
+    	maxtextlength=80),
+    	header1='Example query (all quotes)',
+    	results2=query2,
+    	header2='Example query (text search, \"every\")')
+
+
+def manage_quotes():
+	"""
+	*** for testing purposes only***
+	"""
+	grid = SQLFORM.grid(db.QUOTE, user_signature=False)
+	return locals()
 
 
 def index():
@@ -34,7 +53,7 @@ def index():
     function to list data on the main page
    
     """
-    return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR), 
+    return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR),
     	authors_tr=SQLFORM.grid(db.AUTHOR_TR), works=SQLFORM.grid(db.WORK),
     	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.USER), 
     	languages=SQLFORM.grid(db.LANGUAGE), translations=SQLFORM.grid(db.TRANSLATION))
