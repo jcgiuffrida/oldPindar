@@ -99,18 +99,17 @@ db.define_table('LANGUAGE',
 
 
 db.define_table('USER',
-			Field('UserName', 'string', length=32, requires=IS_NOT_EMPTY()),
+			Field('UserName', 'string', length=32, required=True),
 			Field('DateJoined', 'datetime', default=datetime.now()),
 			Field('PrimaryLanguageID', 'integer', 'reference LANGUAGE'),
 			Field('UserBiography', 'text'),
 			Field('IsDeleted', 'boolean'))
 
-
 db.define_table('QUOTE',
             Field('Text', 'text', requires=IS_NOT_EMPTY()),
-            Field('SubmitterID', 'reference USER', requires=IS_NOT_EMPTY()),
+            Field('SubmitterID', 'reference USER', required=True),
             Field('SubmissionDate', 'datetime', default=datetime.now()),
-            Field('QuoteLanguageID', 'reference LANGUAGE', requires=IS_NOT_EMPTY()),
+            Field('QuoteLanguageID', 'reference LANGUAGE', required=True),
             Field('IsOriginalLanguage', 'boolean'),
             Field('IsDeleted', 'boolean', default=False),
             Field('Note', 'text'))
@@ -125,15 +124,19 @@ db.define_table('WORK',
 
 
 db.define_table('WORK_TR',
-			Field('WorkID', 'reference WORK', requires=IS_NOT_EMPTY()),
-			Field('LanguageID', 'reference LANGUAGE', requires=IS_NOT_EMPTY()),
-			Field('WorkName', 'string', length=1024, requires=IS_NOT_EMPTY()),
+			Field('WorkID', 'reference WORK', required=True),
+			Field('LanguageID', 'reference LANGUAGE', required=True),
+			Field('WorkName', 'string', length=1024, required=True),
 			Field('WorkSubtitle', 'string', length=1024),
 			Field('WorkDescription', 'text'),
 			Field('WikipediaLink', 'string', length=256),
 			Field('WorkNote', 'text'),
-			Field('SubmitterID', 'reference USER', requires=IS_NOT_EMPTY()),
+			Field('SubmitterID', 'reference USER', required=True),
 			Field('SubmissionDate', 'datetime', default=datetime.now()))
+
+db.WORK_TR.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
+db.WORK_TR.LanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.WORK_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
 
 
 db.define_table('AUTHOR',
@@ -143,8 +146,8 @@ db.define_table('AUTHOR',
 			
 
 db.define_table('AUTHOR_TR',
-			Field('AuthorID', 'reference AUTHOR', requires=IS_NOT_EMPTY()),
-			Field('LanguageID', 'reference LANGUAGE', requires=IS_NOT_EMPTY()),
+			Field('AuthorID', 'reference AUTHOR', required=True),
+			Field('LanguageID', 'reference LANGUAGE', required=True),
 			Field('FirstName', 'string', length=128),
 			Field('MiddleName', 'string', length=128),
 			Field('LastName', 'string', length=128),
@@ -152,18 +155,31 @@ db.define_table('AUTHOR_TR',
 			Field('DisplayName', 'string', length=512),
 			Field('Biography', 'text'),
 			Field('WikipediaLink', 'string', length=256),
-			Field('SubmitterID', 'reference USER', requires=IS_NOT_EMPTY()),
+			Field('SubmitterID', 'reference USER', required=True),
 			Field('SubmissionDate', 'datetime', default=datetime.now()))
+
+db.AUTHOR_TR.AuthorID.requires = IS_IN_DB(
+						db, db.AUTHOR.id, '%(id)s (%(YearBorn)s-%(YearDied)s)')
+db.AUTHOR_TR.LanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.AUTHOR_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
 
 
 db.define_table('QUOTE_WORK',
-			Field('QuoteID', 'reference QUOTE', requires=IS_NOT_EMPTY()),
-			Field('WorkID', 'reference WORK', requires=IS_NOT_EMPTY()))
+			Field('QuoteID', 'reference QUOTE', readable=False, writable=False),
+			Field('WorkID', 'reference WORK', required=True))
+
+
+db.QUOTE_WORK.QuoteID.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.QUOTE.id, '%(Text)s')]
+db.QUOTE_WORK.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
 
 
 db.define_table('WORK_AUTHOR',
-			Field('WorkID', 'reference WORK', requires=IS_NOT_EMPTY()),
-			Field('AuthorID', 'reference AUTHOR', requires=IS_NOT_EMPTY()))
+			Field('WorkID', 'reference WORK', required=True),
+			Field('AuthorID', 'reference AUTHOR', required=True))
+
+
+db.WORK_AUTHOR.AuthorID.requires = IS_IN_DB(db, db.AUTHOR.id, '%(id)s (%(YearBorn)s-%(YearDied)s)')
+db.WORK_AUTHOR.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
 
 
 db.define_table('TRANSLATION',

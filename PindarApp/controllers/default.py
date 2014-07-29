@@ -25,8 +25,8 @@ def show():
    	(db.WORK._id==db.WORK_TR.WorkID) & 
    	(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
    	(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-   	(db.QUOTE.Text.like('%every%'))).select(db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, groupby=db.QUOTE.Text)
-   	
+   	(db.QUOTE.Text.like('%every%'))).select(db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.WORK_TR.id, groupby=db.QUOTE.Text)
+   
    return dict(results1=SQLFORM.grid(query1, 
     	fields=[db.QUOTE.Text, db.LANGUAGE.EnglishName, db.WORK_TR.WorkName], 
     	headers={'QUOTE.Text': 'Text', 

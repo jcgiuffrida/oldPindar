@@ -22,12 +22,15 @@ def add_quote():
 	*** for testing purposes only***
 	*** does not require user authorization ***
 	"""
-	form = SQLFORM(db.QUOTE, user_signature=False,
-		fields=['Text', 'SubmitterID', 'QuoteLanguageID', 'IsOriginalLanguage', 'Note'],
-		labels={'Text': 'Quote', 'SubmitterID': 'User', 'QuoteLanguageID': 'Language of quote', 'IsOriginalLanguage': 'Check if this is the quote\'s original language', 'Note': 'Add a note'},
-		submit_button='Add quote!')
+	form = SQLFORM.factory(db.QUOTE, db.QUOTE_WORK, user_signature=False)#,
+#		fields=['Text', 'SubmitterID', 'QuoteLanguageID', 'IsOriginalLanguage', 'Note'],
+#		labels={'Text': 'Quote', 'SubmitterID': 'User', 'QuoteLanguageID': 'Language of quote', 'IsOriginalLanguage': 'Check if this is the quote\'s original language', 'Note': 'Add a note'},
+#		submit_button='Add quote!')
 	if form.process().accepted:
-		response.flash = 'form accepted'
+		id = db.QUOTE.insert(**db.QUOTE._filter_fields(form.vars))
+		form.vars.QuoteID = id
+		db.QUOTE_WORK.insert(**db.QUOTE_WORK._filter_fields(form.vars))
+		response.flash = 'quote accepted'
 	elif form.errors:
 		response.flash = 'form has errors'
 	return dict(form=form)
@@ -49,5 +52,14 @@ def authors():
 	"""
 	grid1 = SQLFORM.grid(db.AUTHOR, user_signature=False)
 	grid2 = SQLFORM.grid(db.AUTHOR_TR, user_signature=False)
+	return locals()
+
+
+def connections():
+	"""
+	*** for testing purposes only***
+	"""
+	grid1 = SQLFORM.grid(db.QUOTE_WORK, user_signature=False)
+	grid2 = SQLFORM.grid(db.WORK_AUTHOR, user_signature=False)
 	return locals()
 
