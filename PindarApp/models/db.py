@@ -115,7 +115,7 @@ db.define_table('QUOTE',
             Field('IsDeleted', 'boolean', default=False),
             Field('Note', 'text'))
 
-db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(EnglishName)s')
+db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
 db.QUOTE.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
 
 db.define_table('WORK',

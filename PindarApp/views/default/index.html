@@ -1,6 +1,7 @@
 {{extend 'layout.html'}}
 <h1>Menu<h1>
-{{=A('Add Quote', _href='quote_form', cid='myid')}}
+Manage {{=A('Quotes', _href='/PindarApp/manage/quotes')}}, {{=A('Authors', _href='/PindarApp/manage/authors')}}, and {{=A('Works', _href='/PindarApp/manage/works')}}<br/>
+{{=A('Add Quote', _href='/PindarApp/manage/add_quote')}}
 <div id="myid"></div>
 
 <h2>Available quotes</h2>
