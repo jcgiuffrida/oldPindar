@@ -38,12 +38,6 @@ def show():
     	header2='Example query (text search, \"every\")')
 
 
-def manage_quotes():
-	"""
-	*** for testing purposes only***
-	"""
-	grid = SQLFORM.grid(db.QUOTE, user_signature=False)
-	return locals()
 
 
 def index():

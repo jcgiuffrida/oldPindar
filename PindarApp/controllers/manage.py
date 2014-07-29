@@ -17,6 +17,22 @@ def quotes():
 	return locals()
 
 
+def add_quote():
+	"""
+	*** for testing purposes only***
+	*** does not require user authorization ***
+	"""
+	form = SQLFORM(db.QUOTE, user_signature=False,
+		fields=['Text', 'SubmitterID', 'QuoteLanguageID', 'IsOriginalLanguage', 'Note'],
+		labels={'Text': 'Quote', 'SubmitterID': 'User', 'QuoteLanguageID': 'Language of quote', 'IsOriginalLanguage': 'Check if this is the quote\'s original language', 'Note': 'Add a note'},
+		submit_button='Add quote!')
+	if form.process().accepted:
+		response.flash = 'form accepted'
+	elif form.errors:
+		response.flash = 'form has errors'
+	return dict(form=form)
+
+
 def works():
 	"""
 	*** for testing purposes only***

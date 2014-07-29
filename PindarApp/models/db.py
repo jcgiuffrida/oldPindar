@@ -99,7 +99,7 @@ db.define_table('LANGUAGE',
 
 
 db.define_table('USER',
-			Field('UserName', 'string', length=32, required=True),
+			Field('UserName', 'string', length=32, requires=IS_NOT_EMPTY()),
 			Field('DateJoined', 'datetime', default=datetime.now()),
 			Field('PrimaryLanguageID', 'integer', 'reference LANGUAGE'),
 			Field('UserBiography', 'text'),
@@ -107,14 +107,16 @@ db.define_table('USER',
 
 
 db.define_table('QUOTE',
-            Field('Text', 'text', required=True),
-            Field('SubmitterID', 'reference USER', required=True),
+            Field('Text', 'text', requires=IS_NOT_EMPTY()),
+            Field('SubmitterID', 'reference USER', requires=IS_NOT_EMPTY()),
             Field('SubmissionDate', 'datetime', default=datetime.now()),
-            Field('QuoteLanguageID', 'reference LANGUAGE', required=True),
+            Field('QuoteLanguageID', 'reference LANGUAGE', requires=IS_NOT_EMPTY()),
             Field('IsOriginalLanguage', 'boolean'),
             Field('IsDeleted', 'boolean', default=False),
             Field('Note', 'text'))
 
+db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(EnglishName)s')
+db.QUOTE.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
 
 db.define_table('WORK',
             Field('YearPublished', 'integer'),
@@ -123,14 +125,14 @@ db.define_table('WORK',
 
 
 db.define_table('WORK_TR',
-			Field('WorkID', 'reference WORK', required=True),
-			Field('LanguageID', 'reference LANGUAGE', required=True),
-			Field('WorkName', 'string', length=1024, required=True),
+			Field('WorkID', 'reference WORK', requires=IS_NOT_EMPTY()),
+			Field('LanguageID', 'reference LANGUAGE', requires=IS_NOT_EMPTY()),
+			Field('WorkName', 'string', length=1024, requires=IS_NOT_EMPTY()),
 			Field('WorkSubtitle', 'string', length=1024),
 			Field('WorkDescription', 'text'),
 			Field('WikipediaLink', 'string', length=256),
 			Field('WorkNote', 'text'),
-			Field('SubmitterID', 'reference USER', required=True),
+			Field('SubmitterID', 'reference USER', requires=IS_NOT_EMPTY()),
 			Field('SubmissionDate', 'datetime', default=datetime.now()))
 
 
@@ -141,8 +143,8 @@ db.define_table('AUTHOR',
 			
 
 db.define_table('AUTHOR_TR',
-			Field('AuthorID', 'reference AUTHOR', required=True),
-			Field('LanguageID', 'reference LANGUAGE', required=True),
+			Field('AuthorID', 'reference AUTHOR', requires=IS_NOT_EMPTY()),
+			Field('LanguageID', 'reference LANGUAGE', requires=IS_NOT_EMPTY()),
 			Field('FirstName', 'string', length=128),
 			Field('MiddleName', 'string', length=128),
 			Field('LastName', 'string', length=128),
@@ -150,18 +152,18 @@ db.define_table('AUTHOR_TR',
 			Field('DisplayName', 'string', length=512),
 			Field('Biography', 'text'),
 			Field('WikipediaLink', 'string', length=256),
-			Field('SubmitterID', 'reference USER', required=True),
+			Field('SubmitterID', 'reference USER', requires=IS_NOT_EMPTY()),
 			Field('SubmissionDate', 'datetime', default=datetime.now()))
 
 
 db.define_table('QUOTE_WORK',
-			Field('QuoteID', 'reference QUOTE', required=True),
-			Field('WorkID', 'reference WORK', required=True))
+			Field('QuoteID', 'reference QUOTE', requires=IS_NOT_EMPTY()),
+			Field('WorkID', 'reference WORK', requires=IS_NOT_EMPTY()))
 
 
 db.define_table('WORK_AUTHOR',
-			Field('WorkID', 'reference WORK', required=True),
-			Field('AuthorID', 'reference AUTHOR', required=True))
+			Field('WorkID', 'reference WORK', requires=IS_NOT_EMPTY()),
+			Field('AuthorID', 'reference AUTHOR', requires=IS_NOT_EMPTY()))
 
 
 db.define_table('TRANSLATION',
