@@ -18,27 +18,46 @@ def show():
    	(db.WORK._id==db.WORK_TR.WorkID) & 
    	(db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID) & 
    	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id))
-   query2 = db((db.WORK_TR.LanguageID==1) & 
-   	(db.AUTHOR_TR.LanguageID==1) & 
-   	(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-   	(db.WORK._id==db.WORK_TR.WorkID) & 
-   	(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
-   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-   	(db.QUOTE.Text.like('%every%'))).select(db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.WORK_TR.id, groupby=db.QUOTE.Text)
+   langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
    
    return dict(results1=SQLFORM.grid(query1, 
     	fields=[db.QUOTE.Text, db.LANGUAGE.EnglishName, db.WORK_TR.WorkName], 
     	headers={'QUOTE.Text': 'Text', 
     			'LANGUAGE.EnglishName': 'Language', 
     			'WORK_TR.WorkName': 'Source'},
-    	maxtextlength=80),
+    	maxtextlength=80, paginate=10),
     	header1='Example query (all quotes)',
-    	results2=query2,
-    	header2='Example query (text search, \"every\")')
+    	langs=langs)
 
 
+def text_query():
+	lang = 1 if request.vars.lang=='' else int(request.vars.lang)
+	if len(request.vars.query) < 2:
+		return ''
+	query = '%' + request.vars.query + '%'
+	results = db((db.WORK_TR.LanguageID==lang) & 
+   	(db.AUTHOR_TR.LanguageID==lang) & 
+   	(db.QUOTE.QuoteLanguageID==lang) & 
+   	(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+   	(db.WORK._id==db.WORK_TR.WorkID) & 
+   	(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+   	(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.WORK_TR.id, groupby=db.QUOTE.Text)
+   	
+   	response = '<h3>Example query (text search)</h3>'
+   	if len(results) == 0:
+   		response += '<em>No results found.</em>'
+   	for row in results:
+		response += row.QUOTE.Text + '<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">'
+		response += row.AUTHOR_TR.DisplayName + ', <a href="data/read/WORK_TR/' + str(row.WORK_TR.id) + '"><em>'
+		response += row.WORK_TR.WorkName + '</em></a></span><br/><br/>'
+   	
+   	return response
 
+
+def echo():
+    return request.vars.name
 
 def index():
     """

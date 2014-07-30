@@ -1,12 +1,19 @@
 {{extend 'layout.html'}}
-<h1>{{=header1}}</h1>
-{{=results1}}
+<form>
+   <label for="query"><b>Search: </b></label>
+   <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
+	<select name="lang" onchange="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')">
+   {{ for row in langs:}}
+		<option value="{{=row.id}}">{{=row.NativeName}}</option>
+   {{ pass }}
+	</select>
+</form>
+<div id="target"></div>
 <br/><br/>
-<h1>{{=header2}}</h1>
-{{ for row in results2: }}
-	{{ =row.QUOTE.Text }}<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">
-	{{ =row.AUTHOR_TR.DisplayName }}, <a href="data/read/WORK_TR/{{ =row.WORK_TR.id }}"><em>
-	{{ =row.WORK_TR.WorkName }}</em></a></span><br/><br/>
-	{{ pass}}
 <hr>
+<h3>{{=header1}}</h3>
+{{=results1}}
+<hr>
+
+
 {{=response.toolbar()}}
