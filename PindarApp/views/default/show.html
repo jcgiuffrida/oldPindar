@@ -3,6 +3,7 @@
    <label for="query"><b>Search: </b></label>
    <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
 	<select name="lang" onchange="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')">
+		<option value="0">All languages</option>
    {{ for row in langs:}}
 		<option value="{{=row.id}}">{{=row.NativeName}}</option>
    {{ pass }}

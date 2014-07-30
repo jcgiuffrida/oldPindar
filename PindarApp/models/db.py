@@ -107,11 +107,11 @@ db.define_table('USER',
 
 db.define_table('QUOTE',
             Field('Text', 'text', requires=IS_NOT_EMPTY()),
-            Field('SubmitterID', 'reference USER', required=True),
+            Field('SubmitterID', 'reference USER', required=True, default=1),
             Field('SubmissionDate', 'datetime', default=datetime.now()),
-            Field('QuoteLanguageID', 'reference LANGUAGE', required=True),
+            Field('QuoteLanguageID', 'reference LANGUAGE', required=True, default=1),
             Field('IsOriginalLanguage', 'boolean'),
-            Field('IsDeleted', 'boolean', default=False),
+            Field('IsDeleted', 'boolean', default=False, readable=False, writable=False),
             Field('Note', 'text'))
 
 db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')

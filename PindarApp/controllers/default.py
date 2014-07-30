@@ -16,16 +16,31 @@ def show():
    query1 = ((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
    	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
    	(db.WORK._id==db.WORK_TR.WorkID) & 
+   	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id) & 
+   	(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
+   	# language is consistent
    	(db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID) & 
-   	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id))
+   	(db.QUOTE.QuoteLanguageID==db.AUTHOR_TR.LanguageID))
    langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
    
    return dict(results1=SQLFORM.grid(query1, 
-    	fields=[db.QUOTE.Text, db.LANGUAGE.EnglishName, db.WORK_TR.WorkName], 
-    	headers={'QUOTE.Text': 'Text', 
-    			'LANGUAGE.EnglishName': 'Language', 
-    			'WORK_TR.WorkName': 'Source'},
-    	maxtextlength=80, paginate=10),
+    		fields=[
+				db.QUOTE.Text, 
+				db.LANGUAGE.EnglishName, 
+				db.AUTHOR_TR.DisplayName, 
+				db.WORK_TR.WorkName], 
+			headers={'QUOTE.Text': 'Text', 
+					'LANGUAGE.EnglishName': 'Language', 
+					'AUTHOR_TR.DisplayName': 'Author',
+					'WORK_TR.WorkName': 'Source'},
+			maxtextlengths={'QUOTE.Text': 400, 
+							'LANGUAGE.EnglishName': 20, 
+							'AUTHOR_TR.DisplayName': 50, 
+							'WORK_TR.WorkName': 80}, 
+			paginate=10,
+			orderby=db.LANGUAGE.EnglishName, details=False),
     	header1='Example query (all quotes)',
     	langs=langs)
 
@@ -35,15 +50,33 @@ def text_query():
 	if len(request.vars.query) < 2:
 		return ''
 	query = '%' + request.vars.query + '%'
-	results = db((db.WORK_TR.LanguageID==lang) & 
-   	(db.AUTHOR_TR.LanguageID==lang) & 
-   	(db.QUOTE.QuoteLanguageID==lang) & 
-   	(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-   	(db.WORK._id==db.WORK_TR.WorkID) & 
-   	(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
-   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-   	(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.WORK_TR.id, groupby=db.QUOTE.Text)
+	if lang == 0:
+		results = db((db.WORK_TR.LanguageID==db.QUOTE.QuoteLanguageID) & 
+		(db.AUTHOR_TR.LanguageID==db.QUOTE.QuoteLanguageID) & 
+		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+		(db.WORK._id==db.WORK_TR.WorkID) & 
+		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+		(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+		(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
+											db.AUTHOR_TR.DisplayName, 
+											db.WORK_TR.WorkName, 
+											db.WORK_TR.id, 
+											groupby=db.QUOTE.Text)
+	else:
+		results = db((db.WORK_TR.LanguageID==lang) & 
+		(db.AUTHOR_TR.LanguageID==lang) & 
+		(db.QUOTE.QuoteLanguageID==lang) & 
+		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+		(db.WORK._id==db.WORK_TR.WorkID) & 
+		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+		(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+		(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
+											db.AUTHOR_TR.DisplayName, 
+											db.WORK_TR.WorkName, 
+											db.WORK_TR.id, 
+											groupby=db.QUOTE.Text)
    	
    	response = '<h3>Example query (text search)</h3>'
    	if len(results) == 0:
