@@ -91,96 +91,179 @@ crud = Crud(db)
 
 
 
+###---------------------- LANGUAGE
 
 db.define_table('LANGUAGE',
-			Field('LanguageCode', 'string', length=3),
-			Field('EnglishName', 'string', length=64),
-			Field('NativeName', 'string', length=64))
+			Field('LanguageCode', 'string', length=3, label='Two-letter code'),
+			Field('EnglishName', 'string', length=64, label='English name'),
+			Field('NativeName', 'string', length=64, required=True, label='Native name'))
 
+db.LANGUAGE.LanguageCode.requires = IS_LENGTH(minsize=2, maxsize=3)
+db.LANGUAGE.EnglishName.requires = IS_LENGTH(minsize=2, maxsize=64)
+db.LANGUAGE.NativeName.requires = [IS_NOT_EMPTY(), IS_LENGTH(minsize=2, maxsize=64)]
+
+
+###---------------------- USER
 
 db.define_table('USER',
-			Field('UserName', 'string', length=32, required=True),
-			Field('DateJoined', 'datetime', default=datetime.now()),
-			Field('PrimaryLanguageID', 'integer', 'reference LANGUAGE'),
-			Field('UserBiography', 'text'),
-			Field('IsDeleted', 'boolean'))
+			Field('UserName', 'string', length=32, required=True, unique=True, 
+					label='Username'),
+			Field('DateJoined', 'datetime', default=datetime.now(), writable=False,
+					label='Date joined'),
+			Field('PrimaryLanguageID', 'integer', 'reference LANGUAGE', default=1,
+					label='Primary language'),
+			Field('UserBiography', 'text', 
+					label='User biography'),
+			Field('IsDeleted', 'boolean', default=False, readable=False, writable=False))
+
+db.USER.UserName.requires = [IS_NOT_EMPTY(), IS_LENGTH(minsize=3, maxsize=32), 
+							 IS_NOT_IN_DB(db, db.USER.UserName)]
+db.USER.DateJoined.requires = IS_DATETIME()
+db.USER.PrimaryLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.USER.UserBiography.requires = IS_LENGTH(maxsize=4096)
+
+
+###---------------------- QUOTE
 
 db.define_table('QUOTE',
-            Field('Text', 'text', requires=IS_NOT_EMPTY()),
-            Field('SubmitterID', 'reference USER', required=True, default=1),
-            Field('SubmissionDate', 'datetime', default=datetime.now()),
-            Field('QuoteLanguageID', 'reference LANGUAGE', required=True, default=1),
-            Field('IsOriginalLanguage', 'boolean'),
+            Field('Text', 'text', required=True),
+            Field('SubmitterID', 'reference USER', required=True, label='Submitter', 
+            		default=1), # temporary default for testing purposes
+            Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
+            		label='Date submitted'),
+            Field('QuoteLanguageID', 'reference LANGUAGE', required=True, 
+            		default=1, label='Language'), # temporary default for testing purposes
+            Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
             Field('IsDeleted', 'boolean', default=False, readable=False, writable=False),
-            Field('Note', 'text'))
+            Field('Note', 'text', label='Context or additional information'))
 
-db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.QUOTE.Text.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.QUOTE.Text)]
 db.QUOTE.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
+db.QUOTE.SubmissionDate.requires = IS_DATETIME()
+db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.QUOTE.Note.requires = IS_LENGTH(maxsize=4096)
+
+
+###---------------------- WORK
 
 db.define_table('WORK',
-            Field('YearPublished', 'integer'),
-            Field('YearWritten', 'integer'),
-            Field('IsHidden', 'boolean', default=False))
+            Field('YearPublished', 'integer', label='Year published'),
+            Field('YearWritten', 'integer', label='Year written (if different)'),
+            Field('IsHidden', 'boolean', default=False, readable=False, writable=False))
 
+db.WORK.YearPublished.requires = IS_INT_IN_RANGE(-5000,2050)
+db.WORK.YearPublished.requires = IS_INT_IN_RANGE(-5000,2050)
+
+
+###---------------------- WORK_TR
 
 db.define_table('WORK_TR',
 			Field('WorkID', 'reference WORK', required=True),
-			Field('LanguageID', 'reference LANGUAGE', required=True),
-			Field('WorkName', 'string', length=1024, required=True),
-			Field('WorkSubtitle', 'string', length=1024),
-			Field('WorkDescription', 'text'),
-			Field('WikipediaLink', 'string', length=256),
-			Field('WorkNote', 'text'),
-			Field('SubmitterID', 'reference USER', required=True),
-			Field('SubmissionDate', 'datetime', default=datetime.now()))
+			Field('LanguageID', 'reference LANGUAGE', required=True, 
+					label='Language of this work or translation'),
+			Field('WorkName', 'string', length=1024, required=True,
+					label='Name of work'),
+			Field('WorkSubtitle', 'string', length=1024, 
+					label='Subtitle'),
+			Field('WorkDescription', 'text',
+					label='Description of work'),
+			Field('WikipediaLink', 'string', length=256,
+					label='Link to Wikipedia page'),
+			Field('WorkNote', 'text',
+					label='Context or additional information'),
+			Field('SubmitterID', 'reference USER', required=True,
+					label='User'),
+			Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
+					label='Date submitted'))
 
 db.WORK_TR.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
 db.WORK_TR.LanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.WORK_TR.WorkName.requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=1024)]
+db.WORK_TR.WorkSubtitle.requires = IS_LENGTH(maxsize=1024)
+db.WORK_TR.WorkDescription.requires = IS_LENGTH(maxsize=4096)
+db.WORK_TR.WikipediaLink.requires = \
+		[IS_MATCH('(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
+		 IS_LENGTH(maxsize=256)]
+db.WORK_TR.WorkNote.requires = IS_LENGTH(maxsize=4096)
 db.WORK_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
+db.WORK_TR.SubmissionDate.requires = IS_DATETIME()
 
+
+###---------------------- AUTHOR
 
 db.define_table('AUTHOR',
 			Field('YearBorn', 'integer'),
 			Field('YearDied', 'integer'),
-			Field('IsHidden', 'boolean', default=False))
-			
+			Field('IsHidden', 'boolean', default=False, readable=False, writable=False))
+
+db.AUTHOR.YearBorn.requires = IS_INT_IN_RANGE(-5000,2050)
+db.AUTHOR.YearDied.requires = IS_INT_IN_RANGE(-5000,2050)
+
+
+###---------------------- AUTHOR_TR
 
 db.define_table('AUTHOR_TR',
 			Field('AuthorID', 'reference AUTHOR', required=True),
-			Field('LanguageID', 'reference LANGUAGE', required=True),
-			Field('FirstName', 'string', length=128),
-			Field('MiddleName', 'string', length=128),
-			Field('LastName', 'string', length=128),
-			Field('AKA', 'list:string'),
-			Field('DisplayName', 'string', length=512),
+			Field('LanguageID', 'reference LANGUAGE', required=True,
+					label='Your language'),
+			Field('FirstName', 'string', length=128,
+					label='First name'),
+			Field('MiddleName', 'string', length=128,
+					label='Middle name'),
+			Field('LastName', 'string', length=128,
+					label='Last name'),
+			Field('AKA', 'list:string',
+					label='Other names'),
+			Field('DisplayName', 'string', length=512,
+					label='Default name'),
 			Field('Biography', 'text'),
-			Field('WikipediaLink', 'string', length=256),
-			Field('SubmitterID', 'reference USER', required=True),
-			Field('SubmissionDate', 'datetime', default=datetime.now()))
+			Field('WikipediaLink', 'string', length=256, 
+					label='Link to Wikipedia page'),
+			Field('SubmitterID', 'reference USER', required=True,
+					label='User'),
+			Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
+					label='Date submitted'))
 
 db.AUTHOR_TR.AuthorID.requires = IS_IN_DB(
 						db, db.AUTHOR.id, '%(id)s (%(YearBorn)s-%(YearDied)s)')
 db.AUTHOR_TR.LanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.AUTHOR_TR.FirstName.requires = IS_LENGTH(maxsize=128)
+db.AUTHOR_TR.MiddleName.requires = IS_LENGTH(maxsize=128)
+db.AUTHOR_TR.LastName.requires = IS_LENGTH(maxsize=128)
+db.AUTHOR_TR.AKA.requires = IS_LIST_OF(IS_LENGTH(maxsize=256))
+db.AUTHOR_TR.DisplayName.requirse = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=512)]
+db.AUTHOR_TR.Biography.requires = IS_LENGTH(maxsize=8192)
+db.AUTHOR_TR.WikipediaLink.requires = \
+		[IS_MATCH('(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
+		 IS_LENGTH(maxsize=256)]
 db.AUTHOR_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
+db.AUTHOR_TR.SubmissionDate.requires = IS_DATETIME()
 
+
+###---------------------- QUOTE_WORK
 
 db.define_table('QUOTE_WORK',
-			Field('QuoteID', 'reference QUOTE', readable=False, writable=False),
+			Field('QuoteID', 'reference QUOTE', required=True, 
+					readable=False, writable=False),
 			Field('WorkID', 'reference WORK', required=True))
 
-
-db.QUOTE_WORK.QuoteID.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.QUOTE.id, '%(Text)s')]
+db.QUOTE_WORK.QuoteID.requires = IS_IN_DB(db, db.QUOTE.id, '%(Text)s')
 db.QUOTE_WORK.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
 
 
+###---------------------- WORK_AUTHOR
+
 db.define_table('WORK_AUTHOR',
-			Field('WorkID', 'reference WORK', required=True),
+			Field('WorkID', 'reference WORK', required=True, 
+					readable=False, writable=False),
 			Field('AuthorID', 'reference AUTHOR', required=True))
 
-
-db.WORK_AUTHOR.AuthorID.requires = IS_IN_DB(db, db.AUTHOR.id, '%(id)s (%(YearBorn)s-%(YearDied)s)')
+db.WORK_AUTHOR.AuthorID.requires = IS_IN_DB(db, db.AUTHOR.id, 
+									'%(id)s (%(YearBorn)s-%(YearDied)s)')
 db.WORK_AUTHOR.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
 
+
+###---------------------- TRANSLATION (fill out later)
 
 db.define_table('TRANSLATION',
 			Field('OriginalQuoteID', 'reference QUOTE'),

@@ -24,7 +24,6 @@ def add_quote():
 	"""
 	form = SQLFORM.factory(db.QUOTE, db.QUOTE_WORK, user_signature=False,
 		fields=['Text', 'SubmitterID', 'QuoteLanguageID', 'IsOriginalLanguage', 'Note'],
-		labels={'Text': 'Quote', 'SubmitterID': 'User', 'QuoteLanguageID': 'Language of quote', 'IsOriginalLanguage': 'Check if this is the quote\'s original language', 'Note': 'Add a note'},
 		submit_button='Add quote!')
 	if form.process().accepted:
 		id = db.QUOTE.insert(**db.QUOTE._filter_fields(form.vars))
