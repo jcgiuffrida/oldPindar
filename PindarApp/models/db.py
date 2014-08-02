@@ -146,6 +146,8 @@ db.QUOTE.Note.requires = IS_LENGTH(maxsize=4096)
 
 ###---------------------- WORK
 
+### note: it should not be possible to enter a WORK without joining it to a WORK_TR. same with authors
+
 db.define_table('WORK',
             Field('YearPublished', 'integer', label='Year published'),
             Field('YearWritten', 'integer', label='Year written (if different)'),

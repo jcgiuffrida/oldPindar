@@ -43,7 +43,7 @@ def show():
 			orderby=db.LANGUAGE.EnglishName, details=False),
     	header1='Example query (all quotes)',
     	langs=langs)
-
+    	
 
 def text_query():
 	lang = 1 if request.vars.lang=='' else int(request.vars.lang)
@@ -89,8 +89,6 @@ def text_query():
    	return response
 
 
-def echo():
-    return request.vars.name
 
 def index():
     """
