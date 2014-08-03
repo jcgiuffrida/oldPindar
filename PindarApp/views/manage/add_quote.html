@@ -3,24 +3,26 @@
 {{=form_quote}}
 <div id="author_tr">
 	<h4>Select Author</h4>
-	<input name="author_query" onkeyup="ajax('{{=URL('manage', 'author_query')}}', ['author_query', 'QuoteLanguageID'], 'author_target')" onclick="jQuery('#work_tr>input').val(''); jQuery('#work_target').html(''); jQuery('#work_tr').fadeOut('fast');" />
+	<input name="author_query" onkeyup="ajax('{{=URL('manage', 'author_query')}}', ['author_query', 'QuoteLanguageID'], 'author_target')" onclick="jQuery('#form_author_tr').fadeOut('fast');jQuery('#work_tr>input').val(''); jQuery('#work_target').html(''); jQuery('#work_tr').fadeOut('fast');" />
 	<div id="author_target"></div>
-	<div id="form_author_tr"></div>
+	<div id="form_author_tr">{{=add_author_tr}}</div>
 </div>
 <div id="work_tr">
 	<h4>Select Work</h4>
 	<input name="work_query" onkeyup="ajax('{{=URL('manage', 'work_query')}}', ['work_query', 'author_selection'], 'work_target')" />
 	<div id="work_target"></div>
-	<div id="form_work_tr"></div>
+	<div id="form_work_tr">{{=add_work_tr}}</div>
 </div>
 <div id="submit_button">
-	<button>Submit!</button>
 </div>
 <div id="target"></div>
 <script>
 jQuery(document).ready(function(){
-	jQuery('#work_tr').hide();
+	//jQuery('#form_author_tr').hide();
+	//jQuery('#work_tr').hide();
 	jQuery('#submit_button').hide();
+	jQuery('').appendTo('#submit_button');
+	$('#WORK_TR_Author_Tr_ID__row').hide();
 	/*jQuery('#QUOTE_IsOriginalLanguage').change(function(){
 		if(jQuery('#QUOTE_IsOriginalLanguage').prop('checked')){
 			jQuery('#QUOTE_QuoteLanguageID__row').fadeOut("fast");
@@ -38,12 +40,18 @@ jQuery(document).ready(function(){
 			e.preventDefault();
 			selected = $(this);
 			selected.css("background-color", "#999");
-			ajax('{{=URL('manage', 'author_selected')}}?authorid=' + this.id, '',
-			'form_author_tr');
-			$('#author_target').html('<input style="display:none" name="author_selection"></input>');
-			$('#author_target input').val(this.id);
-			$('#author_tr>input').val($(this).children('td').html());
-			$('#work_tr').fadeIn('fast');
+			//ajax('{{=URL('manage', 'author_selected')}}?authorid=' + this.id, '',
+			//'form_author_tr');
+			$('#author_target').html('<input style="display:none" ' + 
+				'name="author_selection"></input>');
+			if (this.id == 0){
+				$('#form_author_tr').fadeIn('fast');
+			} else {			
+				$('#author_target input').val(this.id);
+				$('#author_tr>input').val($(this).children('td').html());
+				$('#work_tr').fadeIn('fast');
+			}
+			
 		});
 		$(tablename).on('selectstart', false); //Don't let the user select the table
 	}
@@ -57,15 +65,25 @@ $.selectAuthor("#author_target");
 			e.preventDefault();
 			selected = $(this);
 			selected.css("background-color", "#999");
-			ajax('{{=URL('manage', 'work_selected')}}?workid=' + this.id, '',
-			'form_work_tr');
-			$('#work_target').html('<input style="display:none" name="work_selection"></input>');
-			$('#work_target input').val(this.id);
-			$('#work_tr>input').val($(this).children('td').html());
-			$('#submit_button').fadeIn('fast');
+			//ajax('{{=URL('manage', 'work_selected')}}?workid=' + this.id, '',
+			//'form_work_tr');
+			$('#work_target').html('<input style="display:none" ' + 
+				'name="work_selection"></input>');
+			if (this.id == 0){
+				$('#form_work_tr').fadeIn('fast');
+				$('#WORK_TR_Author_Tr_ID').val($('#author_target input').val());
+			} else {	
+				$('#work_target input').val(this.id);
+				$('#work_tr>input').val($(this).children('td').html());
+				$('#submit_button').fadeIn('fast');
+			}
 		});
 		$(tablename).on('selectstart', false); //Don't let the user select the table
 	}
 })(jQuery);
 $.selectWork("#work_target");
 </script>
+<!-- additional js to show the form on page refresh -->
+{{=author_js}}
+{{=work_js}}
+{{=debug}}

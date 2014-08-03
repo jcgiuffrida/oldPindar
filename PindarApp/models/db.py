@@ -154,7 +154,7 @@ db.define_table('WORK',
             Field('IsHidden', 'boolean', default=False, readable=False, writable=False))
 
 db.WORK.YearPublished.requires = IS_INT_IN_RANGE(-5000,2050)
-db.WORK.YearPublished.requires = IS_INT_IN_RANGE(-5000,2050)
+db.WORK.YearWritten.requires = IS_INT_IN_RANGE(-5000,2050)
 
 
 ###---------------------- WORK_TR
