@@ -14,10 +14,6 @@ def add_quote():
 	*** for testing purposes only ***
 	*** does not require user authorization ***
 	"""
-	langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
-	options = []
-	for row in langs:
-		options.append(OPTION(row.NativeName, _value=row.id))
 	form_quote = SQLFORM.factory(
 		Field('Text', 'text', requires = [IS_NOT_EMPTY(), 
 				IS_NOT_IN_DB(db, db.QUOTE.Text)]),
@@ -29,121 +25,97 @@ def add_quote():
             	default=1, label='Language', 
             	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')), 
         Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
-        #Field('Note', 'text', label='Context or additional information',
-        #		requires = IS_LENGTH(maxsize=4096)),
+        Field('Note', 'text', label='Context or additional information',
+        		requires = IS_LENGTH(maxsize=4096)),
+		Field('FirstName', 'string', label='First name'), 
+#				requires = IS_LENGTH(maxsize=128)),
+		Field('MiddleName', 'string', label='Middle name'),
+#				requires = IS_LENGTH(maxsize=128)),
+		Field('LastName', 'string', label='Last name'),
+#				requires = IS_LENGTH(maxsize=128)),
+		Field('AKA', 'list:string', label='Other names'),
+#				requires=IS_LIST_OF(IS_LENGTH(maxsize=256))),
+		Field('DisplayName', 'string', label='Default name'), 
+#				requires=[IS_LENGTH(maxsize=512)]),
+		Field('Biography', 'text'), 
+#				requires=IS_LENGTH(maxsize=8192)),
+		Field('AuthorWikipediaLink', 'string', label='Link to Wikipedia page'),# requires = 
+#				[IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
+#				'\.wikipedia\.org/wiki/.{1,}')), 
+#				IS_LENGTH(maxsize=256)]),
+		Field('YearBorn', 'integer', label='Year born'), 
+#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
+		Field('YearDied', 'integer', label='Year died'),
+#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
+		Field('WorkName', 'string', label='Name of work'),
+#				requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=1024)]),
+		Field('WorkSubtitle', 'string', label='Subtitle'),
+#				requires = IS_LENGTH(maxsize=1024)),
+		Field('WorkDescription', 'text', label='Description of work'),
+#				requires = IS_LENGTH(maxsize=4096)),
+		Field('WorkWikipediaLink', 'string', label='Link to Wikipedia page'),
+#				requires = [IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
+#				'\.wikipedia\.org/wiki/.{1,}')), IS_LENGTH(maxsize=256)]),
+		Field('WorkNote', 'text', label='Context or additional information'),
+#				requires = IS_LENGTH(maxsize=4096)),
+		Field('YearPublished', 'integer', label='Year published'),
+#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
+        Field('YearWritten', 'integer', label='Year written (if different)'),
+#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
+		Field('AuthorTrID', 'integer'),
+		Field('WorkTrID', 'integer'),
 		submit_button='Add quote!', table_name='QUOTE')
 	
-	add_author_tr = SQLFORM.factory(
-			Field('FirstName', 'string', label='First name', 
-					requires = IS_LENGTH(maxsize=128)),
-			Field('MiddleName', 'string', label='Middle name',
-					requires = IS_LENGTH(maxsize=128)),
-			Field('LastName', 'string', label='Last name',
-					requires = IS_LENGTH(maxsize=128)),
-			Field('AKA', 'list:string', label='Other names',
-					requires=IS_LIST_OF(IS_LENGTH(maxsize=256))),
-			Field('DisplayName', 'string', label='Default name', 
-					requires=[IS_NOT_EMPTY(), IS_LENGTH(maxsize=512)]),
-			Field('Biography', 'text', requires=IS_LENGTH(maxsize=8192)),
-			Field('WikipediaLink', 'string', label='Link to Wikipedia page', requires = 
-					[IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
-					'\.wikipedia\.org/wiki/.{1,}')), 
-					IS_LENGTH(maxsize=256)]),
-			Field('YearBorn', 'integer', label='Year born', 
-					requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-			Field('YearDied', 'integer', label='Year died',
-					requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-			submit_button='Add author', table_name='AUTHOR_TR')
+	author_lookup = TR(LABEL('Select Author'),
+					INPUT(_name="author_lookup", _type="text", 
+					_id='QUOTE_Author_Lookup'), _id='QUOTE_Author_Lookup__row')
+	form_quote[0].insert(6, author_lookup)
 	
-	add_work_tr = SQLFORM.factory(
-			Field('WorkName', 'string', label='Name of work',
-					requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=1024)]),
-			Field('WorkSubtitle', 'string', label='Subtitle',
-					requires = IS_LENGTH(maxsize=1024)),
-			Field('WorkDescription', 'text', label='Description of work',
-					requires = IS_LENGTH(maxsize=4096)),
-			Field('WikipediaLink', 'string', label='Link to Wikipedia page',
-					requires = [IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
-					'\.wikipedia\.org/wiki/.{1,}')), IS_LENGTH(maxsize=256)]),
-			Field('WorkNote', 'text', label='Context or additional information',
-					requires = IS_LENGTH(maxsize=4096)),
-			Field('YearPublished', 'integer', label='Year published',
-				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-            Field('YearWritten', 'integer', label='Year written (if different)',
-				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-			Field('Author_Tr_ID', 'integer'), 
-			submit_button='Add work', table_name='WORK_TR')
+	work_lookup = TR(LABEL('Select Work'),
+					INPUT(_name="work_lookup", _type="text", 
+					_id='QUOTE_Work_Lookup'), _id='QUOTE_Work_Lookup__row')
+	form_quote[0].insert(16, work_lookup)
 	
-	author_js = SCRIPT('jQuery("#form_author_tr").hide();$("#work_tr").hide();', _type="text/javascript")
-	work_js = SCRIPT('jQuery("#form_work_tr").hide();', _type="text/javascript")
+	author_submit = TR(INPUT(_name='Author_Submit', _value='Add author', 
+			_id='QUOTE_Author_Submit', _type='submit'), _id='QUOTE_Author_Submit__row')
+	form_quote[0].insert(16, author_submit)
+	
+	work_submit = TR(INPUT(_name='Work_Submit', _value='Add work', 
+			_id='QUOTE_Work_Submit', _type='submit'), _id='QUOTE_Work_Submit__row')
+	form_quote[0].insert(25, work_submit)
+	
+	quote_submit = TR(INPUT(_name='Quote_Submit', _value='Add quote!', 
+			_id='QUOTE_Quote_Submit', _type='submit'), _id='QUOTE_Quote_Submit__row')
+	form_quote[0].insert(26, quote_submit)
+	
+	debug=''
+	
 	if form_quote.validate():
-		display_authors = db((db.AUTHOR_TR.LanguageID==request.vars.QuoteLanguageID)).\
-				select(db.AUTHOR_TR.DisplayName, db.AUTHOR_TR.id)
+		form_quote.vars.QuoteID = \
+			db.QUOTE.insert(**db.QUOTE._filter_fields(form_quote.vars))
+		tmp = db((db.WORK_TR.id==form_quote.vars.WorkTrID) & 
+				 (db.WORK.id==db.WORK_TR.WorkID)).\
+			  	 select(db.WORK.id)
+		for row in tmp:
+			form_quote.vars.WorkID = row.id
+		
+		Quote_Work_ID = \
+			db.QUOTE_WORK.insert(**db.QUOTE_WORK._filter_fields(form_quote.vars))
+		
+		debug = Quote_Work_ID
+		
 		response.flash = 'quote accepted'
 	elif form_quote.errors:
-		response.flash = 'form has errors'
-	debug = ''
-	
-	if add_author_tr.validate():
-		# add AUTHOR
-		author_id = db.AUTHOR.insert(**db.AUTHOR._filter_fields(add_author_tr.vars))
-		add_author_tr.vars.AuthorID = author_id
-		# add AUTHOR_TR
-		add_author_tr.vars.LanguageID = 1  # later, get user's language
-		add_author_tr.vars.SubmitterID = 1  # later, grab user from form_quote
-		author_tr_id = db.AUTHOR_TR.insert(**db.AUTHOR_TR._filter_fields(\
-			add_author_tr.vars))
+		debug = db.WORK_AUTHOR._filter_fields(form_quote.vars)
 		
-		author_js = SCRIPT('jQuery("#form_author_tr").fadeOut("fast");' \
-			'$("#work_tr").fadeIn("fast");' \
-			'$("#author_target").html("<input style=\'display:none\'' \
-			'name=\'author_selection\'></input>");$("#author_target input").val(' + \
-			str(author_id) + ');$("#author_tr>input").val("' + \
-			add_author_tr.vars.DisplayName + '");$("#work_tr").fadeIn("fast");', 
-			_type="text/javascript")
-		response.flash = 'author added'
-	elif add_author_tr.errors:
-		author_js = SCRIPT('jQuery("#form_author_tr").show();', _type="text/javascript")
 		response.flash = 'form has errors'
-	
-	if add_work_tr.validate():
-		# add WORK
-		work_id = db.WORK.insert(**db.WORK._filter_fields(add_work_tr.vars))
-		add_work_tr.vars.WorkID = work_id
-		# add WORK_TR
-		add_work_tr.vars.LanguageID = 1  # later, get user's language
-		add_work_tr.vars.SubmitterID = 1  # later, grab user from form_quote
-		work_tr_id = db.WORK_TR.insert(**db.WORK_TR._filter_fields(\
-			add_work_tr.vars))
 		
-		work_js = SCRIPT('jQuery("#form_work_tr").fadeOut("fast");' \
-			'$("#work_target").html(<input style=\'display:none\'' \
-			'name=\'work_selection\'></input>");$("#work_target input").val(' + \
-			str(work_id) + ');$("#work_tr>input").val("' + \
-			add_work_tr.vars.WorkName + '");$("#submit_button").fadeIn("fast");',
-			_type="text/javascript")
-		response.flash = 'work added'
-	elif add_work_tr.errors:
-		author_display_row = db(db.AUTHOR_TR.id==add_work_tr.vars.Author_Tr_ID).\
-			select(db.AUTHOR_TR.DisplayName)
-		for row in author_display_row:
-			author_display = row.DisplayName
-		work_js = SCRIPT('$("#work_tr").show();jQuery("#form_work_tr").show();' \
-			'$("#author_target").html("<input style=\'display:none\' ' \
-			'name=\'author_selection\'></input>");' \
-			'$("#author_target input").val("' + str(add_work_tr.vars.Author_Tr_ID) +
-			'");$("#author_tr>input").val("' + author_display + '");', 
-			_type="text/javascript")
-		response.flash = 'form has errors' + str(add_work_tr.vars.Author_Tr_ID)
-	
-	return dict(form_quote=form_quote, add_author_tr=add_author_tr, author_js=author_js,
-		add_work_tr=add_work_tr, work_js=work_js, debug=debug)
+	return dict(form_quote=form_quote, debug=debug)
 
 
 def author_query():
-	lang = request.vars.QuoteLanguageID
 	# should add a line here disqualifying query if it's just the '%' character
-	query = '%' + request.vars.author_query + '%'
+	query = '%' + request.vars.author_lookup + '%'
 	if len(query) < 4:
 		return ''
 	display_authors = db((db.AUTHOR_TR.LanguageID==1) & # change 1 to lang, later
@@ -155,10 +127,10 @@ def author_query():
 			 (db.AUTHOR_TR.AKA.like(query)))).select(
 			db.AUTHOR_TR.DisplayName, db.AUTHOR.YearBorn, db.AUTHOR.YearDied,
 			db.AUTHOR_TR.id, orderby=db.AUTHOR_TR.LastName)
-	response = '<h4>Search results:</h4><br/>'
-	response += '<table><tbody>'
+	response = '<table><thead>'
+	response += '<tr><td><h4>Search results</h4></td></tr></thead>'
 	if len(display_authors)>0:
-		response += '<table><tbody>'
+		response += '<tbody>'
 		for row in display_authors:
 			response += '<tr class="author_query_result" id="' + str(row.AUTHOR_TR.id)+\
 		 		'"><td>' + \
@@ -166,26 +138,29 @@ def author_query():
 				str(row.AUTHOR.YearBorn) + ' - ' + str(row.AUTHOR.YearDied) + \
 				'</td></tr>'
 	response += '<tr class="author_query_result" id="0"><td>' + \
-		request.vars.author_query + '...</td><td><em>Create new author</em></td></tr>'
-	response += '<table><tbody>'
+		request.vars.author_lookup + '...</td><td><em>Create new author</em></td></tr>'
+	response += '</tbody></table>'
 	return response
 
+
+def author_submit():
+	request.vars.WikipediaLink = request.vars.AuthorWikipediaLink
+	request.vars.LanguageID = 1
+	request.vars.AuthorID = int(db.AUTHOR.insert(**db.AUTHOR._filter_fields(request.vars)))
+	AuthorTrID = db.AUTHOR_TR.insert(**db.AUTHOR_TR._filter_fields(request.vars))
+	return 'jQuery("#QUOTE_AuthorTrID").val("' + str(AuthorTrID) + '");'
 
 def lang_changed():
 	#rows = db().select(cache=(cache.ram, 10),cacheable=True)
 	return 'x'
 
-
-def author_selected():
-	return ''
-	
 	
 def work_query():
 	# should add a line here disqualifying query if it's just the '%' character
-	query = '%' + request.vars.work_query + '%'
+	query = '%' + request.vars.work_lookup + '%'
 	if len(query) < 4:
 		return ''
-	selected_author = request.vars.author_selection
+	selected_author = request.vars.AuthorTrID
 	display_works = db((db.AUTHOR_TR.id==selected_author) &
 			(db.AUTHOR_TR.AuthorID==db.AUTHOR.id) & 
 			(db.WORK_AUTHOR.AuthorID==db.AUTHOR.id) & 
@@ -196,9 +171,10 @@ def work_query():
 			 (db.WORK_TR.WorkSubtitle.like(query)))).select(
 			db.WORK_TR.WorkName, db.WORK_TR.id, db.WORK.YearPublished,
 			db.WORK.YearWritten, db.WORK_TR.WorkSubtitle, orderby=db.WORK_TR.WorkName)
-	response = '<h4>Search results:</h4><br/>'
-	response += '<table><tbody>'
+	response = '<table><thead>'
+	response += '<tr><td><h4>Search results</h4></td></tr></thead>'
 	if len(display_works)>0:
+		response += '<tbody>'
 		for row in display_works:
 			response += '<tr class="work_query_result" id="' + str(row.WORK_TR.id)+\
 		 		'"><td>' + \
@@ -207,13 +183,18 @@ def work_query():
 				str(row.WORK.YearPublished) + \
 				'</td></tr>'
 	response += '<tr class="work_query_result" id="0"><td>' + \
-		request.vars.work_query + '...</td><td><em>Create new work</em></td></tr>'
-	response += '<table><tbody>'
+		request.vars.work_lookup + '...</td><td><em>Create new work</em></td></tr>'
+	response += '</tbody></table>'
 	return response
 
 
-def work_selected():
-	return ''
+def work_submit():
+	request.vars.WikipediaLink = request.vars.WorkWikipediaLink
+	request.vars.LanguageID = 1
+	request.vars.WorkID = int(db.WORK.insert(**db.WORK._filter_fields(request.vars)))
+	WorkTrID = db.WORK_TR.insert(**db.WORK_TR._filter_fields(request.vars))
+	return 'jQuery("#QUOTE_WorkTrID").val("' + str(WorkTrID) + '");'
+
 
 def quotes():
 	"""

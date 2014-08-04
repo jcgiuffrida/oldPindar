@@ -216,7 +216,7 @@ db.define_table('AUTHOR_TR',
 					label='Last name'),
 			Field('AKA', 'list:string',
 					label='Other names'),
-			Field('DisplayName', 'string', length=512,
+			Field('DisplayName', 'string', length=512, required=True, 
 					label='Default name'),
 			Field('Biography', 'text'),
 			Field('WikipediaLink', 'string', length=256, 
@@ -245,8 +245,7 @@ db.AUTHOR_TR.SubmissionDate.requires = IS_DATETIME()
 ###---------------------- QUOTE_WORK
 
 db.define_table('QUOTE_WORK',
-			Field('QuoteID', 'reference QUOTE', required=True, 
-					readable=False, writable=False),
+			Field('QuoteID', 'reference QUOTE', required=True),
 			Field('WorkID', 'reference WORK', required=True))
 
 db.QUOTE_WORK.QuoteID.requires = IS_IN_DB(db, db.QUOTE.id, '%(Text)s')

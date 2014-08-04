@@ -1,37 +1,182 @@
 {{extend 'layout.html'}}
 <h2>Add Quote</h2>
 {{=form_quote}}
-<div id="author_tr">
-	<h4>Select Author</h4>
-	<input name="author_query" onkeyup="ajax('{{=URL('manage', 'author_query')}}', ['author_query', 'QuoteLanguageID'], 'author_target')" onclick="jQuery('#form_author_tr').fadeOut('fast');jQuery('#work_tr>input').val(''); jQuery('#work_target').html(''); jQuery('#work_tr').fadeOut('fast');" />
-	<div id="author_target"></div>
-	<div id="form_author_tr">{{=add_author_tr}}</div>
+<div id="author_results">
 </div>
 <div id="work_tr">
-	<h4>Select Work</h4>
-	<input name="work_query" onkeyup="ajax('{{=URL('manage', 'work_query')}}', ['work_query', 'author_selection'], 'work_target')" />
-	<div id="work_target"></div>
-	<div id="form_work_tr">{{=add_work_tr}}</div>
+	<div id="work_results"></div>
 </div>
 <div id="submit_button">
 </div>
 <div id="target"></div>
+<style> .error {color: #AC1F24;}</style>
 <script>
 jQuery(document).ready(function(){
-	//jQuery('#form_author_tr').hide();
-	//jQuery('#work_tr').hide();
-	jQuery('#submit_button').hide();
-	jQuery('').appendTo('#submit_button');
-	$('#WORK_TR_Author_Tr_ID__row').hide();
-	/*jQuery('#QUOTE_IsOriginalLanguage').change(function(){
-		if(jQuery('#QUOTE_IsOriginalLanguage').prop('checked')){
-			jQuery('#QUOTE_QuoteLanguageID__row').fadeOut("fast");
-			jQuery('#QUOTE_Note').val('Original language');
-		} else jQuery('#QUOTE_QuoteLanguageID__row').fadeIn("fast");
+	// hide author and work fields
+	jQuery('#QUOTE_Note__row').hide();  // temporary
+	jQuery('#QUOTE_FirstName__row').hide();
+	jQuery('#QUOTE_MiddleName__row').hide();
+	jQuery('#QUOTE_LastName__row').hide();
+	jQuery('#QUOTE_AKA__row').hide();
+	jQuery('#QUOTE_DisplayName__row').hide();
+	jQuery('#QUOTE_Biography__row').hide();
+	jQuery('#QUOTE_AuthorWikipediaLink__row').hide();
+	jQuery('#QUOTE_YearBorn__row').hide();
+	jQuery('#QUOTE_YearDied__row').hide();
+	jQuery('#QUOTE_Author_Submit__row').hide();
+	jQuery('#QUOTE_WorkName__row').hide();
+	jQuery('#QUOTE_WorkSubtitle__row').hide();
+	jQuery('#QUOTE_WorkDescription__row').hide();
+	jQuery('#QUOTE_WorkWikipediaLink__row').hide();
+	jQuery('#QUOTE_WorkNote__row').hide();
+	jQuery('#QUOTE_YearPublished__row').hide();
+	jQuery('#QUOTE_YearWritten__row').hide();
+	jQuery('#QUOTE_Work_Submit__row').hide();
+	jQuery('#QUOTE_AuthorTrID__row').hide();
+	jQuery('#QUOTE_WorkTrID__row').hide();
+	jQuery('#QUOTE_Work_Lookup__row').hide();
+	jQuery('#submit_record__row').hide();
+	jQuery('#QUOTE_Quote_Submit__row').hide();
+
+	
+	jQuery('#QUOTE_Author_Lookup').keyup(function(){
+		jQuery('#work_results').html('');
+		if (jQuery('#QUOTE_Author_Lookup').val().length < 2){
+			jQuery('#author_results').html('');
+		} else {
+			ajax('{{=URL('manage', 'author_query')}}', 
+					['author_lookup'], 'author_results');
+		}
 	});
-	jQuery('#QUOTE_QuoteLanguageID').change(function(){
-		jQuery('#target').load('{{=URL('manage', 'lang_changed')}}?lang=' + jQuery('#QUOTE_QuoteLanguageID').val());
-	});*/
+	jQuery('#QUOTE_Author_Lookup').click(function(){
+		jQuery('#author_results').html('');
+	});
+	
+	jQuery('#QUOTE_Author_Submit').click(function(){
+		$('form').validate({
+			rules: {
+				FirstName: {
+					maxlength: 128
+				},
+				MiddleName: {
+					maxlength: 128
+				},
+				LastName: {
+					maxlength: 128
+				},
+				DisplayName: {
+					required: true,
+					maxlength: 512
+				},
+				Biography: {
+					maxlength: 8192
+				},
+				AuthorWikipediaLink: {
+					url: true
+				},
+				YearBorn: {
+					range: [-5000,2050]
+				},
+				YearDied: {
+					range: ['#QUOTE_YearBorn', 2050]
+				}
+			},
+			messages: {
+				DisplayName: {
+					required: "Please enter a name"
+				},
+				YearBorn: "Please enter a valid year",
+				YearDied: "Please enter a valid year"
+			},
+			submitHandler: function(form) {
+				ajax('{{=URL('manage', 'author_submit')}}',
+					['FirstName', 'MiddleName', 'LastName', 'AKA', 'DisplayName',
+					 'Biography', 'AuthorWikipediaLink', 'YearBorn', 'YearDied', 
+					 'LanguageID', 'SubmitterID'],
+					 ':eval');
+				jQuery('#QUOTE_FirstName__row').fadeOut('fast');
+				jQuery('#QUOTE_MiddleName__row').fadeOut('fast');
+				jQuery('#QUOTE_LastName__row').fadeOut('fast');
+				jQuery('#QUOTE_AKA__row').fadeOut('fast');
+				jQuery('#QUOTE_DisplayName__row').fadeOut('fast');
+				jQuery('#QUOTE_Biography__row').fadeOut('fast');
+				jQuery('#QUOTE_AuthorWikipediaLink__row').fadeOut('fast')
+				jQuery('#QUOTE_YearBorn__row').fadeOut('fast');
+				jQuery('#QUOTE_YearDied__row').fadeOut('fast');
+				jQuery('#QUOTE_Author_Submit__row').fadeOut('fast');
+				$('#QUOTE_Author_Lookup').val($('#QUOTE_DisplayName').val());
+				$('#QUOTE_Work_Lookup__row').fadeIn('fast');
+			}
+		});
+	});
+	
+	jQuery('#QUOTE_Work_Lookup').keyup(function(){
+		if (jQuery('#QUOTE_Work_Lookup').val().length < 2){
+			jQuery('#work_results').html('');
+		} else {
+			ajax('{{=URL('manage', 'work_query')}}', 
+					['work_lookup', 'AuthorTrID'], 'work_results');
+		}
+	});
+	
+	jQuery('#QUOTE_Work_Lookup').click(function(){
+		jQuery('#work_results').html('');
+	});
+	
+	
+	jQuery('#QUOTE_Work_Submit').click(function(){
+		$('form').validate({
+			rules: {
+				WorkName: {
+					required: true,
+					maxlength: 1024
+				},
+				WorkSubtitle: {
+					maxlength: 1024
+				},
+				WorkDescription: {
+					maxlength: 4096
+				},
+				WorkWikipediaLink: {
+					url: true
+				},
+				WorkNote: {
+					maxlength: 4096
+				},
+				YearPublished: {
+					range: [-5000, 2050]
+				},
+				YearWritten: {
+					range: [-5000, '#QUOTE_YearPublished']
+				}	
+			},
+			messages: {
+				WorkName: {
+					required: "Please enter the work name"
+				},
+				YearPublished: "Please enter a valid year",
+				YearWritten: "Please enter a valid year"
+			},
+			submitHandler: function(form) {
+				ajax('{{=URL('manage', 'work_submit')}}',
+					['WorkName', 'WorkSubtitle', 'WorkDescription', 'WorkWikipediaLink',
+					 'WorkNote', 'YearPublished', 'YearWritten',  
+					 'LanguageID', 'SubmitterID', 'AuthorID'],
+					 ':eval');
+				jQuery('#QUOTE_WorkName__row').fadeOut('fast');
+				jQuery('#QUOTE_WorkSubtitle__row').fadeOut('fast');
+				jQuery('#QUOTE_WorkDescription__row').fadeOut('fast');
+				jQuery('#QUOTE_WorkWikipediaLink__row').fadeOut('fast');
+				jQuery('#QUOTE_WorkNote__row').fadeOut('fast');
+				jQuery('#QUOTE_YearPublished__row').fadeOut('fast');
+				jQuery('#QUOTE_YearWritten__row').fadeOut('fast');
+				jQuery('#QUOTE_Work_Submit__row').fadeOut('fast');
+				$('#QUOTE_Work_Lookup').val($('#QUOTE_WorkName').val());
+				$('#QUOTE_Quote_Submit__row').fadeIn('fast');
+			}
+		});
+	});
+	
 });
 (function ($) {
 	$.selectAuthor = function(tablename){
@@ -40,23 +185,31 @@ jQuery(document).ready(function(){
 			e.preventDefault();
 			selected = $(this);
 			selected.css("background-color", "#999");
-			//ajax('{{=URL('manage', 'author_selected')}}?authorid=' + this.id, '',
-			//'form_author_tr');
-			$('#author_target').html('<input style="display:none" ' + 
-				'name="author_selection"></input>');
 			if (this.id == 0){
-				$('#form_author_tr').fadeIn('fast');
+				$('#author_results').fadeOut('fast');
+				jQuery('#QUOTE_FirstName__row').fadeIn('fast');
+				jQuery('#QUOTE_MiddleName__row').fadeIn('fast');
+				jQuery('#QUOTE_LastName__row').fadeIn('fast');
+				jQuery('#QUOTE_AKA__row').fadeIn('fast');
+				jQuery('#QUOTE_DisplayName__row').fadeIn('fast');
+				jQuery('#QUOTE_Biography__row').fadeIn('fast');
+				jQuery('#QUOTE_AuthorWikipediaLink__row').fadeIn('fast')
+				jQuery('#QUOTE_YearBorn__row').fadeIn('fast');
+				jQuery('#QUOTE_YearDied__row').fadeIn('fast');
+				jQuery('#QUOTE_Author_Submit__row').fadeIn('fast');
+				$('#QUOTE_Author_Lookup').val($(this).children('td').html());
 			} else {			
-				$('#author_target input').val(this.id);
-				$('#author_tr>input').val($(this).children('td').html());
-				$('#work_tr').fadeIn('fast');
+				$('#QUOTE_AuthorTrID').val(this.id);
+				$('#QUOTE_Author_Lookup').val($(this).children('td').html());
+				$('#author_results').fadeOut('fast');
+				$('#QUOTE_Work_Lookup__row').fadeIn('fast');
 			}
 			
 		});
 		$(tablename).on('selectstart', false); //Don't let the user select the table
 	}
 })(jQuery);
-$.selectAuthor("#author_target");
+$.selectAuthor("#author_results");
 
 (function ($) {
 	$.selectWork = function(tablename){
@@ -65,25 +218,28 @@ $.selectAuthor("#author_target");
 			e.preventDefault();
 			selected = $(this);
 			selected.css("background-color", "#999");
-			//ajax('{{=URL('manage', 'work_selected')}}?workid=' + this.id, '',
-			//'form_work_tr');
-			$('#work_target').html('<input style="display:none" ' + 
-				'name="work_selection"></input>');
 			if (this.id == 0){
-				$('#form_work_tr').fadeIn('fast');
-				$('#WORK_TR_Author_Tr_ID').val($('#author_target input').val());
+				$('#work_results').fadeOut('fast');
+				jQuery('#QUOTE_WorkName__row').fadeIn('fast');
+				jQuery('#QUOTE_WorkSubtitle__row').fadeIn('fast');
+				jQuery('#QUOTE_WorkDescription__row').fadeIn('fast');
+				jQuery('#QUOTE_WorkWikipediaLink__row').fadeIn('fast');
+				jQuery('#QUOTE_WorkNote__row').fadeIn('fast');
+				jQuery('#QUOTE_YearPublished__row').fadeIn('fast');
+				jQuery('#QUOTE_YearWritten__row').fadeIn('fast');
+				jQuery('#QUOTE_Work_Submit__row').fadeIn('fast');
+				$('#QUOTE_Work_Lookup').val($(this).children('td').html());
 			} else {	
-				$('#work_target input').val(this.id);
-				$('#work_tr>input').val($(this).children('td').html());
-				$('#submit_button').fadeIn('fast');
+				$('#QUOTE_WorkTrID').val(this.id);
+				$('#QUOTE_Work_Lookup').val($(this).children('td').html());
+				$('#work_results').fadeOut('fast');
+				$('#QUOTE_Quote_Submit__row').fadeIn('fast');
 			}
 		});
 		$(tablename).on('selectstart', false); //Don't let the user select the table
 	}
 })(jQuery);
-$.selectWork("#work_target");
+$.selectWork("#work_results");
 </script>
-<!-- additional js to show the form on page refresh -->
-{{=author_js}}
-{{=work_js}}
+<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
 {{=debug}}
