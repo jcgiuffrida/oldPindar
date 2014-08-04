@@ -1,5 +1,5 @@
 (dp1
-S'YearDied'
+S'AuthorID'
 p2
 (dp3
 S'length'
@@ -13,35 +13,18 @@ p6
 I3
 sS'sql'
 p7
-S'INTEGER'
+S'INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE'
 p8
 sS'notnull'
 p9
 I00
 sS'type'
 p10
-S'integer'
+S'reference AUTHOR'
 p11
-ssS'IsHidden'
+ssS'id'
 p12
 (dp13
-g4
-I512
-sg5
-I00
-sg6
-I4
-sg7
-S'CHAR(1)'
-p14
-sg9
-I00
-sg10
-S'boolean'
-p15
-ssS'id'
-p16
-(dp17
 g4
 I512
 sg5
@@ -50,14 +33,14 @@ sg6
 I1
 sg7
 S'INTEGER PRIMARY KEY AUTOINCREMENT'
-p18
+p14
 sg9
 I00
 sg10
-g16
-ssS'YearBorn'
-p19
-(dp20
+g12
+ssS'WorkID'
+p15
+(dp16
 g4
 I512
 sg5
@@ -65,10 +48,11 @@ I00
 sg6
 I2
 sg7
-S'INTEGER'
-p21
+S'INTEGER REFERENCES WORK (id) ON DELETE CASCADE'
+p17
 sg9
 I00
 sg10
-g11
+S'reference WORK'
+p18
 ss.

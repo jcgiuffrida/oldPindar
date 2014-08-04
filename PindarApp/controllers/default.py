@@ -9,16 +9,85 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
-def quote_form(): #test
-    
-    form1 = SQLFORM(db.quote)
-    
-    form2 = SQLFORM(db.author)
-    
-    form3 = SQLFORM(db.work)
+def show(): 
+   """
+   test SQL query and display
+   """
+   query1 = ((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+   	(db.WORK._id==db.WORK_TR.WorkID) & 
+   	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id) & 
+   	(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
+   	# language is consistent
+   	(db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID) & 
+   	(db.QUOTE.QuoteLanguageID==db.AUTHOR_TR.LanguageID))
+   langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
+   
+   return dict(results1=SQLFORM.grid(query1, 
+    		fields=[
+				db.QUOTE.Text, 
+				db.LANGUAGE.EnglishName, 
+				db.AUTHOR_TR.DisplayName, 
+				db.WORK_TR.WorkName], 
+			headers={'QUOTE.Text': 'Text', 
+					'LANGUAGE.EnglishName': 'Language', 
+					'AUTHOR_TR.DisplayName': 'Author',
+					'WORK_TR.WorkName': 'Source'},
+			maxtextlengths={'QUOTE.Text': 400, 
+							'LANGUAGE.EnglishName': 20, 
+							'AUTHOR_TR.DisplayName': 50, 
+							'WORK_TR.WorkName': 80}, 
+			paginate=10,
+			orderby=db.LANGUAGE.EnglishName, details=False),
+    	header1='Example query (all quotes)',
+    	langs=langs)
+    	
 
+def text_query():
+	lang = 1 if request.vars.lang=='' else int(request.vars.lang)
+	if len(request.vars.query) < 2:
+		return ''
+	query = '%' + request.vars.query + '%'
+	if lang == 0:
+		results = db((db.WORK_TR.LanguageID==db.QUOTE.QuoteLanguageID) & 
+		(db.AUTHOR_TR.LanguageID==db.QUOTE.QuoteLanguageID) & 
+		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+		(db.WORK._id==db.WORK_TR.WorkID) & 
+		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+		(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+		(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
+											db.AUTHOR_TR.DisplayName, 
+											db.WORK_TR.WorkName, 
+											db.WORK_TR.id, 
+											groupby=db.QUOTE.Text)
+	else:
+		results = db((db.WORK_TR.LanguageID==lang) & 
+		(db.AUTHOR_TR.LanguageID==lang) & 
+		(db.QUOTE.QuoteLanguageID==lang) & 
+		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+		(db.WORK._id==db.WORK_TR.WorkID) & 
+		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+		(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+		(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
+											db.AUTHOR_TR.DisplayName, 
+											db.WORK_TR.WorkName, 
+											db.WORK_TR.id, 
+											groupby=db.QUOTE.Text)
+   	
+   	response = '<h3>Example query (text search)</h3>'
+   	if len(results) == 0:
+   		response += '<em>No results found.</em>'
+   	for row in results:
+		response += row.QUOTE.Text + '<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">'
+		response += row.AUTHOR_TR.DisplayName + ', <a href="data/read/WORK_TR/' + str(row.WORK_TR.id) + '"><em>'
+		response += row.WORK_TR.WorkName + '</em></a></span><br/><br/>'
+   	
+   	return response
 
-    return dict(form1=form1, form2=form2, form3=form3)
 
 
 def index():
@@ -28,8 +97,10 @@ def index():
     function to list data on the main page
    
     """
-    return dict(quotes=SQLFORM.grid(db.quote), authors=SQLFORM.grid(db.author), 
-    	works=SQLFORM.grid(db.work))
+    return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR),
+    	authors_tr=SQLFORM.grid(db.AUTHOR_TR), works=SQLFORM.grid(db.WORK),
+    	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.USER), 
+    	languages=SQLFORM.grid(db.LANGUAGE), translations=SQLFORM.grid(db.TRANSLATION))
 
 
 
