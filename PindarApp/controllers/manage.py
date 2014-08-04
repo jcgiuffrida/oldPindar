@@ -18,15 +18,17 @@ def add_quote():
 		Field('Text', 'text', requires = [IS_NOT_EMPTY(), 
 				IS_NOT_IN_DB(db, db.QUOTE.Text)]),
         Field('SubmitterID', 'reference USER', label='Submitter', 
-            	default=1, requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')),
-        Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
-            	label='Date submitted', requires = IS_DATETIME()),
-    	Field('QuoteLanguageID', 'reference LANGUAGE', 
+            	default=1, requires = IS_IN_DB(db, db.USER.id, '%(UserName)s',
+            	orderby=db.USER.id)),
+        Field('QuoteLanguageID', 'reference LANGUAGE', 
             	default=1, label='Language', 
-            	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')), 
+            	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s', 
+            	orderby=db.LANGUAGE.id)), 
         Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
-        Field('Note', 'text', label='Context or additional information',
+        Field('Note', 'string', label='Context or additional information',
         		requires = IS_LENGTH(maxsize=4096)),
+		Field('DisplayName', 'string', label='Default name'), 
+#				requires=[IS_LENGTH(maxsize=512)]),
 		Field('FirstName', 'string', label='First name'), 
 #				requires = IS_LENGTH(maxsize=128)),
 		Field('MiddleName', 'string', label='Middle name'),
@@ -35,8 +37,6 @@ def add_quote():
 #				requires = IS_LENGTH(maxsize=128)),
 		Field('AKA', 'list:string', label='Other names'),
 #				requires=IS_LIST_OF(IS_LENGTH(maxsize=256))),
-		Field('DisplayName', 'string', label='Default name'), 
-#				requires=[IS_LENGTH(maxsize=512)]),
 		Field('Biography', 'text'), 
 #				requires=IS_LENGTH(maxsize=8192)),
 		Field('AuthorWikipediaLink', 'string', label='Link to Wikipedia page'),# requires = 
@@ -89,26 +89,6 @@ def add_quote():
 	form_quote[0].insert(26, quote_submit)
 	
 	debug=''
-	
-	if form_quote.validate():
-		form_quote.vars.QuoteID = \
-			db.QUOTE.insert(**db.QUOTE._filter_fields(form_quote.vars))
-		tmp = db((db.WORK_TR.id==form_quote.vars.WorkTrID) & 
-				 (db.WORK.id==db.WORK_TR.WorkID)).\
-			  	 select(db.WORK.id)
-		for row in tmp:
-			form_quote.vars.WorkID = row.id
-		
-		Quote_Work_ID = \
-			db.QUOTE_WORK.insert(**db.QUOTE_WORK._filter_fields(form_quote.vars))
-		
-		debug = Quote_Work_ID
-		
-		response.flash = 'quote accepted'
-	elif form_quote.errors:
-		debug = db.WORK_AUTHOR._filter_fields(form_quote.vars)
-		
-		response.flash = 'form has errors'
 		
 	return dict(form_quote=form_quote, debug=debug)
 
@@ -138,7 +118,8 @@ def author_query():
 				str(row.AUTHOR.YearBorn) + ' - ' + str(row.AUTHOR.YearDied) + \
 				'</td></tr>'
 	response += '<tr class="author_query_result" id="0"><td>' + \
-		request.vars.author_lookup + '...</td><td><em>Create new author</em></td></tr>'
+		request.vars.author_lookup + '</td><td><em>Create new ' \
+			'author</em></td></tr>'
 	response += '</tbody></table>'
 	return response
 
@@ -148,7 +129,8 @@ def author_submit():
 	request.vars.LanguageID = 1
 	request.vars.AuthorID = int(db.AUTHOR.insert(**db.AUTHOR._filter_fields(request.vars)))
 	AuthorTrID = db.AUTHOR_TR.insert(**db.AUTHOR_TR._filter_fields(request.vars))
-	return 'jQuery("#QUOTE_AuthorTrID").val("' + str(AuthorTrID) + '");'
+	return 'jQuery("#QUOTE_AuthorTrID").val("' + str(AuthorTrID) + '");' \
+		'jQuery("#target").html("Author added: ' + request.vars.DisplayName + '");'
 
 def lang_changed():
 	#rows = db().select(cache=(cache.ram, 10),cacheable=True)
@@ -183,7 +165,7 @@ def work_query():
 				str(row.WORK.YearPublished) + \
 				'</td></tr>'
 	response += '<tr class="work_query_result" id="0"><td>' + \
-		request.vars.work_lookup + '...</td><td><em>Create new work</em></td></tr>'
+		request.vars.work_lookup + '</td><td><em>Create new work</em></td></tr>'
 	response += '</tbody></table>'
 	return response
 
@@ -193,14 +175,33 @@ def work_submit():
 	request.vars.LanguageID = 1
 	request.vars.WorkID = int(db.WORK.insert(**db.WORK._filter_fields(request.vars)))
 	WorkTrID = db.WORK_TR.insert(**db.WORK_TR._filter_fields(request.vars))
-	return 'jQuery("#QUOTE_WorkTrID").val("' + str(WorkTrID) + '");'
+	tmp = db((db.AUTHOR_TR.id==request.vars.AuthorTrID) & 
+			 (db.AUTHOR.id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR.id)
+	for row in tmp:
+		request.vars.AuthorID = row.id
+	Work_Author_ID = db.WORK_AUTHOR.insert(**db.WORK_AUTHOR._filter_fields(request.vars))
+	return 'jQuery("#QUOTE_WorkTrID").val("' + str(WorkTrID) + '");' \
+		'jQuery("#target").html("Work added: ' + request.vars.WorkName + '");'
+
+
+def quote_submit():
+	request.vars.QuoteID = \
+		db.QUOTE.insert(**db.QUOTE._filter_fields(request.vars))
+	tmp = db((db.WORK_TR.id==request.vars.WorkTrID) & 
+			 (db.WORK.id==db.WORK_TR.WorkID)).select(db.WORK.id)
+	for row in tmp:
+		request.vars.WorkID = row.id
+	Quote_Work_ID = \
+		db.QUOTE_WORK.insert(**db.QUOTE_WORK._filter_fields(request.vars))
+	return 'jQuery("#target").html("Success!");'
 
 
 def quotes():
 	"""
 	*** for testing purposes only***
 	"""
-	grid = SQLFORM.grid(db.QUOTE, user_signature=False)
+	grid = SQLFORM.grid(db.QUOTE, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('QUOTE', ids))])
 	return locals()
 
 
@@ -208,8 +209,10 @@ def works():
 	"""
 	*** for testing purposes only***
 	"""
-	grid1 = SQLFORM.grid(db.WORK, user_signature=False)
-	grid2 = SQLFORM.grid(db.WORK_TR, user_signature=False)
+	grid1 = SQLFORM.grid(db.WORK, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('WORK', ids))])
+	grid2 = SQLFORM.grid(db.WORK_TR, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('WORK_TR', ids))])
 	return locals()
 
 
@@ -218,8 +221,10 @@ def authors():
 	"""
 	*** for testing purposes only***
 	"""
-	grid1 = SQLFORM.grid(db.AUTHOR, user_signature=False)
-	grid2 = SQLFORM.grid(db.AUTHOR_TR, user_signature=False)
+	grid1 = SQLFORM.grid(db.AUTHOR, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('AUTHOR', ids))])
+	grid2 = SQLFORM.grid(db.AUTHOR_TR, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('AUTHOR_TR', ids))])
 	return locals()
 
 
@@ -227,8 +232,10 @@ def connections():
 	"""
 	*** for testing purposes only***
 	"""
-	grid1 = SQLFORM.grid(db.QUOTE_WORK, user_signature=False)
-	grid2 = SQLFORM.grid(db.WORK_AUTHOR, user_signature=False)
+	grid1 = SQLFORM.grid(db.QUOTE_WORK, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('QUOTE_WORK', ids))])
+	grid2 = SQLFORM.grid(db.WORK_AUTHOR, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('WORK_AUTHOR', ids))])
 	return locals()
 
 
@@ -236,7 +243,8 @@ def users():
 	"""
 	*** for testing purposes only***
 	"""
-	grid = SQLFORM.grid(db.USER, user_signature=False)
+	grid = SQLFORM.grid(db.USER, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('USER', ids))])
 	return locals()
 
 
@@ -244,5 +252,37 @@ def languages():
 	"""
 	*** for testing purposes only***
 	"""
-	grid = SQLFORM.grid(db.LANGUAGE, user_signature=False)
+	grid = SQLFORM.grid(db.LANGUAGE, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('LANGUAGE', ids))])
 	return locals()
+	
+
+def delete_multiple(table, ids):
+	if table == 'QUOTE':
+		to_delete = db(db.QUOTE.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'WORK':
+		to_delete = db(db.WORK.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'WORK_TR':
+		to_delete = db(db.WORK_TR.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'AUTHOR':
+		to_delete = db(db.AUTHOR.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'AUTHOR_TR':
+		to_delete = db(db.AUTHOR_TR.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'WORK_AUTHOR':
+		to_delete = db(db.WORK_AUTHOR.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'QUOTE_WORK':
+		to_delete = db(db.QUOTE_WORK.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'LANGUAGE':
+		to_delete = db(db.LANGUAGE.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'USER':
+		to_delete = db(db.USER.id.belongs(ids))
+		to_delete.delete()
+

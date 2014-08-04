@@ -19,10 +19,7 @@ def show():
    	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id) & 
    	(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
    	(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
-   	# language is consistent
-   	(db.QUOTE.QuoteLanguageID==db.WORK_TR.LanguageID) & 
-   	(db.QUOTE.QuoteLanguageID==db.AUTHOR_TR.LanguageID))
+   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID))
    langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
    
    return dict(results1=SQLFORM.grid(query1, 
@@ -51,9 +48,7 @@ def text_query():
 		return ''
 	query = '%' + request.vars.query + '%'
 	if lang == 0:
-		results = db((db.WORK_TR.LanguageID==db.QUOTE.QuoteLanguageID) & 
-		(db.AUTHOR_TR.LanguageID==db.QUOTE.QuoteLanguageID) & 
-		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+		results = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
 		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
 		(db.WORK._id==db.WORK_TR.WorkID) & 
 		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
@@ -64,9 +59,7 @@ def text_query():
 											db.WORK_TR.id, 
 											groupby=db.QUOTE.Text)
 	else:
-		results = db((db.WORK_TR.LanguageID==lang) & 
-		(db.AUTHOR_TR.LanguageID==lang) & 
-		(db.QUOTE.QuoteLanguageID==lang) & 
+		results = db((db.QUOTE.QuoteLanguageID==lang) & 
 		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
 		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
 		(db.WORK._id==db.WORK_TR.WorkID) & 

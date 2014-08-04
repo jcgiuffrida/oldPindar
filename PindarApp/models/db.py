@@ -255,8 +255,7 @@ db.QUOTE_WORK.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublishe
 ###---------------------- WORK_AUTHOR
 
 db.define_table('WORK_AUTHOR',
-			Field('WorkID', 'reference WORK', required=True, 
-					readable=False, writable=False),
+			Field('WorkID', 'reference WORK', required=True),
 			Field('AuthorID', 'reference AUTHOR', required=True))
 
 db.WORK_AUTHOR.AuthorID.requires = IS_IN_DB(db, db.AUTHOR.id, 
