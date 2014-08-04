@@ -184,7 +184,7 @@ db.WORK_TR.WorkName.requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=1024)]
 db.WORK_TR.WorkSubtitle.requires = IS_LENGTH(maxsize=1024)
 db.WORK_TR.WorkDescription.requires = IS_LENGTH(maxsize=4096)
 db.WORK_TR.WikipediaLink.requires = \
-		[IS_MATCH('(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
+		[IS_MATCH('^(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
 		 IS_LENGTH(maxsize=256)]
 db.WORK_TR.WorkNote.requires = IS_LENGTH(maxsize=4096)
 db.WORK_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
@@ -233,10 +233,10 @@ db.AUTHOR_TR.FirstName.requires = IS_LENGTH(maxsize=128)
 db.AUTHOR_TR.MiddleName.requires = IS_LENGTH(maxsize=128)
 db.AUTHOR_TR.LastName.requires = IS_LENGTH(maxsize=128)
 db.AUTHOR_TR.AKA.requires = IS_LIST_OF(IS_LENGTH(maxsize=256))
-db.AUTHOR_TR.DisplayName.requirse = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=512)]
+db.AUTHOR_TR.DisplayName.requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=512)]
 db.AUTHOR_TR.Biography.requires = IS_LENGTH(maxsize=8192)
 db.AUTHOR_TR.WikipediaLink.requires = \
-		[IS_MATCH('(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
+		[IS_MATCH('^(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
 		 IS_LENGTH(maxsize=256)]
 db.AUTHOR_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
 db.AUTHOR_TR.SubmissionDate.requires = IS_DATETIME()

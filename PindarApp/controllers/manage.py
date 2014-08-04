@@ -25,9 +25,7 @@ def add_quote():
             	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s', 
             	orderby=db.LANGUAGE.id)), 
         Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
-        Field('Note', 'string', label='Context or additional information',
-        		requires = IS_LENGTH(maxsize=4096)),
-		Field('DisplayName', 'string', label='Default name'), 
+        Field('DisplayName', 'string', label='Default name'), 
 #				requires=[IS_LENGTH(maxsize=512)]),
 		Field('FirstName', 'string', label='First name'), 
 #				requires = IS_LENGTH(maxsize=128)),
@@ -62,8 +60,16 @@ def add_quote():
 #				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
         Field('YearWritten', 'integer', label='Year written (if different)'),
 #				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
+		Field('Note', 'string', label='Context or additional information',
+        		requires = IS_LENGTH(maxsize=4096)),
 		Field('AuthorTrID', 'integer'),
 		Field('WorkTrID', 'integer'),
+		col3={'AuthorWikipediaLink': \
+			A(INPUT(_type="button",value="?"), _href='', 
+				_id='authorWikiLink', _target='blank'),
+			  'WorkWikipediaLink': \
+			A(INPUT(_type="button",value="?"), _href='', 
+				_id='workWikiLink', _target='blank')},
 		submit_button='Add quote!', table_name='QUOTE')
 	
 	author_lookup = TR(LABEL('Select Author'),
@@ -129,8 +135,8 @@ def author_submit():
 	request.vars.LanguageID = 1
 	request.vars.AuthorID = int(db.AUTHOR.insert(**db.AUTHOR._filter_fields(request.vars)))
 	AuthorTrID = db.AUTHOR_TR.insert(**db.AUTHOR_TR._filter_fields(request.vars))
-	return 'jQuery("#QUOTE_AuthorTrID").val("' + str(AuthorTrID) + '");' \
-		'jQuery("#target").html("Author added: ' + request.vars.DisplayName + '");'
+	response.flash='Added author: ' + request.vars.DisplayName
+	return 'jQuery("#QUOTE_AuthorTrID").val("' + str(AuthorTrID) + '");'
 
 def lang_changed():
 	#rows = db().select(cache=(cache.ram, 10),cacheable=True)
@@ -180,8 +186,8 @@ def work_submit():
 	for row in tmp:
 		request.vars.AuthorID = row.id
 	Work_Author_ID = db.WORK_AUTHOR.insert(**db.WORK_AUTHOR._filter_fields(request.vars))
-	return 'jQuery("#QUOTE_WorkTrID").val("' + str(WorkTrID) + '");' \
-		'jQuery("#target").html("Work added: ' + request.vars.WorkName + '");'
+	response.flash='Added work: ' + request.vars.WorkName
+	return 'jQuery("#QUOTE_WorkTrID").val("' + str(WorkTrID) + '");'
 
 
 def quote_submit():
@@ -193,7 +199,8 @@ def quote_submit():
 		request.vars.WorkID = row.id
 	Quote_Work_ID = \
 		db.QUOTE_WORK.insert(**db.QUOTE_WORK._filter_fields(request.vars))
-	return 'jQuery("#target").html("Success!");'
+	response.flash='Added quote!'
+	return ''
 
 
 def quotes():
