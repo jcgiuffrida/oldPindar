@@ -7,11 +7,11 @@
   
 <!-- DataTables -->
 <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
-
+<style>.dataTables_wrapper .dataTables_filter {float: left;}</style>
 <form>
    <label for="query"><b>Search: </b></label>
    <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
-	<select name="lang" onchange="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')">
+	<select name="lang" onchange="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')">	
 		<option value="0">All languages</option>
    {{ for row in langs:}}
 		<option value="{{=row.id}}">{{=row.NativeName}}</option>
@@ -22,7 +22,7 @@
 <br/><br/>
 <hr>
 <h3>All Quotes</h3>
-<table id="mytable" class="display">
+<table id="mytable" class="display" width="100%">
 	<thead>
 		<tr>
 			<td><b>Text</b></td>
@@ -58,14 +58,16 @@
 $(document).ready(function(){
 	$('#mytable').DataTable({
 		"order": [[ 3, "asc" ]],
-		"lengthMenu": [[8, 16, 32, -1], [8, 16, 32, "All"]],
+		"lengthMenu": [[5, 16, 32, -1], [5, 16, 32, "All"]],
 		"columns": [
 			{"width": "55%"},
 			{"width": "18%"},
 			{"width": "18%"},
 			null,
 			null
-		]
+		],
+		"ordering": false,
+		"dom": '<<"clear"f>p<t>ip>'
 	});
 });
 </script>
