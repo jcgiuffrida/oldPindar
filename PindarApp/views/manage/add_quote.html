@@ -203,6 +203,7 @@ $(document).on('keypress', 'form', function (e) {
 				$('#QUOTE_Author_Lookup__row').fadeIn('fast');
 				$('#QUOTE_Author_Lookup').val($('#QUOTE_DisplayName').val());
 				$('#QUOTE_Work_Lookup__row').fadeIn('fast');
+				$('#QUOTE_Work_Lookup').focus();
 				clear_author();
 			} else if (button == 'QUOTE_Work_Submit'){
 				ajax('{{=URL('manage', 'work_submit')}}',
@@ -221,6 +222,7 @@ $(document).on('keypress', 'form', function (e) {
 				$('#QUOTE_Work_Lookup__row').fadeIn('fast');
 				$('#QUOTE_Work_Lookup').val($('#QUOTE_WorkName').val());
 				$('#QUOTE_Note__row').fadeIn('fast');
+				$('#QUOTE_Note').focus();
 				$('#QUOTE_Quote_Submit__row').fadeIn('fast');
 				clear_work();
 			} else if (button == 'QUOTE_Quote_Submit'){
@@ -250,6 +252,38 @@ $(document).on('keypress', 'form', function (e) {
 		$('#workWikiLink').attr('href', link);
 	});
 	
+	$('#QUOTE_Author_Cancel').on('click', function(){
+		jQuery('#QUOTE_FirstName__row').fadeOut('fast');
+		jQuery('#QUOTE_MiddleName__row').fadeOut('fast');
+		jQuery('#QUOTE_LastName__row').fadeOut('fast');
+		jQuery('#QUOTE_AKA__row').fadeOut('fast');
+		jQuery('#QUOTE_DisplayName__row').fadeOut('fast');
+		jQuery('#QUOTE_Biography__row').fadeOut('fast');
+		jQuery('#QUOTE_AuthorWikipediaLink__row').fadeOut('fast')
+		jQuery('#QUOTE_YearBorn__row').fadeOut('fast');
+		jQuery('#QUOTE_YearDied__row').fadeOut('fast');
+		jQuery('#QUOTE_Author_Submit__row').fadeOut('fast');
+		$('#QUOTE_Author_Lookup__row').fadeIn('fast');
+		$('#QUOTE_Author_Lookup').val('');
+		$('#QUOTE_Author_Lookup').focus();
+		clear_author();
+	});
+	
+	$('#QUOTE_Work_Cancel').on('click', function(){
+		jQuery('#QUOTE_WorkName__row').fadeOut('fast');
+		jQuery('#QUOTE_WorkSubtitle__row').fadeOut('fast');
+		jQuery('#QUOTE_WorkDescription__row').fadeOut('fast');
+		jQuery('#QUOTE_WorkWikipediaLink__row').fadeOut('fast');
+		jQuery('#QUOTE_WorkNote__row').fadeOut('fast');
+		jQuery('#QUOTE_YearPublished__row').fadeOut('fast');
+		jQuery('#QUOTE_YearWritten__row').fadeOut('fast');
+		jQuery('#QUOTE_Work_Submit__row').fadeOut('fast');
+		$('#QUOTE_Work_Lookup__row').fadeIn('fast');
+		$('#QUOTE_Work_Lookup').val('');
+		$('#QUOTE_Work_Lookup').focus();
+		clear_work();
+	});
+
 });
 (function ($) {
 	$.selectAuthor = function(tablename){

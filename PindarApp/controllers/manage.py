@@ -82,12 +82,16 @@ def add_quote():
 					_id='QUOTE_Work_Lookup'), _id='QUOTE_Work_Lookup__row')
 	form_quote[0].insert(16, work_lookup)
 	
-	author_submit = TR(INPUT(_name='Author_Submit', _value='Add author', 
-			_id='QUOTE_Author_Submit', _type='submit'), _id='QUOTE_Author_Submit__row')
+	author_submit = TR(TD(INPUT(_name='Author_Submit', _value='Add author', 
+			_id='QUOTE_Author_Submit', _type='submit')), 
+			TD(INPUT(_name='Author_Cancel', _value='Cancel', 
+			_id='QUOTE_Author_Cancel', _type='button')), _id='QUOTE_Author_Submit__row'),
 	form_quote[0].insert(16, author_submit)
 	
-	work_submit = TR(INPUT(_name='Work_Submit', _value='Add work', 
-			_id='QUOTE_Work_Submit', _type='submit'), _id='QUOTE_Work_Submit__row')
+	work_submit = TR(TD(INPUT(_name='Work_Submit', _value='Add work', 
+			_id='QUOTE_Work_Submit', _type='submit')), 
+			TD(INPUT(_name='Work_Cancel', _value='Cancel', 
+			_id='QUOTE_Work_Cancel', _type='button')), _id='QUOTE_Work_Submit__row')
 	form_quote[0].insert(25, work_submit)
 	
 	quote_submit = TR(INPUT(_name='Quote_Submit', _value='Add quote!', 
