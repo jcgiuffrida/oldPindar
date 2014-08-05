@@ -13,34 +13,37 @@ def show():
    """
    test SQL query and display
    """
-   query1 = ((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   query1 = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
    	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
    	(db.WORK._id==db.WORK_TR.WorkID) & 
    	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id) & 
    	(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
    	(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID))
+   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+   		db.LANGUAGE.EnglishName, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
+   		db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.WORK.YearPublished,
+   		db.QUOTE.IsOriginalLanguage)
    langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
-   
-   return dict(results1=SQLFORM.grid(query1, 
-    		fields=[
-				db.QUOTE.Text, 
-				db.LANGUAGE.EnglishName, 
-				db.AUTHOR_TR.DisplayName, 
-				db.WORK_TR.WorkName], 
-			headers={'QUOTE.Text': 'Text', 
-					'LANGUAGE.EnglishName': 'Language', 
-					'AUTHOR_TR.DisplayName': 'Author',
-					'WORK_TR.WorkName': 'Source'},
-			maxtextlengths={'QUOTE.Text': 400, 
-							'LANGUAGE.EnglishName': 20, 
-							'AUTHOR_TR.DisplayName': 50, 
-							'WORK_TR.WorkName': 80}, 
-			paginate=10,
-			orderby=db.LANGUAGE.EnglishName, details=False),
-    	header1='Example query (all quotes)',
-    	langs=langs)
-    	
+   return dict(results1=query1, langs=langs) 
+#    return dict(results1=SQLFORM.grid(query1, 
+#     		fields=[
+# 				db.QUOTE.Text, 
+# 				db.LANGUAGE.EnglishName, 
+# 				db.AUTHOR_TR.DisplayName, 
+# 				db.WORK_TR.WorkName], 
+# 			headers={'QUOTE.Text': 'Text', 
+# 					'LANGUAGE.EnglishName': 'Language', 
+# 					'AUTHOR_TR.DisplayName': 'Author',
+# 					'WORK_TR.WorkName': 'Source'},
+# 			maxtextlengths={'QUOTE.Text': 400, 
+# 							'LANGUAGE.EnglishName': 20, 
+# 							'AUTHOR_TR.DisplayName': 50, 
+# 							'WORK_TR.WorkName': 80}, 
+# 			paginate=10,
+# 			orderby=db.LANGUAGE.EnglishName, details=False),
+#     	header1='Example query (all quotes)',
+#     	langs=langs)
+#     	
 
 def text_query():
 	lang = 1 if request.vars.lang=='' else int(request.vars.lang)

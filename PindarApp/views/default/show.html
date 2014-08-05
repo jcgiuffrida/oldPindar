@@ -1,4 +1,13 @@
 {{extend 'layout.html'}}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.css">
+  
+<!-- jQuery -->
+<script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  
+<!-- DataTables -->
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
+
 <form>
    <label for="query"><b>Search: </b></label>
    <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
@@ -12,9 +21,53 @@
 <div id="target"></div>
 <br/><br/>
 <hr>
-<h3>{{=header1}}</h3>
-{{=results1}}
+<h3>All Quotes</h3>
+<table id="mytable" class="display">
+	<thead>
+		<tr>
+			<td><b>Text</b></td>
+			<td><b>Author</b></td>
+			<td><b>Work</b></td>
+			<td><b>Year</b></td>
+			<td><b>Language</b></td>
+		</tr>
+	</thead>
+	<tbody>
+		{{for row in results1:}}
+		<tr>
+			<td>{{if len(row.QUOTE.Text) > 250:}}
+			{{=row.QUOTE.Text[:250]}}...
+			{{else:}}
+			{{=row.QUOTE.Text}}
+			{{pass}}
+			</td>
+			<td>{{=row.AUTHOR_TR.DisplayName}}</td>
+			<td>{{=row.WORK_TR.WorkName}}</td>
+			<td>{{if row.WORK.YearPublished==None:}}
+				{{=row.AUTHOR.YearDied}}
+				{{else:}}
+				{{=row.WORK.YearPublished}}
+				{{pass}}</td>
+			<td>{{=row.LANGUAGE.EnglishName}}</td>
+		</tr>
+		{{pass}}
+	</tbody>
+</table>
 <hr>
-
+<script>
+$(document).ready(function(){
+	$('#mytable').DataTable({
+		"order": [[ 3, "asc" ]],
+		"lengthMenu": [[8, 16, 32, -1], [8, 16, 32, "All"]],
+		"columns": [
+			{"width": "55%"},
+			{"width": "18%"},
+			{"width": "18%"},
+			null,
+			null
+		]
+	});
+});
+</script>
 
 {{=response.toolbar()}}
