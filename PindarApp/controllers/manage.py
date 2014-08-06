@@ -16,51 +16,51 @@ def add_quote():
 	"""
 	form_quote = SQLFORM.factory(
 		Field('Text', 'text', requires = [IS_NOT_EMPTY(), 
-				IS_NOT_IN_DB(db, db.QUOTE.Text)]),
+				IS_NOT_IN_DB(db, db.QUOTE.Text)], label=''),
         Field('SubmitterID', 'reference USER', label='Submitter', 
             	default=1, requires = IS_IN_DB(db, db.USER.id, '%(UserName)s',
             	orderby=db.USER.id)),
         Field('QuoteLanguageID', 'reference LANGUAGE', 
-            	default=1, label='Language', 
+            	default=1, label='', 
             	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s', 
             	orderby=db.LANGUAGE.id)), 
         Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
-        Field('DisplayName', 'string', label='Default name'), 
+        Field('DisplayName', 'string', label=''), 
 #				requires=[IS_LENGTH(maxsize=512)]),
-		Field('FirstName', 'string', label='First name'), 
+		Field('FirstName', 'string', label=''), 
 #				requires = IS_LENGTH(maxsize=128)),
-		Field('MiddleName', 'string', label='Middle name'),
+		Field('MiddleName', 'string', label=''),
 #				requires = IS_LENGTH(maxsize=128)),
-		Field('LastName', 'string', label='Last name'),
+		Field('LastName', 'string', label=''),
 #				requires = IS_LENGTH(maxsize=128)),
-		Field('AKA', 'list:string', label='Other names'),
+		Field('AKA', 'list:string', label=''),
 #				requires=IS_LIST_OF(IS_LENGTH(maxsize=256))),
-		Field('Biography', 'text'), 
+		Field('Biography', 'text', label=''), 
 #				requires=IS_LENGTH(maxsize=8192)),
-		Field('AuthorWikipediaLink', 'string', label='Link to Wikipedia page'),# requires = 
+		Field('AuthorWikipediaLink', 'string', label=''),# requires = 
 #				[IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
 #				'\.wikipedia\.org/wiki/.{1,}')), 
 #				IS_LENGTH(maxsize=256)]),
-		Field('YearBorn', 'integer', label='Year born'), 
+		Field('YearBorn', 'integer', label=''), 
 #				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-		Field('YearDied', 'integer', label='Year died'),
+		Field('YearDied', 'integer', label=''),
 #				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-		Field('WorkName', 'string', label='Name of work'),
+		Field('WorkName', 'string', label=''),
 #				requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=1024)]),
-		Field('WorkSubtitle', 'string', label='Subtitle'),
+		Field('WorkSubtitle', 'string', label=''),
 #				requires = IS_LENGTH(maxsize=1024)),
-		Field('WorkDescription', 'text', label='Description of work'),
+		Field('WorkDescription', 'text', label=''),
 #				requires = IS_LENGTH(maxsize=4096)),
-		Field('WorkWikipediaLink', 'string', label='Link to Wikipedia page'),
+		Field('WorkWikipediaLink', 'string', label=''),
 #				requires = [IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
 #				'\.wikipedia\.org/wiki/.{1,}')), IS_LENGTH(maxsize=256)]),
-		Field('WorkNote', 'text', label='Context or additional information'),
+		Field('WorkNote', 'text', label=''),
 #				requires = IS_LENGTH(maxsize=4096)),
-		Field('YearPublished', 'integer', label='Year published'),
+		Field('YearPublished', 'integer', label=''),
 #				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-        Field('YearWritten', 'integer', label='Year written (if different)'),
+        Field('YearWritten', 'integer', label=''),
 #				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-		Field('Note', 'string', label='Context or additional information',
+		Field('Note', 'string', label='',
         		requires = IS_LENGTH(maxsize=4096)),
 		Field('AuthorTrID', 'integer'),
 		Field('WorkTrID', 'integer'),
@@ -69,34 +69,40 @@ def add_quote():
 				_id='authorWikiLink', _target='blank'),
 			  'WorkWikipediaLink': \
 			A(INPUT(_type="button",value="?"), _href='', 
-				_id='workWikiLink', _target='blank')},
+				_id='workWikiLink', _target='blank'),
+			  'YearBorn': 'Year born',
+			  'YearDied': 'Year died',
+			  'YearPublished': 'Publication year',
+			  'YearWritten': 'Year written (if different)'},
 		submit_button='Add quote!', table_name='QUOTE')
 	
-	author_lookup = TR(LABEL('Select Author'),
-					INPUT(_name="author_lookup", _type="text", 
-					_id='QUOTE_Author_Lookup'), _id='QUOTE_Author_Lookup__row')
+	author_lookup = TR(LABEL(''),
+					INPUT(_name="author_lookup", _type="search", 
+					_id='QUOTE_Author_Lookup', _placeholder='Find author'), _id='QUOTE_Author_Lookup__row')
 	form_quote[0].insert(6, author_lookup)
 	
-	work_lookup = TR(LABEL('Select Work'),
-					INPUT(_name="work_lookup", _type="text", 
-					_id='QUOTE_Work_Lookup'), _id='QUOTE_Work_Lookup__row')
+	work_lookup = TR(LABEL(''),
+					INPUT(_name="work_lookup", _type="search", 
+					_id='QUOTE_Work_Lookup', _placeholder='Find work'), _id='QUOTE_Work_Lookup__row')
 	form_quote[0].insert(16, work_lookup)
 	
-	author_submit = TR(TD(INPUT(_name='Author_Submit', _value='Add author', 
-			_id='QUOTE_Author_Submit', _type='submit')), 
-			TD(INPUT(_name='Author_Cancel', _value='Cancel', 
+	author_submit = TR(LABEL(''),TD(INPUT(_name='Author_Submit', _value='Add author', 
+			_id='QUOTE_Author_Submit', _type='submit'), 
+			INPUT(_name='Author_Cancel', _value='Cancel', 
 			_id='QUOTE_Author_Cancel', _type='button')), _id='QUOTE_Author_Submit__row'),
 	form_quote[0].insert(16, author_submit)
 	
-	work_submit = TR(TD(INPUT(_name='Work_Submit', _value='Add work', 
-			_id='QUOTE_Work_Submit', _type='submit')), 
-			TD(INPUT(_name='Work_Cancel', _value='Cancel', 
+	work_submit = TR(LABEL(''),TD(INPUT(_name='Work_Submit', _value='Add work', 
+			_id='QUOTE_Work_Submit', _type='submit'), 
+			INPUT(_name='Work_Cancel', _value='Cancel', 
 			_id='QUOTE_Work_Cancel', _type='button')), _id='QUOTE_Work_Submit__row')
 	form_quote[0].insert(25, work_submit)
 	
-	quote_submit = TR(INPUT(_name='Quote_Submit', _value='Add quote!', 
+	quote_submit = TR(LABEL(''),INPUT(_name='Quote_Submit', _value='Add quote!', 
 			_id='QUOTE_Quote_Submit', _type='submit'), _id='QUOTE_Quote_Submit__row')
 	form_quote[0].insert(26, quote_submit)
+	
+	
 	
 	debug=''
 		
@@ -267,6 +273,15 @@ def languages():
 		selectable=[('Delete', lambda ids: delete_multiple('LANGUAGE', ids))])
 	return locals()
 	
+
+@auth.requires_login()
+def auth_user():
+	"""
+	*** for testing purposes only***
+	"""
+	grid = SQLFORM.grid(db.auth_user, user_signature=False)
+	return locals()
+
 
 def delete_multiple(table, ids):
 	if table == 'QUOTE':

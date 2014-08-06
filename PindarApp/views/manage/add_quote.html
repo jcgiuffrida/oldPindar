@@ -1,5 +1,4 @@
 {{extend 'layout.html'}}
-<h2>Add Quote</h2>
 {{=form_quote}}
 <div id="author_results">
 </div>
@@ -9,10 +8,21 @@
 <div id="submit_button">
 </div>
 <div id="target"></div>
-<style> .error {color: #AC1F24;}</style>
+<style> 
+main, #author_results, #work_results {font-size: 1.3em; line-height: 1.3em;}
+.error {color: #AC1F24;} 
+form {width: 40%; margin: 0 auto;} 
+#author_results {width:40%; margin:0 auto;}
+#work_results {width:40%; margin:0 auto;}
+textarea, input[type="text"], input[type="search"], input[type="number"] {font-size: 1.3em; padding: 10px;}
+#target {margin-bottom:250px;}
+</style>
 <script>
 jQuery(document).ready(function(){
 	// hide author and work fields
+	jQuery('#QUOTE_SubmitterID__row').hide();
+	jQuery('#QUOTE_QuoteLanguageID__row').hide();
+	jQuery('#QUOTE_IsOriginalLanguage__row').hide();
 	jQuery('#QUOTE_FirstName__row').hide();
 	jQuery('#QUOTE_MiddleName__row').hide();
 	jQuery('#QUOTE_LastName__row').hide();
@@ -39,7 +49,30 @@ jQuery(document).ready(function(){
 	jQuery('#QUOTE_Quote_Submit__row').hide();
 	jQuery('#author_results').hide();
 	jQuery('#work_results').hide();
-
+	
+	jQuery('#QUOTE_Text').attr('placeholder', 'Enter the quote...');
+	jQuery('#QUOTE_Note').attr('placeholder', 'Context or additional information');
+	jQuery('#QUOTE_QuoteLanguageID').attr('placeholder', 'Language');
+	jQuery('#QUOTE_DisplayName').attr('placeholder', 'Name to display');
+	jQuery('#QUOTE_FirstName').attr('placeholder', 'First name');
+	jQuery('#QUOTE_MiddleName').attr('placeholder', 'Middle name');
+	jQuery('#QUOTE_LastName').attr('placeholder', 'Last name');
+	jQuery('#QUOTE_AKA').attr('placeholder', 'Also known as');
+	jQuery('#QUOTE_Biography').attr('placeholder', 'Biographical note');
+	jQuery('#QUOTE_AuthorWikipediaLink').attr('placeholder', 'Wikipedia page for author');
+	jQuery('#QUOTE_WorkName').attr('placeholder', 'Name of work');
+	jQuery('#QUOTE_WorkSubtitle').attr('placeholder', 'Subtitle');
+	jQuery('#QUOTE_WorkDescription').attr('placeholder', 'Description');
+	jQuery('#QUOTE_WorkWikipediaLink').attr('placeholder', 'Wikipedia page for work');
+	jQuery('#QUOTE_WorkNote').attr('placeholder', 'Additional information');
+	
+	jQuery('#QUOTE_YearBorn').attr('type', 'number');
+	jQuery('#QUOTE_YearDied').attr('type', 'number');
+	jQuery('#QUOTE_YearPublished').attr('type', 'number');
+	jQuery('#QUOTE_YearWritten').attr('type', 'number');
+	// disable the following till they can accept urls without http://
+	// jQuery('#QUOTE_AuthorWikipediaLink').attr('type', 'url'); 
+	// jQuery('#QUOTE_WorkWikipediaLink').attr('type', 'url');
 	
 	$.validator.addMethod(
         "regex",
@@ -156,7 +189,8 @@ $(document).on('keypress', 'form', function (e) {
 				range: [-5000, 2050]
 			},
 			Text: {
-				required: true
+				required: true,
+				minlength: 3
 			},
 			SubmitterID: {
 				required: true
@@ -179,7 +213,10 @@ $(document).on('keypress', 'form', function (e) {
 			},
 			YearPublished: "Please enter a valid year",
 			YearWritten: "Please enter a valid year",
-			Text: "Please enter the quote",
+			Text: {
+				required: "Please enter the quote",
+				minlength: "Your quote should be more than two characters"
+			},
 			SubmitterID: "Who are you?",
 			QuoteLanguageID: "What language is the quote in?"
 		},
