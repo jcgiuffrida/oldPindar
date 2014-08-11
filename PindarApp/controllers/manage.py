@@ -9,6 +9,7 @@
 ## - call exposes all registered services (none by default)
 #########################################################################
 
+@auth.requires_login()
 def add_quote():
 	"""
 	*** for testing purposes only ***
@@ -255,7 +256,7 @@ def connections():
 		selectable=[('Delete', lambda ids: delete_multiple('WORK_AUTHOR', ids))])
 	return locals()
 
-
+'''
 def users():
 	"""
 	*** for testing purposes only***
@@ -263,7 +264,7 @@ def users():
 	grid = SQLFORM.grid(db.USER, user_signature=False,
 		selectable=[('Delete', lambda ids: delete_multiple('USER', ids))])
 	return locals()
-
+'''
 
 def languages():
 	"""
@@ -311,4 +312,3 @@ def delete_multiple(table, ids):
 	elif table == 'USER':
 		to_delete = db(db.USER.id.belongs(ids))
 		to_delete.delete()
-

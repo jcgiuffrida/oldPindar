@@ -1,0 +1,145 @@
+timestamp: 2014-08-08T16:47:58.401000
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    username CHAR(128),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2014-08-08T16:47:58.528000
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-08-08T16:47:58.651000
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-08-08T16:47:58.785000
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2014-08-08T16:47:58.895000
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2014-08-08T16:47:59.021000
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2014-08-08T17:01:34.986000
+CREATE TABLE LANGUAGE(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    LanguageCode CHAR(3),
+    EnglishName CHAR(64),
+    NativeName CHAR(64)
+);
+success!
+timestamp: 2014-08-08T17:01:35.249000
+CREATE TABLE QUOTE(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Text TEXT,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    SubmissionDate TIMESTAMP,
+    QuoteLanguageID INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    IsOriginalLanguage CHAR(1),
+    IsDeleted CHAR(1),
+    Note TEXT
+);
+success!
+timestamp: 2014-08-08T17:01:35.444000
+CREATE TABLE WORK(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    YearPublished INTEGER,
+    YearWritten INTEGER,
+    IsHidden CHAR(1)
+);
+success!
+timestamp: 2014-08-08T17:01:35.630000
+CREATE TABLE WORK_TR(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    WorkID INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    LanguageID INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    WorkName CHAR(1024),
+    WorkSubtitle CHAR(1024),
+    WorkDescription TEXT,
+    WikipediaLink CHAR(256),
+    WorkNote TEXT,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    SubmissionDate TIMESTAMP
+);
+success!
+timestamp: 2014-08-08T17:01:35.917000
+CREATE TABLE AUTHOR(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    YearBorn INTEGER,
+    YearDied INTEGER,
+    IsHidden CHAR(1)
+);
+success!
+timestamp: 2014-08-08T17:01:36.238000
+CREATE TABLE AUTHOR_TR(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    AuthorID INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE,
+    LanguageID INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    FirstName CHAR(128),
+    MiddleName CHAR(128),
+    LastName CHAR(128),
+    AKA TEXT,
+    DisplayName CHAR(512),
+    Biography TEXT,
+    WikipediaLink CHAR(256),
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    SubmissionDate TIMESTAMP
+);
+success!
+timestamp: 2014-08-08T17:01:36.407000
+CREATE TABLE QUOTE_WORK(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    QuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    WorkID INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-08-08T17:01:36.573000
+CREATE TABLE WORK_AUTHOR(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    WorkID INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    AuthorID INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2014-08-08T17:01:36.782000
+CREATE TABLE TRANSLATION(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    OriginalQuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    TranslatedQuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    TranslatorID INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE
+);
+success!

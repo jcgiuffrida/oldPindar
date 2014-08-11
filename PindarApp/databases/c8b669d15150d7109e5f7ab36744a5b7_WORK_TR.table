@@ -1,5 +1,5 @@
 (dp1
-S'SubmitterID'
+S'submitterid'
 p2
 (dp3
 S'length'
@@ -13,16 +13,16 @@ p6
 I9
 sS'sql'
 p7
-S'INTEGER REFERENCES USER (id) ON DELETE CASCADE'
+S'CHAR(512)'
 p8
 sS'notnull'
 p9
 I00
 sS'type'
 p10
-S'reference USER'
+S'string'
 p11
-ssS'WorkSubtitle'
+ssS'worksubtitle'
 p12
 (dp13
 g4
@@ -37,11 +37,10 @@ p14
 sg9
 I00
 sg10
-S'string'
+g11
+ssS'languageid'
 p15
-ssS'LanguageID'
-p16
-(dp17
+(dp16
 g4
 I512
 sg5
@@ -50,15 +49,15 @@ sg6
 I3
 sg7
 S'INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE'
-p18
+p17
 sg9
 I00
 sg10
 S'reference LANGUAGE'
+p18
+ssS'wikipedialink'
 p19
-ssS'WikipediaLink'
-p20
-(dp21
+(dp20
 g4
 I256
 sg5
@@ -67,14 +66,14 @@ sg6
 I7
 sg7
 S'CHAR(256)'
-p22
+p21
 sg9
 I00
 sg10
-g15
-ssS'WorkID'
-p23
-(dp24
+g11
+ssS'workid'
+p22
+(dp23
 g4
 I512
 sg5
@@ -83,15 +82,15 @@ sg6
 I2
 sg7
 S'INTEGER REFERENCES WORK (id) ON DELETE CASCADE'
-p25
+p24
 sg9
 I00
 sg10
 S'reference WORK'
+p25
+ssS'workname'
 p26
-ssS'WorkName'
-p27
-(dp28
+(dp27
 g4
 I1024
 sg5
@@ -100,14 +99,14 @@ sg6
 I4
 sg7
 S'CHAR(1024)'
-p29
+p28
 sg9
 I00
 sg10
-g15
-ssS'WorkDescription'
-p30
-(dp31
+g11
+ssS'workdescription'
+p29
+(dp30
 g4
 I32768
 sg5
@@ -116,15 +115,15 @@ sg6
 I6
 sg7
 S'TEXT'
-p32
+p31
 sg9
 I00
 sg10
 S'text'
+p32
+ssS'submissiondate'
 p33
-ssS'SubmissionDate'
-p34
-(dp35
+(dp34
 g4
 I512
 sg5
@@ -133,15 +132,15 @@ sg6
 I10
 sg7
 S'TIMESTAMP'
-p36
+p35
 sg9
 I00
 sg10
 S'datetime'
-p37
+p36
 ssS'id'
-p38
-(dp39
+p37
+(dp38
 g4
 I512
 sg5
@@ -150,12 +149,13 @@ sg6
 I1
 sg7
 S'INTEGER PRIMARY KEY AUTOINCREMENT'
-p40
+p39
 sg9
 I00
 sg10
-g38
-ssS'WorkNote'
+S'id'
+p40
+ssS'worknote'
 p41
 (dp42
 g4
@@ -170,5 +170,5 @@ p43
 sg9
 I00
 sg10
-g33
+g32
 ss.

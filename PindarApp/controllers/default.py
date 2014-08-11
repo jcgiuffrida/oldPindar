@@ -95,7 +95,7 @@ def index():
     """
     return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR),
     	authors_tr=SQLFORM.grid(db.AUTHOR_TR), works=SQLFORM.grid(db.WORK),
-    	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.USER), 
+    	works_tr=SQLFORM.grid(db.WORK_TR), #users=SQLFORM.grid(db.USER),    #def auth
     	languages=SQLFORM.grid(db.LANGUAGE), translations=SQLFORM.grid(db.TRANSLATION))
 
 

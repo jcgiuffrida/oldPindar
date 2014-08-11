@@ -1,5 +1,5 @@
 (dp1
-S'SubmitterID'
+S'submitterid'
 p2
 (dp3
 S'length'
@@ -13,16 +13,16 @@ p6
 I3
 sS'sql'
 p7
-S'INTEGER REFERENCES USER (id) ON DELETE CASCADE'
+S'CHAR(512)'
 p8
 sS'notnull'
 p9
 I00
 sS'type'
 p10
-S'reference USER'
+S'string'
 p11
-ssS'Text'
+ssS'text'
 p12
 (dp13
 g4
@@ -39,7 +39,7 @@ I00
 sg10
 S'text'
 p15
-ssS'SubmissionDate'
+ssS'submissiondate'
 p16
 (dp17
 g4
@@ -56,7 +56,7 @@ I00
 sg10
 S'datetime'
 p19
-ssS'Note'
+ssS'note'
 p20
 (dp21
 g4
@@ -72,7 +72,7 @@ sg9
 I00
 sg10
 g15
-ssS'IsOriginalLanguage'
+ssS'isoriginallanguage'
 p23
 (dp24
 g4
@@ -89,7 +89,7 @@ I00
 sg10
 S'boolean'
 p26
-ssS'IsDeleted'
+ssS'isdeleted'
 p27
 (dp28
 g4
@@ -120,10 +120,11 @@ p32
 sg9
 I00
 sg10
-g30
-ssS'QuoteLanguageID'
+S'id'
 p33
-(dp34
+ssS'quotelanguageid'
+p34
+(dp35
 g4
 I512
 sg5
@@ -132,10 +133,10 @@ sg6
 I5
 sg7
 S'INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE'
-p35
+p36
 sg9
 I00
 sg10
 S'reference LANGUAGE'
-p36
+p37
 ss.

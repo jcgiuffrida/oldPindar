@@ -45,8 +45,15 @@ from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
+auth.settings.extra_fields['auth_user']= [
+    Field('QUOTE_ADDED', 'reference QUOTE'),
+    Field('WORK_ADDED', 'reference WORK'),
+    Field('AUTHOR_ADDED', 'reference AUTHOR')]
+
+
+
 ## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=False)
+auth.define_tables(username=True, signature=False)
 
 ## configure email
 mail = auth.settings.mailer
@@ -82,13 +89,7 @@ use_janrain(auth, filename='private/janrain.key')
 #########################################################################
 
 db = DAL('sqlite://storage.sqlite',
-         check_reserved=['mysql'])
-
-from gluon.tools import *
-auth = Auth(db)
-auth.define_tables()
-crud = Crud(db)
-
+         check_reserved=['mysql', 'postgres'])
 
 
 ###---------------------- LANGUAGE
@@ -102,32 +103,31 @@ db.LANGUAGE.LanguageCode.requires = IS_LENGTH(minsize=2, maxsize=3)
 db.LANGUAGE.EnglishName.requires = IS_LENGTH(minsize=2, maxsize=64)
 db.LANGUAGE.NativeName.requires = [IS_NOT_EMPTY(), IS_LENGTH(minsize=2, maxsize=64)]
 
+'''
+###---------------------- USER_
 
-###---------------------- USER
-
-db.define_table('USER',
+db.define_table('USER_',
 			Field('UserName', 'string', length=32, required=True, unique=True, 
 					label='Username'),
 			Field('DateJoined', 'datetime', default=datetime.now(), writable=False,
 					label='Date joined'),
 			Field('PrimaryLanguageID', 'integer', 'reference LANGUAGE', default=1,
 					label='Primary language'),
-			Field('UserBiography', 'text', 
+			Field('UserBiography', 'text',
 					label='User biography'),
 			Field('IsDeleted', 'boolean', default=False, readable=False, writable=False))
 
-db.USER.UserName.requires = [IS_NOT_EMPTY(), IS_LENGTH(minsize=3, maxsize=32), 
-							 IS_NOT_IN_DB(db, db.USER.UserName)]
-db.USER.DateJoined.requires = IS_DATETIME()
-db.USER.PrimaryLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
-db.USER.UserBiography.requires = IS_LENGTH(maxsize=4096)
-
-
+db.USER_.UserName.requires = [IS_NOT_EMPTY(), IS_LENGTH(minsize=3, maxsize=32), 
+							 IS_NOT_IN_DB(db, db.USER_.UserName)]
+db.USER_.DateJoined.requires = IS_DATETIME()
+db.USER_.PrimaryLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.USER_.UserBiography.requires = IS_LENGTH(maxsize=4096)
+'''
 ###---------------------- QUOTE
 
 db.define_table('QUOTE',
             Field('Text', 'text', required=True),
-            Field('SubmitterID', 'reference USER', required=True, label='Submitter', 
+            Field('SubmitterID', required=True, label='Submitter',       #ref auth
             		default=1), # temporary default for testing purposes
             Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
             		label='Date submitted'),
@@ -138,7 +138,7 @@ db.define_table('QUOTE',
             Field('Note', 'text', label='Context or additional information'))
 
 db.QUOTE.Text.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.QUOTE.Text)]
-db.QUOTE.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
+# db.QUOTE.SubmitterID.requires = IS_IN_DB(db, '%(UserName)s') #ref auth
 db.QUOTE.SubmissionDate.requires = IS_DATETIME()
 db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
 db.QUOTE.Note.requires = IS_LENGTH(maxsize=4096)
@@ -173,7 +173,7 @@ db.define_table('WORK_TR',
 					label='Link to Wikipedia page'),
 			Field('WorkNote', 'text',
 					label='Context or additional information'),
-			Field('SubmitterID', 'reference USER', required=True,
+			Field('SubmitterID', required=True,   #ref auth
 					label='User'),
 			Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
 					label='Date submitted'))
@@ -187,7 +187,7 @@ db.WORK_TR.WikipediaLink.requires = \
 		[IS_MATCH('^(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
 		 IS_LENGTH(maxsize=256)]
 db.WORK_TR.WorkNote.requires = IS_LENGTH(maxsize=4096)
-db.WORK_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
+#db.WORK_TR.SubmitterID.requires = IS_IN_DB(db, '%(UserName)s') #ref auth
 db.WORK_TR.SubmissionDate.requires = IS_DATETIME()
 
 
@@ -221,7 +221,7 @@ db.define_table('AUTHOR_TR',
 			Field('Biography', 'text'),
 			Field('WikipediaLink', 'string', length=256, 
 					label='Link to Wikipedia page'),
-			Field('SubmitterID', 'reference USER', required=True,
+			Field('SubmitterID',  required=True, #ref auth
 					label='User'),
 			Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
 					label='Date submitted'))
@@ -238,7 +238,7 @@ db.AUTHOR_TR.Biography.requires = IS_LENGTH(maxsize=8192)
 db.AUTHOR_TR.WikipediaLink.requires = \
 		[IS_MATCH('^(https://|http://)?[a-z]{2}\.wikipedia\.org/wiki/.{1,}'), 
 		 IS_LENGTH(maxsize=256)]
-db.AUTHOR_TR.SubmitterID.requires = IS_IN_DB(db, db.USER.id, '%(UserName)s')
+#db.AUTHOR_TR.SubmitterID.requires = IS_IN_DB(db, '%(UserName)s') #ref auth
 db.AUTHOR_TR.SubmissionDate.requires = IS_DATETIME()
 
 
