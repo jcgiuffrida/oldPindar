@@ -22,7 +22,7 @@ def add_quote():
             	orderby=db.USER.id)),
         Field('QuoteLanguageID', 'reference LANGUAGE', 
             	default=1, label='', 
-            	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s', 
+            	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(LanguageCode)s', 
             	orderby=db.LANGUAGE.id)), 
         Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
         Field('DisplayName', 'string', label=''), 
@@ -77,13 +77,13 @@ def add_quote():
 		submit_button='Add quote!', table_name='QUOTE')
 	
 	author_lookup = TR(LABEL(''),
-					INPUT(_name="author_lookup", _type="search", 
-					_id='QUOTE_Author_Lookup', _placeholder='Find author'), _id='QUOTE_Author_Lookup__row')
+					INPUT(_name="author_lookup", _type="text", 
+					_id='QUOTE_Author_Lookup', _placeholder='Author'), _id='QUOTE_Author_Lookup__row')
 	form_quote[0].insert(6, author_lookup)
 	
 	work_lookup = TR(LABEL(''),
-					INPUT(_name="work_lookup", _type="search", 
-					_id='QUOTE_Work_Lookup', _placeholder='Find work'), _id='QUOTE_Work_Lookup__row')
+					INPUT(_name="work_lookup", _type="text", 
+					_id='QUOTE_Work_Lookup', _placeholder='Source'), _id='QUOTE_Work_Lookup__row')
 	form_quote[0].insert(16, work_lookup)
 	
 	author_submit = TR(LABEL(''),TD(INPUT(_name='Author_Submit', _value='Add author', 

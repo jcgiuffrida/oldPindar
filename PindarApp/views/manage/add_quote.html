@@ -16,12 +16,21 @@ form {width: 40%; margin: 0 auto;}
 #work_results {width:40%; margin:0 auto;}
 textarea, input[type="text"], input[type="search"], input[type="number"] {font-size: 1.3em; padding: 10px;}
 #target {margin-bottom:250px;}
+#QUOTE_QuoteLanguageID { width: 50px; position:relative; top:2px; opacity: 0.7;}
+#author_results tbody tr {cursor: pointer;}
+#author_results tbody tr:hover {background-color: #eee;}
+#author_results tbody tr:active {background-color: #ddd;}
+#work_results tbody tr {cursor: pointer;}
+#work_results tbody tr:hover {background-color: #eee;}
+#work_results tbody tr:active {background-color: #ddd;}
+
 </style>
 <script>
 jQuery(document).ready(function(){
 	// hide author and work fields
 	jQuery('#QUOTE_SubmitterID__row').hide();
 	jQuery('#QUOTE_QuoteLanguageID__row').hide();
+	jQuery('#QUOTE_QuoteLanguageID').appendTo(jQuery('#QUOTE_Text__row .w2p_fc'));
 	jQuery('#QUOTE_IsOriginalLanguage__row').hide();
 	jQuery('#QUOTE_FirstName__row').hide();
 	jQuery('#QUOTE_MiddleName__row').hide();
@@ -74,6 +83,19 @@ jQuery(document).ready(function(){
 	// jQuery('#QUOTE_AuthorWikipediaLink').attr('type', 'url'); 
 	// jQuery('#QUOTE_WorkWikipediaLink').attr('type', 'url');
 	
+	jQuery('#QUOTE_Text__row').hide().fadeIn('slow');
+	jQuery('#QUOTE_QuoteLanguageID').hide();
+	jQuery('#QUOTE_Author_Lookup__row').hide();
+	
+	var started = false;
+	jQuery('#QUOTE_Text').keyup(function(){
+		if (started | jQuery('#QUOTE_Text').val().length > 2){
+			started = true;
+			jQuery('#QUOTE_Author_Lookup__row').fadeIn('slow');
+			jQuery('#QUOTE_QuoteLanguageID').fadeIn('slow');
+		}
+	});
+		
 	$.validator.addMethod(
         "regex",
         function(value, element, regexp) {
@@ -83,7 +105,7 @@ jQuery(document).ready(function(){
         "Please check your input."
 	);
 
-$(document).on('keypress', 'form', function (e) {
+	$(document).on('keypress', 'form', function (e) {
 		var code = e.keyCode || e.which;
 		if (code == 13) {
 			e.preventDefault();
