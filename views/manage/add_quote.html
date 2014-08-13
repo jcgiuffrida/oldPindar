@@ -18,17 +18,16 @@ textarea, input[type="text"], input[type="search"], input[type="number"] {font-s
 #target {margin-bottom:250px;}
 #QUOTE_QuoteLanguageID { width: 50px; position:relative; top:2px; opacity: 0.7;}
 #author_results tbody tr {cursor: pointer;}
-#author_results tbody tr:hover {background-color: #eee;}
-#author_results tbody tr:active {background-color: #ddd;}
+#author_results tbody tr:hover {background-color: #ddd;}
+#author_results tbody tr:active {background-color: #ccc;}
 #work_results tbody tr {cursor: pointer;}
-#work_results tbody tr:hover {background-color: #eee;}
-#work_results tbody tr:active {background-color: #ddd;}
-
+#work_results tbody tr:hover {background-color: #ddd;}
+#work_results tbody tr:active {background-color: #ccc;}
+body {background-color: #eee;}
 </style>
 <script>
 jQuery(document).ready(function(){
 	// hide author and work fields
-	jQuery('#QUOTE_SubmitterID__row').hide();
 	jQuery('#QUOTE_QuoteLanguageID__row').hide();
 	jQuery('#QUOTE_QuoteLanguageID').appendTo(jQuery('#QUOTE_Text__row .w2p_fc'));
 	jQuery('#QUOTE_IsOriginalLanguage__row').hide();
@@ -214,9 +213,6 @@ jQuery(document).ready(function(){
 				required: true,
 				minlength: 3
 			},
-			SubmitterID: {
-				required: true
-			},
 			QuoteLanguageID: {
 				required: true
 			},
@@ -239,7 +235,6 @@ jQuery(document).ready(function(){
 				required: "Please enter the quote",
 				minlength: "Your quote should be more than two characters"
 			},
-			SubmitterID: "Who are you?",
 			QuoteLanguageID: "What language is the quote in?"
 		},
 		submitHandler: function(form) {
@@ -247,7 +242,7 @@ jQuery(document).ready(function(){
 				ajax('{{=URL('manage', 'author_submit')}}',
 					['FirstName', 'MiddleName', 'LastName', 'AKA', 'DisplayName',
 					 'Biography', 'AuthorWikipediaLink', 'YearBorn', 'YearDied', 
-					 'LanguageID', 'SubmitterID'],
+					 'LanguageID'],
 					 ':eval');
 				jQuery('#QUOTE_FirstName__row').fadeOut('fast');
 				jQuery('#QUOTE_MiddleName__row').fadeOut('fast');
@@ -268,7 +263,7 @@ jQuery(document).ready(function(){
 				ajax('{{=URL('manage', 'work_submit')}}',
 					['WorkName', 'WorkSubtitle', 'WorkDescription', 'WorkWikipediaLink',
 					 'WorkNote', 'YearPublished', 'YearWritten',  
-					 'LanguageID', 'SubmitterID', 'AuthorTrID'],
+					 'LanguageID', 'AuthorTrID'],
 					 ':eval');
 				jQuery('#QUOTE_WorkName__row').fadeOut('fast');
 				jQuery('#QUOTE_WorkSubtitle__row').fadeOut('fast');
@@ -286,7 +281,7 @@ jQuery(document).ready(function(){
 				clear_work();
 			} else if (button == 'QUOTE_Quote_Submit'){
 				ajax('{{=URL('manage', 'quote_submit')}}',
-					['Text', 'SubmitterID', 'QuoteLanguageID', 'IsOriginalLanguage',
+					['Text', 'QuoteLanguageID', 'IsOriginalLanguage',
 					 'Note', 'AuthorTrID', 'WorkTrID'],
 					 ':eval');
 				clear_quote();
@@ -404,7 +399,6 @@ String.prototype.capitalize = function(delim) {
 
 function clear_quote() {
 	jQuery('#QUOTE_Text').val('');
-	jQuery('#QUOTE_SubmitterID').val(1);
 	jQuery('#QUOTE_QuoteLanguageID').val(1);
 	jQuery('#QUOTE_IsOriginalLanguage').prop('checked',false)
 	jQuery('#QUOTE_Note').val('');

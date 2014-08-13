@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 
 #########################################################################
 ## This scaffolding model makes your app work on Google App Engine too
@@ -11,7 +12,7 @@
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['all'])
+    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['mysql', 'postgres'])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -30,22 +31,21 @@ response.generic_patterns = ['*'] if request.is_local else []
 # response.optimize_js = 'concat,minify,inline'
 ## (optional) static assets folder versioning
 # response.static_version = '0.0.0'
-#########################################################################
-## Here is sample code if you need for
-## - email capabilities
-## - authentication (registration, login, logout, ... )
-## - authorization (role based authorization)
-## - services (xml, csv, json, xmlrpc, jsonrpc, amf, rss)
-## - old style crud actions
-## (more options discussed in gluon/tools.py)
-#########################################################################
+
 
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()
 
+auth.settings.extra_fields['auth_user'] = [
+    Field('DateJoined', 'datetime', default=datetime.now(), 
+          readable=False, writable=False),
+    Field('PrimaryLanguageID', 'integer', default=1),
+    Field('UserBiography', 'text'),
+    Field('IsDeleted', 'boolean', default=False, readable=False, writable=False)]
+
 ## create all tables needed by auth if not custom tables
-auth.define_tables(username=False, signature=False)
+auth.define_tables(username=True, signature=False)
 
 ## configure email
 mail = auth.settings.mailer
@@ -80,87 +80,41 @@ use_janrain(auth, filename='private/janrain.key')
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
 
-db = DAL('sqlite://storage.sqlite',
-         check_reserved=['mysql'])
+###---------------------- LANGUAGE
+
+db.define_table('LANGUAGE',
+			Field('LanguageCode', 'string', length=3, label='Two-letter code'),
+			Field('EnglishName', 'string', length=64, label='English name'),
+			Field('NativeName', 'string', length=64, required=True, label='Native name'))
+
+db.LANGUAGE.LanguageCode.requires = IS_LENGTH(minsize=2, maxsize=3)
+db.LANGUAGE.EnglishName.requires = IS_LENGTH(minsize=2, maxsize=64)
+db.LANGUAGE.NativeName.requires = [IS_NOT_EMPTY(), IS_LENGTH(minsize=2, maxsize=64)]
+
+# add reference in auth_user table
+db.auth_user.PrimaryLanguageID.type = 'reference LANGUAGE'
+db.auth_user.PrimaryLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
 
 
-'''
-from gluon.tools import *
-auth = Auth(db)
-auth.define_tables()
-crud = Crud(db)
-'''
+###---------------------- QUOTE
 
-'''
-QUOTES
-*ID (int) UNIQUE, NOT NULL
-TEXT (varchar(4096)) NOT NULL  (this would allow for about 700 words)
-WORK_ID (int)
-SUBMITTER_ID (int)
-DATE (date)
-LANGUAGE_ID (int)
-DELETED_FLAG (bool)
-'''
-#test
-db.define_table('person', Field('name', requires=IS_NOT_EMPTY()))
+db.define_table('QUOTE',
+            Field('Text', 'text', required=True),
+            Field('SubmitterID', 'reference auth_user', required=True, label='Submitter', 
+            		default=auth.user_id), # temporary default for testing purposes
+            Field('SubmissionDate', 'datetime', default=datetime.now(), writable=False,
+            		readable=False, label='Date submitted'),
+            Field('QuoteLanguageID', 'reference LANGUAGE', required=True, 
+            		default=1, label='Language'), # temporary default for testing purposes
+            Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
+            Field('IsDeleted', 'boolean', default=False, readable=False, writable=False),
+            Field('Note', 'text', label='Context or additional information'))
 
-
-db.define_table('quote',
-            Field('body', 'text', required=True),
-            Field('work_id', db.work),
-            #Field('submitter_id'), #get from session
-            #Field('language_id'),
-            Field('deleted_flag', 'boolean')
-            )
-
-
-'''
-AUTHORS
-*ID (int) UNIQUE, NOT NULL
-FNAME (varchar(128))
-LNAME (varchar(128))
-AKA (varchar(256))  ("as known as")
-B_YEAR (int)
-D_YEAR (int)
-MNAME (varchar(64))
-
-
-force unique: FNAME + LNAME + MNAME + B_YEAR; AKA + B_YEAR
-'''
-db.define_table('author',
-            Field('f_name'),
-            Field('l_name'),
-            Field('aka'),
-            Field('b_year', 'integer'),
-            Field('d_year', 'integer'),
-            Field('m_name'))
-
-
-'''
-WORKS
-*ID (int) UNIQUE, NOT NULL
-NAME (varchar(512))
-AUTHOR_ID (int)
-YEAR (int)
-LANGUAGE (int)  (original language)
-
-force unique: NAME + AUTHOR_ID
-'''
-
-db.define_table('work',
-            Field('name'),
-            Field('author_id', db.author),
-            Field('year', 'integer'),
-            Field('language'))
-
-'''
-CHAPTERS
-*ID (int) UNIQUE, NOT NULL
-NAME (varchar(512))
-WORK_ID (int)
-
-force unique: NAME + WORK_ID
-'''
+db.QUOTE.Text.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.QUOTE.Text)]
+db.QUOTE.SubmitterID.requires = IS_IN_DB(auth, auth.user, '%(Username)s')
+db.QUOTE.SubmissionDate.requires = IS_DATETIME()
+db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
+db.QUOTE.Note.requires = IS_LENGTH(maxsize=4096)
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
