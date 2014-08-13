@@ -88,8 +88,32 @@ def user():
         @auth.requires_membership('group name')
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
-    """
-    return dict(form=auth())
+    """	    
+    # the below is from https://groups.google.com/forum/#!topic/web2py/okakKiDajNw
+    if request.args[0]=='profile':
+    	response.view='default/profile.html'
+    	quotes_added = db((db.QUOTE.created_by==auth.user_id) & 
+        	(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+   			(db.WORK._id==db.WORK_TR.WorkID) & 
+   			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+   			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+   			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+   			db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.QUOTE.created_on)
+        authors_added = db((db.AUTHOR_TR.created_by==auth.user_id) & 
+        	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR_TR.DisplayName,
+   			db.AUTHOR_TR.created_on, db.AUTHOR.YearBorn, db.AUTHOR.YearDied)
+        works_added = db((db.WORK_TR.created_by==auth.user_id) & 
+        	(db.WORK._id==db.WORK_TR.WorkID) & 
+   			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+   			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+   			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.WORK_TR.WorkName,
+   			db.WORK.YearPublished, db.AUTHOR_TR.DisplayName, db.WORK_TR.created_on)
+    	return dict(form=auth(), quotes_added=quotes_added, authors_added=authors_added,
+        	works_added=works_added)
+    return dict(form=auth())  
+
+
 
 @cache.action()
 def download():
