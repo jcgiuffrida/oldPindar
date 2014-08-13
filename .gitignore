@@ -37,7 +37,7 @@ Icon
 .Trashes
 
 # other stuff
-PindarApp/sessions
-PindarApp/errors
-PindarApp/cache
+sessions
+errors
+cache
 
