@@ -5,13 +5,13 @@
 ## Customize your APP title, subtitle and menus here
 #########################################################################
 
-response.logo = A(B('web',SPAN(2),'py'),XML('&trade;&nbsp;'),
-                  _class="brand",_href="http://www.jonnygee.org/")
-response.title = 'Pindar' #request.application.replace('_',' ').title()
+response.logo = A(B('Pindar'), _class="brand",
+	_href="http://127.0.0.1:8000/Pindar/default/show")
+response.title = request.application.replace('_',' ').title()
 response.subtitle = 'open-source quotes'
 
 ## read more at http://dev.w3.org/html5/markup/meta.name.html
-response.meta.author = 'Jonny G <me@jonnygee.org>'
+response.meta.author = 'jonny gee <me@jonnygee.org>'
 response.meta.keywords = 'web2py, python, framework'
 response.meta.generator = 'Web2py Web Framework'
 
@@ -22,9 +22,7 @@ response.google_analytics_id = None
 ## this is the main application menu add/remove items as required
 #########################################################################
 
-response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
-]
+response.menu = []
 
 DEVELOPMENT_MENU = True
 
@@ -38,9 +36,19 @@ def _():
     ctr = request.controller
     # useful links to internal and external resources
     response.menu += [
-        (SPAN('web2py', _class='highlighted'), False, 'http://web2py.com', [
-        (T('My Sites'), False, URL('admin', 'default', 'site')),
+        (SPAN('Menu', _class='highlighted'), False, URL('default', 'show'), [
+        (T('Add Data'), False, URL('manage', 'add_quote')),
+        (T('Show All Data'), False, URL('default', 'index')),
+        (T('Manage'), False, URL('manage', 'quotes'), [
+        (T('Quotes'), False, URL('manage', 'quotes')),
+        (T('Authors'), False, URL('manage', 'authors')),
+        (T('Works'), False, URL('manage', 'works')),
+        (T('Connections'), False, URL('manage', 'connections')),
+        (T('Languages'), False, URL('manage', 'languages')),
+        (T('Users'), False, URL('manage', 'users')),
+        ]),
         (T('This App'), False, URL('admin', 'default', 'design/%s' % app), [
+        (T('Shell'), False, URL('admin', 'shell', 'index/%s' % app)),
         (T('Controller'), False,
          URL(
          'admin', 'default', 'edit/%s/controllers/%s.py' % (app, ctr))),
@@ -65,24 +73,6 @@ def _():
         (T('About'), False, URL(
          'admin', 'default', 'about/' + app)),
         ]),
-            ('web2py.com', False, 'http://www.web2py.com', [
-             (T('Download'), False,
-              'http://www.web2py.com/examples/default/download'),
-             (T('Support'), False,
-              'http://www.web2py.com/examples/default/support'),
-             (T('Demo'), False, 'http://web2py.com/demo_admin'),
-             (T('Quick Examples'), False,
-              'http://web2py.com/examples/default/examples'),
-             (T('FAQ'), False, 'http://web2py.com/AlterEgo'),
-             (T('Videos'), False,
-              'http://www.web2py.com/examples/default/videos/'),
-             (T('Free Applications'),
-              False, 'http://web2py.com/appliances'),
-             (T('Plugins'), False, 'http://web2py.com/plugins'),
-             (T('Layouts'), False, 'http://web2py.com/layouts'),
-             (T('Recipes'), False, 'http://web2pyslices.com/'),
-             (T('Semantic'), False, 'http://web2py.com/semantic'),
-             ]),
             (T('Documentation'), False, 'http://www.web2py.com/book', [
              (T('Preface'), False,
               'http://www.web2py.com/book/default/chapter/00'),
@@ -116,24 +106,9 @@ def _():
               'http://www.web2py.com/book/default/chapter/14'),
              (T('Buy this book'), False,
               'http://stores.lulu.com/web2py'),
-             ]),
-            (T('Community'), False, None, [
-             (T('Groups'), False,
-              'http://www.web2py.com/examples/default/usergroups'),
-                        (T('Twitter'), False, 'http://twitter.com/web2py'),
-                        (T('Live Chat'), False,
-                         'http://webchat.freenode.net/?channels=web2py'),
-                        ]),
-                (T('Plugins'), False, None, [
-                        ('plugin_wiki', False,
-                         'http://web2py.com/examples/default/download'),
-                        (T('Other Plugins'), False,
-                         'http://web2py.com/plugins'),
-                        (T('Layout Plugins'),
-                         False, 'http://web2py.com/layouts'),
-                        ])
+             ])
                 ]
          )]
 if DEVELOPMENT_MENU: _()
 
-if "auth" in locals(): auth.wikimenu()
+if "auth" in locals(): auth.wikimenu() 

@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
 
-#########################################################################
-## This is a sample controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
 
 def show(): 
    """
@@ -25,25 +17,7 @@ def show():
    		db.QUOTE.IsOriginalLanguage)
    langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
    return dict(results1=query1, langs=langs) 
-#    return dict(results1=SQLFORM.grid(query1, 
-#     		fields=[
-# 				db.QUOTE.Text, 
-# 				db.LANGUAGE.EnglishName, 
-# 				db.AUTHOR_TR.DisplayName, 
-# 				db.WORK_TR.WorkName], 
-# 			headers={'QUOTE.Text': 'Text', 
-# 					'LANGUAGE.EnglishName': 'Language', 
-# 					'AUTHOR_TR.DisplayName': 'Author',
-# 					'WORK_TR.WorkName': 'Source'},
-# 			maxtextlengths={'QUOTE.Text': 400, 
-# 							'LANGUAGE.EnglishName': 20, 
-# 							'AUTHOR_TR.DisplayName': 50, 
-# 							'WORK_TR.WorkName': 80}, 
-# 			paginate=10,
-# 			orderby=db.LANGUAGE.EnglishName, details=False),
-#     	header1='Example query (all quotes)',
-#     	langs=langs)
-#     	
+
 
 def text_query():
 	lang = 1 if request.vars.lang=='' else int(request.vars.lang)
@@ -95,7 +69,7 @@ def index():
     """
     return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR),
     	authors_tr=SQLFORM.grid(db.AUTHOR_TR), works=SQLFORM.grid(db.WORK),
-    	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.USER), 
+    	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.auth_user), 
     	languages=SQLFORM.grid(db.LANGUAGE), translations=SQLFORM.grid(db.TRANSLATION))
 
 

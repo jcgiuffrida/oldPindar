@@ -1,13 +1,5 @@
 # -*- coding: utf-8 -*-
-# this file is released under public domain and you can use without limitations
 
-#########################################################################
-## This is a sample controller
-## - index is the default action of any application
-## - user is required for authentication and authorization
-## - download is for downloading files uploaded in the db (does streaming)
-## - call exposes all registered services (none by default)
-#########################################################################
 
 def add_quote():
 	"""
@@ -17,51 +9,28 @@ def add_quote():
 	form_quote = SQLFORM.factory(
 		Field('Text', 'text', requires = [IS_NOT_EMPTY(), 
 				IS_NOT_IN_DB(db, db.QUOTE.Text)], label=''),
-        Field('SubmitterID', 'reference USER', label='Submitter', 
-            	default=1, requires = IS_IN_DB(db, db.USER.id, '%(UserName)s',
-            	orderby=db.USER.id)),
         Field('QuoteLanguageID', 'reference LANGUAGE', 
             	default=1, label='', 
             	requires = IS_IN_DB(db, db.LANGUAGE.id, '%(LanguageCode)s', 
             	orderby=db.LANGUAGE.id)), 
         Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
         Field('DisplayName', 'string', label=''), 
-#				requires=[IS_LENGTH(maxsize=512)]),
 		Field('FirstName', 'string', label=''), 
-#				requires = IS_LENGTH(maxsize=128)),
 		Field('MiddleName', 'string', label=''),
-#				requires = IS_LENGTH(maxsize=128)),
 		Field('LastName', 'string', label=''),
-#				requires = IS_LENGTH(maxsize=128)),
 		Field('AKA', 'list:string', label=''),
-#				requires=IS_LIST_OF(IS_LENGTH(maxsize=256))),
 		Field('Biography', 'text', label=''), 
-#				requires=IS_LENGTH(maxsize=8192)),
 		Field('AuthorWikipediaLink', 'string', label=''),# requires = 
-#				[IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
-#				'\.wikipedia\.org/wiki/.{1,}')), 
-#				IS_LENGTH(maxsize=256)]),
 		Field('YearBorn', 'integer', label=''), 
-#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
 		Field('YearDied', 'integer', label=''),
-#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
 		Field('WorkName', 'string', label=''),
-#				requires = [IS_NOT_EMPTY(), IS_LENGTH(maxsize=1024)]),
 		Field('WorkSubtitle', 'string', label=''),
-#				requires = IS_LENGTH(maxsize=1024)),
 		Field('WorkDescription', 'text', label=''),
-#				requires = IS_LENGTH(maxsize=4096)),
 		Field('WorkWikipediaLink', 'string', label=''),
-#				requires = [IS_EMPTY_OR(IS_MATCH('(https://|http://)?[a-z]{2}'\
-#				'\.wikipedia\.org/wiki/.{1,}')), IS_LENGTH(maxsize=256)]),
 		Field('WorkNote', 'text', label=''),
-#				requires = IS_LENGTH(maxsize=4096)),
 		Field('YearPublished', 'integer', label=''),
-#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
         Field('YearWritten', 'integer', label=''),
-#				requires = IS_EMPTY_OR(IS_INT_IN_RANGE(-5000,2050))),
-		Field('Note', 'string', label='',
-        		requires = IS_LENGTH(maxsize=4096)),
+		Field('Note', 'string', label=''),
 		Field('AuthorTrID', 'integer'),
 		Field('WorkTrID', 'integer'),
 		col3={'AuthorWikipediaLink': \
@@ -102,7 +71,7 @@ def add_quote():
 			_id='QUOTE_Quote_Submit', _type='submit'), _id='QUOTE_Quote_Submit__row')
 	form_quote[0].insert(26, quote_submit)
 	
-	
+	# intentionally no way to submit the data here
 	
 	debug=''
 		
@@ -256,15 +225,6 @@ def connections():
 	return locals()
 
 
-def users():
-	"""
-	*** for testing purposes only***
-	"""
-	grid = SQLFORM.grid(db.USER, user_signature=False,
-		selectable=[('Delete', lambda ids: delete_multiple('USER', ids))])
-	return locals()
-
-
 def languages():
 	"""
 	*** for testing purposes only***
@@ -274,8 +234,8 @@ def languages():
 	return locals()
 	
 
-@auth.requires_login()
-def auth_user():
+#@auth.requires_login()
+def users():
 	"""
 	*** for testing purposes only***
 	"""
@@ -307,8 +267,5 @@ def delete_multiple(table, ids):
 		to_delete.delete()
 	elif table == 'LANGUAGE':
 		to_delete = db(db.LANGUAGE.id.belongs(ids))
-		to_delete.delete()
-	elif table == 'USER':
-		to_delete = db(db.USER.id.belongs(ids))
 		to_delete.delete()
 

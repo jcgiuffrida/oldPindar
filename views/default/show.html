@@ -7,7 +7,8 @@
   
 <!-- DataTables -->
 <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
-<style>.dataTables_wrapper .dataTables_filter {float: left;}</style>
+<style>.dataTables_wrapper .dataTables_filter {float: left;}
+body {background-color: #eee;}</style>
 <form>
    <label for="query"><b>Search: </b></label>
    <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
