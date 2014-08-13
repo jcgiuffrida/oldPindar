@@ -244,24 +244,5 @@ db.define_table('TRANSLATION',
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## after defining tables, uncomment below to enable auditing
-# auth.enable_record_versioning(db)
+auth.enable_record_versioning(db)

@@ -176,3 +176,130 @@ CREATE TABLE TRANSLATION(
     modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
 );
 success!
+timestamp: 2014-08-13T01:52:53.794592
+CREATE TABLE LANGUAGE_archive(
+    current_record INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    LanguageCode CHAR(3),
+    EnglishName CHAR(64),
+    NativeName CHAR(64),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.804899
+CREATE TABLE QUOTE_archive(
+    current_record INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Text TEXT,
+    QuoteLanguageID INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    IsOriginalLanguage CHAR(1),
+    IsDeleted CHAR(1),
+    Note TEXT,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.807188
+CREATE TABLE WORK_archive(
+    current_record INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    YearPublished INTEGER,
+    YearWritten INTEGER,
+    IsHidden CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.810177
+CREATE TABLE WORK_TR_archive(
+    current_record INTEGER REFERENCES WORK_TR (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    WorkID INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    LanguageID INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    WorkName CHAR(1024),
+    WorkSubtitle CHAR(1024),
+    WorkDescription TEXT,
+    WikipediaLink CHAR(256),
+    WorkNote TEXT,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.813623
+CREATE TABLE AUTHOR_archive(
+    current_record INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    YearBorn INTEGER,
+    YearDied INTEGER,
+    IsHidden CHAR(1),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.817721
+CREATE TABLE AUTHOR_TR_archive(
+    current_record INTEGER REFERENCES AUTHOR_TR (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    AuthorID INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE,
+    LanguageID INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE,
+    FirstName CHAR(128),
+    MiddleName CHAR(128),
+    LastName CHAR(128),
+    AKA TEXT,
+    DisplayName CHAR(512),
+    Biography TEXT,
+    WikipediaLink CHAR(256),
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.820580
+CREATE TABLE QUOTE_WORK_archive(
+    current_record INTEGER REFERENCES QUOTE_WORK (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    QuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    WorkID INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.823178
+CREATE TABLE WORK_AUTHOR_archive(
+    current_record INTEGER REFERENCES WORK_AUTHOR (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    WorkID INTEGER REFERENCES WORK (id) ON DELETE CASCADE,
+    AuthorID INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-13T01:52:53.826238
+CREATE TABLE TRANSLATION_archive(
+    current_record INTEGER REFERENCES TRANSLATION (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    OriginalQuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    TranslatedQuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    TranslatorID INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
