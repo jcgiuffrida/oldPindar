@@ -109,8 +109,17 @@ def user():
    			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
    			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.WORK_TR.WorkName,
    			db.WORK.YearPublished, db.AUTHOR_TR.DisplayName, db.WORK_TR.created_on)
+        quotes_edited = db((db.QUOTE.modified_by==auth.user_id) & 
+        	(db.QUOTE.modified_on!=db.QUOTE.created_on) & # not the first edit
+   			(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+   			(db.WORK._id==db.WORK_TR.WorkID) & 
+   			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+   			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+   			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+   			db.QUOTE.modified_on, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName)
     	return dict(form=auth(), quotes_added=quotes_added, authors_added=authors_added,
-        	works_added=works_added)
+        	works_added=works_added, quotes_edited=quotes_edited)
     return dict(form=auth())  
 
 

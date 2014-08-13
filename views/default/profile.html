@@ -65,9 +65,9 @@
 <table id="mytable" class="display" width="100%">
 	<thead>
 		<tr>
-			<td><b>Text</b></td>
-			<td><b>Author</b></td>
 			<td><b>Work</b></td>
+			<td><b>Year Published</b></td>
+			<td><b>Author</b></td>
 			<td><b>Date Added</b></td>
 		</tr>
 	</thead>
@@ -78,6 +78,28 @@
 			<td>{{=row.WORK.YearPublished}}</td>
 			<td>{{=row.AUTHOR_TR.DisplayName}}</td>
 			<td>{{=row.WORK_TR.created_on}}</td>
+		</tr>
+		{{pass}}
+	</tbody>
+</table>
+<hr>
+<h3>Quotes edited by {{=auth.user.username}}</h3>
+<table id="mytable" class="display" width="100%">
+	<thead>
+		<tr>
+			<td><b>Text</b></td>
+			<td><b>Author</b></td>
+			<td><b>Work</b></td>
+			<td><b>Date Edited</b></td>
+		</tr>
+	</thead>
+	<tbody>
+		{{for row in quotes_edited:}}
+		<tr>
+			<td>{{=row.QUOTE.Text}}</td>
+			<td>{{=row.AUTHOR_TR.DisplayName}}</td>
+			<td>{{=row.WORK_TR.WorkName}}</td>
+			<td>{{=row.QUOTE.modified_on}}</td>
 		</tr>
 		{{pass}}
 	</tbody>
