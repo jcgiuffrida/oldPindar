@@ -37,7 +37,6 @@ def _():
     # useful links to internal and external resources
     response.menu += [
         (SPAN('Menu', _class='highlighted'), False, URL('default', 'show'), [
-        (T('Add Data'), False, URL('manage', 'add_quote')),
         (T('Show All Data'), False, URL('default', 'index')),
         (T('Manage'), False, URL('manage', 'quotes'), [
         (T('Quotes'), False, URL('manage', 'quotes')),
@@ -108,7 +107,7 @@ def _():
               'http://stores.lulu.com/web2py'),
              ])
                 ]
-         )]
+         ), (T('Add Data'), False, URL('manage', 'add_quote'))]
 if DEVELOPMENT_MENU: _()
 
 if "auth" in locals(): auth.wikimenu() 
