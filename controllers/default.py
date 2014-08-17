@@ -187,15 +187,21 @@ def quotes():
 
 # unique page for each author
 def authors():
-	# what author?
-	a = db.AUTHOR_TR(request.args(0))
-	# if author is invalid, return to home
-	if not a:
-		redirect(URL('default', 'show'))
 	if auth.user:
 		lang = auth.user.PrimaryLanguageID
 	else:
 		lang = 1  # default is english
+	# what author?
+	if request.args(0)=='all':
+		authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+					(db.AUTHOR_TR.LanguageID==lang)).select(db.AUTHOR_TR.DisplayName,
+					db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, 
+					orderby=db.AUTHOR_TR.LastName, limitby=(0,10))
+		return locals()
+	a = db.AUTHOR_TR(request.args(0))
+	# if author is invalid, return to home
+	if not a:
+		redirect(URL('Pindar/default', 'authors', 'all'))
 	author = db((db.AUTHOR_TR._id==request.args(0)) & 
 			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
 			(db.AUTHOR_TR.LanguageID==lang)).select()
@@ -208,6 +214,8 @@ def authors():
 			limitby=(0,10))
 	quotes = db((db.WORK_AUTHOR.AuthorID==author_id) & 
 			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+			(db.WORK_TR.WorkID==db.WORK._id) & 
+			(db.WORK_TR.LanguageID==lang) & 
 			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
 			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
 			limitby=(0,10))
@@ -234,7 +242,8 @@ def works():
 			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
 			(db.AUTHOR_TR.LanguageID==lang)).select(orderby=db.AUTHOR_TR.DisplayName,
 			limitby=(0,10))
-	quotes = db((db.WORK_AUTHOR.WorkID==work_id) & 
+	quotes = db((db.WORK_TR._id==work_id) & 
+			(db.WORK_TR.WorkID==db.WORK._id) & 
 			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
 			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
 			limitby=(0,10))

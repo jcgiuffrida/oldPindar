@@ -1,5 +1,5 @@
 {{extend 'layout.html'}}
-
+{{if 'works' in locals():}}
 <h3>Author</h3>
 {{for a in author:}}
 {{=a.AUTHOR_TR.DisplayName}}
@@ -17,11 +17,22 @@
 <br/>
 <h4>Quotes</h4>
 {{for q in quotes:}}
-{{=q.QUOTE.Text}}&nbsp;&nbsp;&nbsp;&nbsp;(<a href="/Pindar/default/quotes/{{=q.QUOTE.id}}">View Quote</a>)
+{{=q.QUOTE.Text}}&nbsp;(<a href="/Pindar/default/works/{{=q.WORK_TR.id}}">{{=q.WORK_TR.WorkName}}</a>)&nbsp;(<a href="/Pindar/default/quotes/{{=q.QUOTE.id}}">View Quote</a>)
 <br/>
 <br/>
 {{pass}}
 
 <hr>
+
+
+{{else:}}
+<h3>Authors</h3>
+{{for a in authors:}}
+<a href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">{{=a.AUTHOR_TR.DisplayName}}</a>
+{{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}}
+<br/>
 {{pass}}
+{{pass}}
+<br/>
+<hr>
 {{=response.toolbar()}}
