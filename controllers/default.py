@@ -159,3 +159,88 @@ def data():
       LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
     """
     return dict(form=crud())
+
+
+# show the page for a quote
+def quotes():
+	# figure out what quote to display
+	q = db.QUOTE(request.args(0))
+	# if quote is invalid, return to home
+	if not q:
+		redirect(URL('default', 'show'))
+	if auth.user:
+		lang = auth.user.PrimaryLanguageID
+	else:
+		lang = 1  # default is english
+	quote = db((db.QUOTE._id==request.args(0)) & 
+			(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+			(db.WORK._id==db.WORK_TR.WorkID) & 
+			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+			(db.AUTHOR_TR.LanguageID==lang) & 
+			(db.WORK_TR.LanguageID==lang)).select(
+			db.QUOTE.Text, db.WORK_TR.WorkName, db.AUTHOR_TR.DisplayName,
+			db.WORK_TR._id, db.AUTHOR_TR._id)
+	return locals()
+
+# unique page for each author
+def authors():
+	# what author?
+	a = db.AUTHOR_TR(request.args(0))
+	# if author is invalid, return to home
+	if not a:
+		redirect(URL('default', 'show'))
+	if auth.user:
+		lang = auth.user.PrimaryLanguageID
+	else:
+		lang = 1  # default is english
+	author = db((db.AUTHOR_TR._id==request.args(0)) & 
+			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+			(db.AUTHOR_TR.LanguageID==lang)).select()
+	for a in author:
+		author_id = a.AUTHOR.id
+	works = db((db.WORK_AUTHOR.AuthorID==author_id) & 
+			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+			(db.WORK._id==db.WORK_TR.WorkID) & 
+			(db.WORK_TR.LanguageID==lang)).select(orderby=db.WORK_TR.WorkName,
+			limitby=(0,10))
+	quotes = db((db.WORK_AUTHOR.AuthorID==author_id) & 
+			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
+			limitby=(0,10))
+	return locals()
+
+# unique page for each work
+def works():
+	# what work?
+	w = db.WORK_TR(request.args(0))
+	# if work is invalid, return to home
+	if not w:
+		redirect(URL('default', 'show'))
+	if auth.user:
+		lang = auth.user.PrimaryLanguageID
+	else:
+		lang = 1  # default is english
+	work = db((db.WORK_TR._id==request.args(0)) & 
+			(db.WORK_TR.WorkID==db.WORK._id) & 
+			(db.WORK_TR.LanguageID==lang)).select()
+	for w in work:
+		work_id = w.WORK.id
+	authors = db((db.WORK_AUTHOR.WorkID==work_id) & 
+			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
+			(db.AUTHOR_TR.LanguageID==lang)).select(orderby=db.AUTHOR_TR.DisplayName,
+			limitby=(0,10))
+	quotes = db((db.WORK_AUTHOR.WorkID==work_id) & 
+			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
+			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
+			limitby=(0,10))
+	return locals()
+
+
+
+
+

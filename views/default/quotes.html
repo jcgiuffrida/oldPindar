@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+
+<h3>Quote</h3>
+{{for q in quote:}}
+{{=q.QUOTE.Text}}
+<br/>
+<a href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
+{{=q.AUTHOR_TR.DisplayName}}</a>
+<br/>
+<a href="/Pindar/default/works/{{=q.WORK_TR.id}}">
+{{=q.WORK_TR.WorkName}}</a>
+<hr>
+{{pass}}
+{{=response.toolbar()}}
