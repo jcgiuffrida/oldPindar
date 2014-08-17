@@ -1,5 +1,5 @@
 {{extend 'layout.html'}}
-
+{{if 'work' in locals():}}
 <h3>Work</h3>
 {{for w in work:}}
 {{=w.WORK_TR.WorkName}}
@@ -21,7 +21,17 @@ Published {{=w.WORK.YearPublished}}
 <br/>
 <br/>
 {{pass}}
-
 <hr>
+
+{{else:}}
+<h3>All Works</h3>
+{{for w in works:}}
+<a href="/Pindar/default/works/{{=w.WORK_TR.id}}">{{=w.WORK_TR.WorkName}}</a>
+({{=w.AUTHOR_TR.DisplayName}}, {{=w.WORK.YearPublished}})
+<br/>
 {{pass}}
+{{pass}}
+<br/>
+<hr>
+
 {{=response.toolbar()}}

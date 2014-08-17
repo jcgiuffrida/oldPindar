@@ -197,11 +197,14 @@ def authors():
 					(db.AUTHOR_TR.LanguageID==lang)).select(db.AUTHOR_TR.DisplayName,
 					db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, 
 					orderby=db.AUTHOR_TR.LastName, limitby=(0,10))
+		if request.vars['e']:
+			response.flash='Author ' + request.vars['e'] + ' was not found'
+		return locals()
 		return locals()
 	a = db.AUTHOR_TR(request.args(0))
-	# if author is invalid, return to home
+	# if author is invalid, show all authors and an error message
 	if not a:
-		redirect(URL('Pindar/default', 'authors', 'all'))
+		redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
 	author = db((db.AUTHOR_TR._id==request.args(0)) & 
 			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
 			(db.AUTHOR_TR.LanguageID==lang)).select()
@@ -223,15 +226,26 @@ def authors():
 
 # unique page for each work
 def works():
-	# what work?
-	w = db.WORK_TR(request.args(0))
-	# if work is invalid, return to home
-	if not w:
-		redirect(URL('default', 'show'))
 	if auth.user:
 		lang = auth.user.PrimaryLanguageID
 	else:
-		lang = 1  # default is english
+		lang = 1  # default is english# what work?
+	if request.args(0)=='all':
+		works = db((db.WORK_TR.WorkID==db.WORK._id) & 
+					(db.WORK_TR.LanguageID==lang) & 
+					(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+					(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+					(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+					(db.AUTHOR_TR.LanguageID==lang)).select(db.AUTHOR_TR.DisplayName,
+					db.WORK.YearPublished, db.WORK_TR.WorkName, db.WORK_TR._id, 
+					orderby=db.WORK_TR.WorkName, limitby=(0,10))
+		if request.vars['e']:
+			response.flash='Work ' + request.vars['e'] + ' was not found'
+		return locals()
+	w = db.WORK_TR(request.args(0))
+	# if work is invalid, show all works and an error message
+	if not w:
+		redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
 	work = db((db.WORK_TR._id==request.args(0)) & 
 			(db.WORK_TR.WorkID==db.WORK._id) & 
 			(db.WORK_TR.LanguageID==lang)).select()
