@@ -1,14 +1,28 @@
 {{extend 'layout.html'}}
 
 <h3>Quote</h3>
+<div class="object">
+<div>
 {{for q in quote:}}
 {{=q.QUOTE.Text}}
+</div>
+<button class="button-edit">Edit Quote</button>
+<div class="edit">{{=crud.update(db.QUOTE, q.QUOTE.id)}}</div>
 <br/>
-<a href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
+<br/>
+Author: <a href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
 {{=q.AUTHOR_TR.DisplayName}}</a>
 <br/>
-<a href="/Pindar/default/works/{{=q.WORK_TR.id}}">
+Work: <a href="/Pindar/default/works/{{=q.WORK_TR.id}}">
 {{=q.WORK_TR.WorkName}}</a>
 <hr>
 {{pass}}
+<script>
+$(document).ready(function(){
+	$('.edit').hide();
+	$('.object').on('click', '.button-edit', function(){
+		$(this).closest('.object').find('.edit').slideToggle();
+	});
+});
+</script>
 {{=response.toolbar()}}

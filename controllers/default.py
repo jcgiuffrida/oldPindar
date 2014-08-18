@@ -181,7 +181,7 @@ def quotes():
 			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
 			(db.AUTHOR_TR.LanguageID==lang) & 
 			(db.WORK_TR.LanguageID==lang)).select(
-			db.QUOTE.Text, db.WORK_TR.WorkName, db.AUTHOR_TR.DisplayName,
+			db.QUOTE.Text, db.QUOTE._id, db.WORK_TR.WorkName, db.AUTHOR_TR.DisplayName,
 			db.WORK_TR._id, db.AUTHOR_TR._id)
 	return locals()
 

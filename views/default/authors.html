@@ -1,13 +1,20 @@
 {{extend 'layout.html'}}
 {{if 'works' in locals():}}
 <h3>Author</h3>
+<div class="object">
+<div>
 {{for a in author:}}
 {{=a.AUTHOR_TR.DisplayName}}
 <br/>
 {{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}}
 {{pass}}
+</div>
+<button class="button-edit">Edit Author</button>
+<div class="edit">{{=crud.update(db.AUTHOR_TR, a.AUTHOR_TR.id)}}</div>
+</div>
 <br/>
 <br/>
+
 <h4>Works</h4>
 {{for w in works:}}
 <a href="/Pindar/default/works/{{=w.WORK_TR.id}}">
@@ -35,4 +42,12 @@
 {{pass}}
 <br/>
 <hr>
+<script>
+$(document).ready(function(){
+	$('.edit').hide();
+	$('.object').on('click', '.button-edit', function(){
+		$(this).closest('.object').find('.edit').slideToggle();
+	});
+});
+</script>
 {{=response.toolbar()}}
