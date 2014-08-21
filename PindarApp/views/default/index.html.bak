@@ -1,6 +1,0 @@
-{{extend 'layout.html'}}
-<h1>Menu<h1>
-{{=A('Add Quote', callback=URL('quote_form'))}}
-
-<h1>Available quotes</h1>
-{{=quotes}}
