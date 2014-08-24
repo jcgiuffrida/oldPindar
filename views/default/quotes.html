@@ -69,6 +69,12 @@ $(document).ready(function(){
 	$('.flag-submit').on('click', '.submit', function(e){
 		e.preventDefault();
 		var form = $(this).closest('.flag-submit');
+		// annoying but it seems we have to embed all data in the url for ajax requests
+		// controller can't find anything in request.post_vars where it's supposed to be
+		// also can't figure out how to return "success" or "error" from controller, except manually
+		// in the json
+		// also, we need to make this crap more extensible by incorporating it into a jquery plugin
+		// this is a ridiculous amount of code
 		$.ajax({
 			url: '/Pindar/default/flag?Type='+form.data('type')+'&FlagNote='+
 				form.find('textarea').val()+'&QuoteID='+form.closest('.object').data('id'),
@@ -76,10 +82,11 @@ $(document).ready(function(){
 			contentType: 'application/json',
 			dataType: 'json',
 			success: function(response) {
+				// use fa icons to indicate to user what's going on
 				if (response.status===200){
 					$('.btn-flag').find('button').removeClass('btn-default').addClass('btn-danger').html('<i class="fa fa-flag"></i>').addClass('disabled');
 				} else {
-					$('.btn-flag').find('button').html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').removeClass('btn-default').addClass('btn-warning').addClass('disabled');
+					$('.btn-flag').find('button').html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').removeClass('btn-default').addClass('btn-warning').addClass('disabled');  // need to tell user what went wrong
 				}
 			},
 			error: function(request, errorType, errorMessage) {
@@ -90,7 +97,7 @@ $(document).ready(function(){
 			beforeSend: function(){
 				$('.flag-submit').slideUp();
 				$('.btn-flag').find('ul').hide();
-				$('.btn-flag').find('button').html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>');
+				$('.btn-flag').find('button').html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>'); // pending icon
 			}
 		});
 		
