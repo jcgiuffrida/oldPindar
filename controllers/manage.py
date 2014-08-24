@@ -243,6 +243,15 @@ def users():
 	return locals()
 
 
+def flags():
+	"""
+	*** for testing purposes only***
+	"""
+	grid = SQLFORM.grid(db.FLAG, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('FLAG', ids))])
+	return locals()
+
+
 def delete_multiple(table, ids):
 	if table == 'QUOTE':
 		to_delete = db(db.QUOTE.id.belongs(ids))
@@ -267,5 +276,8 @@ def delete_multiple(table, ids):
 		to_delete.delete()
 	elif table == 'LANGUAGE':
 		to_delete = db(db.LANGUAGE.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'FLAG':
+		to_delete = db(db.FLAG.id.belongs(ids))
 		to_delete.delete()
 

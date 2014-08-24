@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 
 def show(): 
@@ -262,6 +263,37 @@ def works():
 			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
 			limitby=(0,10))
 	return locals()
+
+
+# flag quote
+# need to make this more extensible
+def flag():
+	if not request.vars.Type:
+		response = {'msg': 'no flag type specified', 'status': 501, 
+			'request': json.dumps(request.vars)}
+	elif not request.vars.QuoteID:
+		response = {'msg': 'no quote specified', 'status': 501,
+			'request': json.dumps(request.vars)}
+	else:
+		flagID = db.FLAG.insert(**db.FLAG._filter_fields(request.vars))
+		if flagID:
+			response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars), 'id': flagID}
+		else:
+			response = {'msg': "oops", 'status': 501, 'request': json.dumps(request.vars)}
+	return json.dumps(response)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

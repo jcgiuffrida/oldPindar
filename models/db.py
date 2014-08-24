@@ -243,6 +243,33 @@ db.define_table('TRANSLATION',
 			Field('TranslatorID', 'reference AUTHOR'))
 
 
+###---------------------- FLAG
+# the below tables allow any quote, work, or author to be flagged. which ID field is active
+# will be contextual. having them all in one table lets us see all flags at once and will
+# help if a work if flagged as offensive when in fact the author name is offensive, etc.
 
-## after defining tables, uncomment below to enable auditing
+db.define_table('FLAGTYPE',
+            Field('FlagName', 'string', required=True))
+
+db.define_table('FLAG',
+            Field('QuoteID', 'reference QUOTE'),  # this is not normal - suggestions?
+            Field('AuthorID', 'reference AUTHOR'),
+            Field('AuthorTrID', 'reference AUTHOR_TR'),
+            Field('WorkID', 'reference WORK'),
+            Field('WorkTrID', 'reference WORK_TR'),
+            Field('Type', 'reference FLAGTYPE', required=True),
+            Field('Active', 'boolean', default=True),
+            Field('FlagNote', 'string'))
+
+db.FLAG.Type.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.FLAGTYPE.id, '%(FlagName)s')]
+db.FLAG.created_by.readable=True
+db.FLAG.created_on.readable=True
+
+
+
+
+
+
+
+## !! we need to enable record versioning only on important tables (quotes, authors, works)
 auth.enable_record_versioning(db)

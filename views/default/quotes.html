@@ -1,13 +1,27 @@
 {{extend 'layout.html'}}
 
 <h3>Quote</h3>
-<div class="object">
+<div class="object" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
 <div>
 {{for q in quote:}}
 {{=q.QUOTE.Text}}
 </div>
 <button class="button-edit">Edit Quote</button>
+<div class="btn-group btn-flag">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="#" class="flag offensive">This quote is offensive</a></li>
+    <li><a href="#" class="flag incorrect">This quote is not correct</a></li>
+    <li><a href="#" class="flag duplicate">This quote is a duplicate</a></li>
+    <li><a href="#" class="flag">Something else...</a></li>
+  </ul>
+</div>
 <div class="edit">{{=crud.update(db.QUOTE, q.QUOTE.id)}}</div>
+<div class="flag-submit">
+<form><label for="complaint">What is wrong with this quote? (Optional)</label><textarea name="complaint" placeholder="Add a comment..."></textarea><button class="submit">Submit</button><button class="cancel">Cancel</button></form>
+</div>
 <br/>
 <br/>
 Author: <a href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
@@ -18,10 +32,68 @@ Work: <a href="/Pindar/default/works/{{=q.WORK_TR.id}}">
 <hr>
 {{pass}}
 <script>
+var user = {{if auth.user:}}{{=auth.user.id}}{{else:}}0{{pass}};
 $(document).ready(function(){
 	$('.edit').hide();
+	$('.flag-submit').hide();
 	$('.object').on('click', '.button-edit', function(){
 		$(this).closest('.object').find('.edit').slideToggle();
+	});
+	$('.btn-flag').on('click', 'a', function(e){
+		e.preventDefault();
+		var selection = $(this);
+		var type = -1;
+		if ($(this).hasClass('offensive')){
+			type = 1;
+		} else if ($(this).hasClass('incorrect')){
+			type = 2;
+		} else if ($(this).hasClass('duplicate')){
+			type = 3;
+		} else if ($(this).hasClass('flag')){
+			type = 4;
+		}
+		if (type === 3 & user===0){
+			// trigger login
+			alert("You must log in to do that!")
+			var current = window.location;
+			window.location.href = "/Pindar/default/user/login?_next=" + current;
+		} else {
+			// show space for comment
+			$('.flag-submit').slideDown().data('type', type);
+		}
+	});
+	$('.flag-submit').on('click', '.cancel', function(e){
+		e.preventDefault();
+		$('.flag-submit').slideUp();
+	});
+	$('.flag-submit').on('click', '.submit', function(e){
+		e.preventDefault();
+		var form = $(this).closest('.flag-submit');
+		$.ajax({
+			url: '/Pindar/default/flag?Type='+form.data('type')+'&FlagNote='+
+				form.find('textarea').val()+'&QuoteID='+form.closest('.object').data('id'),
+			type: 'POST',
+			contentType: 'application/json',
+			dataType: 'json',
+			success: function(response) {
+				if (response.status===200){
+					$('.btn-flag').find('button').removeClass('btn-default').addClass('btn-danger').html('<i class="fa fa-flag"></i>').addClass('disabled');
+				} else {
+					$('.btn-flag').find('button').html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').removeClass('btn-default').addClass('btn-warning').addClass('disabled');
+				}
+			},
+			error: function(request, errorType, errorMessage) {
+				// don't do anything with server errors yet
+				$('.btn-flag').find('button').html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').removeClass('btn-default').addClass('btn-warning').addClass('disabled');
+			},
+			timeout: 3000,
+			beforeSend: function(){
+				$('.flag-submit').slideUp();
+				$('.btn-flag').find('ul').hide();
+				$('.btn-flag').find('button').html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>');
+			}
+		});
+		
 	});
 });
 </script>
