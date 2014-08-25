@@ -1,38 +1,4 @@
-{{extend 'layout.html'}}
 
-<h3>Quote</h3>
-<div class="object" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
-<div>
-{{for q in quote:}}
-{{=q.QUOTE.Text}}
-</div>
-<button class="button-edit">Edit Quote</button>
-<div class="btn-group btn-flag">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
-  </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="#" class="flag offensive">This quote is offensive</a></li>
-    <li><a href="#" class="flag incorrect">This quote is not correct</a></li>
-    <li><a href="#" class="flag duplicate">This quote is a duplicate</a></li>
-    <li><a href="#" class="flag">Something else...</a></li>
-  </ul>
-</div>
-<div class="edit">{{=crud.update(db.QUOTE, q.QUOTE.id)}}</div>
-<div class="flag-submit">
-<form><label for="complaint">What is wrong with this quote? (Optional)</label><textarea name="complaint" placeholder="Add a comment..."></textarea><button class="submit">Submit</button><button class="cancel">Cancel</button></form>
-</div>
-<br/>
-<br/>
-Author: <a href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
-{{=q.AUTHOR_TR.DisplayName}}</a>
-<br/>
-Work: <a href="/Pindar/default/works/{{=q.WORK_TR.id}}">
-{{=q.WORK_TR.WorkName}}</a>
-<hr>
-{{pass}}
-<script>
-var user = {{if auth.user:}}{{=auth.user.id}}{{else:}}0{{pass}};
 $(document).ready(function(){
 	$('.edit').hide();
 	$('.flag-submit').hide();
@@ -58,7 +24,19 @@ $(document).ready(function(){
 			var current = window.location;
 			window.location.href = "/Pindar/default/user/login?_next=" + current;
 		} else {
+			var label = '';
+			if (type === 1){
+				label = 'What is offensive about this quote?'
+			} else if (type === 2){
+				label = 'What is incorrect about this quote?'
+			} else if (type === 3){
+				label = 'Of what quote is this a duplicate?'
+			} else if (type === 4){
+				label = 'What is wrong about this quote?'
+			}
+			label += ' (Optional)';
 			// show space for comment
+			$('.flag-submit').find('label').text(label);
 			$('.flag-submit').slideDown().data('type', type);
 		}
 	});
@@ -103,5 +81,3 @@ $(document).ready(function(){
 		
 	});
 });
-</script>
-{{=response.toolbar()}}
