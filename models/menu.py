@@ -23,6 +23,7 @@ response.google_analytics_id = None
 #########################################################################
 
 response.menu = []
+response.usermenu = []
 
 DEVELOPMENT_MENU = True
 
@@ -35,79 +36,8 @@ def _():
     app = request.application
     ctr = request.controller
     # useful links to internal and external resources
-    response.menu += [
-        (SPAN('Menu', _class='highlighted'), False, URL('default', 'show'), [
-        (T('Show All Data'), False, URL('default', 'index')),
-        (T('Manage'), False, URL('manage', 'quotes'), [
-        (T('Quotes'), False, URL('manage', 'quotes')),
-        (T('Authors'), False, URL('manage', 'authors')),
-        (T('Works'), False, URL('manage', 'works')),
-        (T('Connections'), False, URL('manage', 'connections')),
-        (T('Languages'), False, URL('manage', 'languages')),
-        (T('Users'), False, URL('manage', 'users')),
-        ]),
-        (T('This App'), False, URL('admin', 'default', 'design/%s' % app), [
-        (T('Shell'), False, URL('admin', 'shell', 'index/%s' % app)),
-        (T('Controller'), False,
-         URL(
-         'admin', 'default', 'edit/%s/controllers/%s.py' % (app, ctr))),
-        (T('View'), False,
-         URL(
-         'admin', 'default', 'edit/%s/views/%s' % (app, response.view))),
-        (T('Layout'), False,
-         URL(
-         'admin', 'default', 'edit/%s/views/layout.html' % app)),
-        (T('Stylesheet'), False,
-         URL(
-         'admin', 'default', 'edit/%s/static/css/web2py.css' % app)),
-        (T('DB Model'), False,
-         URL(
-         'admin', 'default', 'edit/%s/models/db.py' % app)),
-        (T('Menu Model'), False,
-         URL(
-         'admin', 'default', 'edit/%s/models/menu.py' % app)),
-        (T('Database'), False, URL(app, 'appadmin', 'index')),
-        (T('Errors'), False, URL(
-         'admin', 'default', 'errors/' + app)),
-        (T('About'), False, URL(
-         'admin', 'default', 'about/' + app)),
-        ]),
-            (T('Documentation'), False, 'http://www.web2py.com/book', [
-             (T('Preface'), False,
-              'http://www.web2py.com/book/default/chapter/00'),
-             (T('Introduction'), False,
-              'http://www.web2py.com/book/default/chapter/01'),
-             (T('Python'), False,
-              'http://www.web2py.com/book/default/chapter/02'),
-             (T('Overview'), False,
-              'http://www.web2py.com/book/default/chapter/03'),
-             (T('The Core'), False,
-              'http://www.web2py.com/book/default/chapter/04'),
-             (T('The Views'), False,
-              'http://www.web2py.com/book/default/chapter/05'),
-             (T('Database'), False,
-              'http://www.web2py.com/book/default/chapter/06'),
-             (T('Forms and Validators'), False,
-              'http://www.web2py.com/book/default/chapter/07'),
-             (T('Email and SMS'), False,
-              'http://www.web2py.com/book/default/chapter/08'),
-             (T('Access Control'), False,
-              'http://www.web2py.com/book/default/chapter/09'),
-             (T('Services'), False,
-              'http://www.web2py.com/book/default/chapter/10'),
-             (T('Ajax Recipes'), False,
-              'http://www.web2py.com/book/default/chapter/11'),
-             (T('Components and Plugins'), False,
-              'http://www.web2py.com/book/default/chapter/12'),
-             (T('Deployment Recipes'), False,
-              'http://www.web2py.com/book/default/chapter/13'),
-             (T('Other Recipes'), False,
-              'http://www.web2py.com/book/default/chapter/14'),
-             (T('Buy this book'), False,
-              'http://stores.lulu.com/web2py'),
-             ])
-                ]
-         ), (T('Add Data'), False, URL('manage', 'add_quote'))]
+
+
 if DEVELOPMENT_MENU: _()
 
 if "auth" in locals(): auth.wikimenu() 
