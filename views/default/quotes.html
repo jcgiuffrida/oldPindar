@@ -1,35 +1,55 @@
 {{extend 'layout.html'}}
 
-<h3>Quote</h3>
-<div class="object" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
-<div>
-{{for q in quote:}}
-{{=q.QUOTE.Text}}
-</div>
-<button class="btn btn-info button-edit">Edit Quote</button>
-<div class="btn-group btn-flag">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
-  </button>
-  <ul class="dropdown-menu" role="menu">
-    <li><a href="#" class="flag offensive">This quote is offensive</a></li>
-    <li><a href="#" class="flag incorrect">This quote is not correct</a></li>
-    <li><a href="#" class="flag duplicate">This quote is a duplicate</a></li>
-    <li><a href="#" class="flag">Something else...</a></li>
-  </ul>
-</div>
-<div class="edit">{{=crud.update(db.QUOTE, q.QUOTE.id)}}</div>
-<div class="flag-submit">
-<form><label for="complaint"></label><textarea name="complaint" placeholder="Add a comment..."></textarea><button class="submit">Submit</button><button class="cancel">Cancel</button></form>
-</div>
-<br/>
-<br/>
-Author: <a href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
-{{=q.AUTHOR_TR.DisplayName}}</a>
-<br/>
-Work: <a href="/Pindar/default/works/{{=q.WORK_TR.id}}">
-{{=q.WORK_TR.WorkName}}</a>
-<hr>
-{{pass}}
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		<div class="object">
+			<div class="object-data panel panel-default" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
+				<div class="panel-heading">
+					<h3 class="panel-title">Quote</h3>
+				</div>
+				<div class="panel-body">
+					<p>{{for q in quote:}}{{=q.QUOTE.Text}}</p>
+					<p>
+						<a class="btn btn-primary" href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
+						{{=q.AUTHOR_TR.DisplayName}}</a>
+						<a class="btn btn-primary" href="/Pindar/default/works/{{=q.WORK_TR.id}}">
+						{{=q.WORK_TR.WorkName}}</a>
+						{{pass}}
+					</p>
+					<button class="btn btn-default button-edit">Edit</button>
+					<div class="btn-group btn-flag">
+						<button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+							<i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
+						</button>
+					  <ul class="dropdown-menu" role="menu">
+					    <li><a href="#" class="flag offensive">This quote is offensive</a></li>
+					    <li><a href="#" class="flag incorrect">This quote is not correct</a></li>
+					    <li><a href="#" class="flag duplicate">This quote is a duplicate</a></li>
+					    <li><a href="#" class="flag">Something else...</a></li>
+					  </ul>
+					</div>
+				</div>
+			</div><!--/.object-data -->
+			<div class="panel object-action" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
+				<div class="edit">
+					{{=crud.update(db.QUOTE, q.QUOTE.id)}}
+				</div>
+				<div class="flag-submit">
+					<form role="form">
+						<div class="form-group">
+							<label for="complaint"></label>
+							<textarea class="form-control" id="complaint" placeholder="Add a comment..."></textarea>
+						</div>
+						<div class="form-group">
+							<button class="submit">Submit</button>
+							<button class="cancel">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div><!--/.object-action -->
+		</div><!--/.object -->
+		{{=response.toolbar()}}
+	</div>
+</div><!--/.row -->
+
 <script type="text/javascript" src='/Pindar/static/js/quotes.js'></script>
-{{=response.toolbar()}}

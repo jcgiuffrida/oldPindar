@@ -1,13 +1,16 @@
 
 $(document).ready(function(){
-	$('.edit').hide();
-	$('.flag-submit').hide();
+	$('.object-action').hide();
+	$('.object-action>div').hide();
 	$('.object').on('click', '.button-edit', function(){
-		$(this).closest('.object').find('.edit').slideToggle();
+		$(this).closest('.object').find('.flag-submit').hide();
+		$(this).closest('.object').find('.edit').show();
+		$(this).closest('.object').find('.object-action').slideToggle();
 	});
 	$('.btn-flag').on('click', 'a', function(e){
 		e.preventDefault();
 		var selection = $(this);
+		var object = selection.closest('.object');
 		var type = -1;
 		if ($(this).hasClass('offensive')){
 			type = 1;
@@ -37,12 +40,14 @@ $(document).ready(function(){
 			label += ' (Optional)';
 			// show space for comment
 			$('.flag-submit').find('label').text(label);
-			$('.flag-submit').slideDown().data('type', type);
+			object.find('.edit').hide();
+			object.find('.flag-submit').show().data('type', type);
+			object.find('.object-action').slideDown();
 		}
 	});
 	$('.flag-submit').on('click', '.cancel', function(e){
 		e.preventDefault();
-		$('.flag-submit').slideUp();
+		$(this).closest('.object-action').slideUp();
 	});
 	$('.flag-submit').on('click', '.submit', function(e){
 		e.preventDefault();
@@ -53,29 +58,35 @@ $(document).ready(function(){
 		// in the json
 		// also, we need to make this crap more extensible by incorporating it into a jquery plugin
 		// this is a ridiculous amount of code
+		var button = $(this).closest('.object').find('.btn-flag>.btn');
 		$.ajax({
 			url: '/Pindar/default/flag?Type='+form.data('type')+'&FlagNote='+
-				form.find('textarea').val()+'&QuoteID='+form.closest('.object').data('id'),
+				form.find('textarea').val()+'&QuoteID='+form.closest('.object-action').data('id'),
 			type: 'POST',
 			contentType: 'application/json',
 			dataType: 'json',
 			success: function(response) {
 				// use fa icons to indicate to user what's going on
 				if (response.status===200){
-					$('.btn-flag').find('button').removeClass('btn-default').addClass('btn-danger').html('<i class="fa fa-flag"></i>').addClass('disabled');
+					button.removeClass('btn-default').addClass('btn-danger').
+						html('<i class="fa fa-flag"></i>').addClass('disabled');
 				} else {
-					$('.btn-flag').find('button').html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').removeClass('btn-default').addClass('btn-warning').addClass('disabled');  // need to tell user what went wrong
+					button.html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').
+						removeClass('btn-default').addClass('btn-warning').addClass('disabled'); 
+					// need to tell user what went wrong
 				}
 			},
 			error: function(request, errorType, errorMessage) {
 				// don't do anything with server errors yet
-				$('.btn-flag').find('button').html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').removeClass('btn-default').addClass('btn-warning').addClass('disabled');
+				button.html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').
+					removeClass('btn-default').addClass('btn-warning').addClass('disabled');
 			},
 			timeout: 3000,
 			beforeSend: function(){
-				$('.flag-submit').slideUp();
-				$('.btn-flag').find('ul').hide();
-				$('.btn-flag').find('button').html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>'); // pending icon
+				button.closest('.object').find('.object-action').slideUp();
+				button.find('ul').hide();
+				button.html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>');
+					// pending icon
 			}
 		});
 		

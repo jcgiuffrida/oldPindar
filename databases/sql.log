@@ -359,3 +359,26 @@ CREATE TABLE FLAG_archive(
     modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
 );
 success!
+timestamp: 2014-08-25T23:35:42.438719
+CREATE TABLE RATING(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rating DOUBLE,
+    QuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!
+timestamp: 2014-08-25T23:35:42.455932
+CREATE TABLE RATING_archive(
+    current_record INTEGER REFERENCES RATING (id) ON DELETE CASCADE,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rating DOUBLE,
+    QuoteID INTEGER REFERENCES QUOTE (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    created_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL,
+    modified_on TIMESTAMP,
+    modified_by INTEGER REFERENCES auth_user (id) ON DELETE SET NULL
+);
+success!

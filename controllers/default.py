@@ -246,7 +246,10 @@ def works():
 	w = db.WORK_TR(request.args(0))
 	# if work is invalid, show all works and an error message
 	if not w:
-		redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
+		if not request.args(0):
+			redirect(URL('Pindar/default', 'works', 'all'))
+		else:
+			redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
 	work = db((db.WORK_TR._id==request.args(0)) & 
 			(db.WORK_TR.WorkID==db.WORK._id) & 
 			(db.WORK_TR.LanguageID==lang)).select()
