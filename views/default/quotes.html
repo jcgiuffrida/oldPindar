@@ -1,14 +1,46 @@
 {{extend 'layout.html'}}
+{{block head}}
+<style>
+.btn-rate span.star {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  font-size:1.2em;
+  float:right;
+}
+.btn-rate li {
+  cursor: pointer;
+  min-width: 100px;
+}
+.btn-rate ul {
+	min-width: 115px;
+}
+.btn-rate span.star:before {
+  content: "\f006";
+  padding: 0 6px;
+  margin: 0 -4px;
+  color: #777777;
+}
+.btn-rate span.star:hover:before,
+.btn-rate span.star:hover ~ span.star:before {
+  content: "\f005";
+  color: #175fdd;
+}
+
+
+</style>
+{{end}}
 
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
-		<div class="object">
-			<div class="object-data panel panel-default" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
+		<div class="object" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
+			<div class="object-data panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Quote</h3>
 				</div>
 				<div class="panel-body">
-					<p>{{for q in quote:}}{{=q.QUOTE.Text}}</p>
+					<p class="lead">{{for q in quote:}}{{=q.QUOTE.Text}}</p>
 					<p>
 						<a class="btn btn-primary" href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
 						{{=q.AUTHOR_TR.DisplayName}}</a>
@@ -18,7 +50,7 @@
 					</p>
 					<button class="btn btn-default button-edit">Edit</button>
 					<div class="btn-group btn-flag">
-						<button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 							<i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
 						</button>
 					  <ul class="dropdown-menu" role="menu">
@@ -28,9 +60,25 @@
 					    <li><a href="#" class="flag">Something else...</a></li>
 					  </ul>
 					</div>
+					<div class="btn-group btn-rate">
+						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+							Rate <i class="fa fa-caret-down"></i>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li>
+								<div class="text-center">
+									<span data-star="5" class="star"></span>
+									<span data-star="4" class="star"></span>
+									<span data-star="3" class="star"></span>
+									<span data-star="2" class="star"></span>
+									<span data-star="1" class="star"></span>
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div><!--/.object-data -->
-			<div class="panel object-action" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
+			<div class="panel object-action" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}" style="display:none;">
 				<div class="edit">
 					{{=crud.update(db.QUOTE, q.QUOTE.id)}}
 				</div>

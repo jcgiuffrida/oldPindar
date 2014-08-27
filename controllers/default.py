@@ -277,6 +277,9 @@ def flag():
 	elif not request.vars.QuoteID:
 		response = {'msg': 'no quote specified', 'status': 501,
 			'request': json.dumps(request.vars)}
+	elif not auth.user and request.vars.Type==3:
+		response = {'msg': 'no user specified', 'status': 501,
+			'request': json.dumps(request.vars)}
 	else:
 		flagID = db.FLAG.insert(**db.FLAG._filter_fields(request.vars))
 		if flagID:
@@ -286,19 +289,24 @@ def flag():
 	return json.dumps(response)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# rate quote
+@auth.requires_login()
+def rate():
+	if not request.vars.Rating:
+		response = {'msg': 'no rating specified', 'status': 501, 
+			'request': json.dumps(request.vars)}
+	elif not request.vars.QuoteID:
+		response = {'msg': 'no quote specified', 'status': 501,
+			'request': json.dumps(request.vars)}
+	elif not auth.user:
+		response = {'msg': 'no user specified', 'status': 501,
+			'request': json.dumps(request.vars)}
+	else:
+		ratingID = db.RATING.insert(**db.RATING._filter_fields(request.vars))
+		if ratingID:
+			response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars), 'id': ratingID}
+		else:
+			response = {'msg': "oops", 'status': 501, 'request': json.dumps(request.vars)}
+	return json.dumps(response)
 
 

@@ -269,16 +269,21 @@ db.FLAG.created_on.readable=True
 ###---------------------- RATING
 
 db.define_table('RATING',
-            Field('rating', 'decimal(2,1)', required=True),
+            Field('Rating', 'decimal(2,1)', required=True),
             Field('QuoteID', 'reference QUOTE', required=True),
             auth_signature)
 
-db.RATING.rating.requires = [IS_NOT_EMPTY(), IS_DECIMAL_IN_RANGE(0,5,dot=".")]
+db.RATING.Rating.requires = [IS_NOT_EMPTY(), IS_DECIMAL_IN_RANGE(0,5,dot=".")]
 db.RATING.QuoteID.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.QUOTE.id, '%(Text)s')]
+db.RATING.created_by.readable=True
+db.RATING.created_on.readable=True
+db.RATING.modified_by.readable=True
+db.RATING.modified_on.readable=True
 
 
-
-
+###---------------------- TAG
+db.define_table('TAG',
+            Field('Name'),format='%(Name)s')
 
 
 
