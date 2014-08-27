@@ -1,53 +1,85 @@
 {{extend 'layout.html'}}
-{{if 'works' in locals():}}
-<h3>Author</h3>
-<div class="object">
-<div>
-{{for a in author:}}
-{{=a.AUTHOR_TR.DisplayName}}
-<br/>
-{{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}}
-{{pass}}
-</div>
-<button class="button-edit">Edit Author</button>
-<div class="edit">{{=crud.update(db.AUTHOR_TR, a.AUTHOR_TR.id)}}</div>
-</div>
-<br/>
-<br/>
+{{block head}}{{end}}
 
-<h4>Works</h4>
-{{for w in works:}}
-<a href="/Pindar/default/works/{{=w.WORK_TR.id}}">
-{{=w.WORK_TR.WorkName}}</a>
-<br/>
-{{pass}}
-<br/>
-<h4>Quotes</h4>
-{{for q in quotes:}}
-{{=q.QUOTE.Text}}&nbsp;(<a href="/Pindar/default/works/{{=q.WORK_TR.id}}">{{=q.WORK_TR.WorkName}}</a>)&nbsp;(<a href="/Pindar/default/quotes/{{=q.QUOTE.id}}">View Quote</a>)
-<br/>
-<br/>
-{{pass}}
-
-<hr>
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		{{if 'works' in locals():}}
+		<br>
+		{{for a in author:}}
+		<div class="object" data-id="{{=a.AUTHOR_TR.id}}">
+			<div class="object-data panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Author</h3>
+				</div>
+				<div class="panel-body">
+					<p class="lead text-center">{{=a.AUTHOR_TR.DisplayName}}</p>
+					<p class="text-center">{{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}}</p>
+					<p class="small">{{=a.AUTHOR_TR.Biography}}</p>
+					<button class="btn btn-default button-edit">Edit</button>
+					{{if a.AUTHOR_TR.WikipediaLink:}}
+						<a class="btn btn-default pull-right" href="{{=a.AUTHOR_TR.WikipediaLink}}" target="_blank">Wikipedia</a>
+					{{pass}}
+				</div>
+			</div><!--/.panel -->
+			<div class="edit">
+				{{=crud.update(db.AUTHOR_TR, a.AUTHOR_TR.id)}}
+			</div>
+		</div><!--/.object -->
+		{{pass}}
+		<br/>
+		<br/>
 
 
-{{else:}}
-<h3>All Authors</h3>
-{{for a in authors:}}
-<a href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">{{=a.AUTHOR_TR.DisplayName}}</a>
-{{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}}
-<br/>
-{{pass}}
-{{pass}}
-<br/>
-<hr>
+		<h4>Works by {{for a in author:}}{{=a.AUTHOR_TR.DisplayName}}{{pass}}</h4>
+		<div class="row">
+			<div class="list-group col-md-8">
+				{{for w in works:}}
+				<a class="list-group-item" href="/Pindar/default/works/{{=w.WORK_TR.id}}">
+					{{=w.WORK_TR.WorkName}} ({{=w.WORK.YearPublished}})
+					<span class="badge">{{=w[quotecount]}} quote{{if w[quotecount]==1:}} {{else:}}s{{pass}}</span>
+				</a>
+				{{pass}}
+			</div>
+		</div>
+
+		<h4>Quotes by {{for a in author:}}{{=a.AUTHOR_TR.DisplayName}}{{pass}}</h4>
+		<div class="row">
+			<div class="list-group col-md-8">
+				{{for q in quotes:}}
+				<a class="list-group-item" href="/Pindar/default/quotes/{{=q.QUOTE.id}}">
+					{{=q.QUOTE.Text}}
+					<p class="small text-right">{{=q.WORK_TR.WorkName}}</p>
+				</a>
+				{{pass}}
+			</div>
+		</div>
+
+		<hr>
+
+
+		{{else:}}
+		<h3>All Authors</h3>
+		<div class="row">
+			<div class="list-group col-md-8">
+				{{for a in authors:}}
+				<a class="list-group-item" href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">
+					{{=a.AUTHOR_TR.DisplayName}} ({{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}})
+					<span class="badge">{{=a[workcount]}} work{{if a[workcount]==1:}} {{else:}}s{{pass}}</span>
+				</a>
+				{{pass}}
+			</div>
+		</div>
+		{{pass}}
+		<br/>
+		<hr>
+		{{=response.toolbar()}}
+	</div>
+</div><!--/.row -->
 <script>
-$(document).ready(function(){
-	$('.edit').hide();
-	$('.object').on('click', '.button-edit', function(){
-		$(this).closest('.object').find('.edit').slideToggle();
+	$(document).ready(function(){
+		$('.edit').hide();
+		$('.object').on('click', '.button-edit', function(){
+			$(this).closest('.object').find('.edit').slideToggle();
+		});
 	});
-});
 </script>
-{{=response.toolbar()}}

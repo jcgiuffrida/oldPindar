@@ -1,45 +1,84 @@
 {{extend 'layout.html'}}
-{{if 'work' in locals():}}
-<h3>Work</h3>
-<div class="object">
-<div>
-{{for w in work:}}
-{{=w.WORK_TR.WorkName}}
-<br/>
-Published {{=w.WORK.YearPublished}}
-{{pass}}
-</div>
-<br/>
-<button class="button-edit">Edit Work</button>
-<div class="edit">{{=crud.update(db.WORK_TR, w.WORK_TR.id)}}</div>
-<br/>
-</div>
+{{block head}}{{end}}
 
-<h4>Authors</h4>
-{{for a in authors:}}
-<a href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">
-{{=a.AUTHOR_TR.DisplayName}}</a>
-<br/>
-{{pass}}
-<br/>
-<h4>Quotes</h4>
-{{for q in quotes:}}
-{{=q.QUOTE.Text}}&nbsp;&nbsp;&nbsp;&nbsp;(<a href="/Pindar/default/quotes/{{=q.QUOTE.id}}">View Quote</a>)
-<br/>
-<br/>
-{{pass}}
-<hr>
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		{{if 'work' in locals():}}
+		<br>
+		{{for w in work:}}
+		{{workid = w.WORK_TR.id}}
+		<div class="object" data-id="{{=workid}}">
+			<div class="object-data panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Work</h3>
+				</div>
+				<div class="panel-body">
+					<p class="lead text-center">{{=w.WORK_TR.WorkName}}</p>
+					<p class="text-center">Published {{=w.WORK.YearPublished}}</p>
+					<p class="text-center">
+						{{for a in authors:}}
+						<a class="btn btn-primary" href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">
+							{{=a.AUTHOR_TR.DisplayName}}
+						</a>
+						{{pass}}
+					</p>
+					<p class="small">{{=w.WORK_TR.WorkDescription}}</p>
+					<button class="btn btn-default button-edit">Edit</button>
+					{{if w.WORK_TR.WikipediaLink:}}
+						<a class="btn btn-default pull-right" href="{{=w.WORK_TR.WikipediaLink}}" target="_blank">Wikipedia</a>
+					{{pass}}
+				</div>
+			</div><!--/.panel -->
+			<div class="edit">{{=crud.update(db.WORK_TR, w.WORK_TR.id)}}</div>
+		</div><!--/.object -->
+		{{pass}}
+		<br/>
+		<br/>
 
-{{else:}}
-<h3>All Works</h3>
-{{for w in works:}}
-<a href="/Pindar/default/works/{{=w.WORK_TR.id}}">{{=w.WORK_TR.WorkName}}</a>
-({{=w.AUTHOR_TR.DisplayName}}, {{=w.WORK.YearPublished}})
-<br/>
-{{pass}}
-{{pass}}
-<br/>
-<hr>
+
+		<h4>Quotes in <em>{{for w in work:}}{{=w.WORK_TR.WorkName}}{{pass}}</em></h4>
+		<div class="row">
+			<div class="list-group col-md-8">
+				{{for q in quotes:}}
+				<a class="list-group-item" href="/Pindar/default/quotes/{{=q.QUOTE.id}}">
+					{{=q.QUOTE.Text}}
+				</a>
+				{{pass}}
+			</div>
+			<hr>
+		</div>
+
+
+		{{pass}}
+		{{if not 'workid' in locals():}}
+		{{workid=0}}
+		{{pass}}
+		<h3>{{if 'work' in locals():}}Other{{else:}}All{{pass}} Works</h3>
+		<div class="row">
+			<div class="list-group col-md-8">
+				{{for w in works:}}
+					{{if not w.WORK_TR.id==workid:}}
+						<a class="list-group-item" href="/Pindar/default/works/{{=w.WORK_TR.id}}">
+							{{=w.WORK_TR.WorkName}} ({{=w.WORK.YearPublished}})
+							<span class="badge">{{=w[quotecount]}} quote{{if w[quotecount]==1:}} {{else:}}s{{pass}}</span>
+							<p class="small">{{=w.AUTHOR_TR.DisplayName}}</p>
+						</a>
+
+					{{pass}}
+				{{pass}}
+			</div>
+		</div>
+		{{pass}}
+		<br/>
+		<hr>
+		{{=response.toolbar()}}
+	</div>
+</div><!--/.row -->
+
+
+
+
+
 <script>
 $(document).ready(function(){
 	$('.edit').hide();
@@ -48,4 +87,3 @@ $(document).ready(function(){
 	});
 });
 </script>
-{{=response.toolbar()}}

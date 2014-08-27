@@ -15,7 +15,7 @@ def show():
    	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
    		db.LANGUAGE.EnglishName, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
    		db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.WORK.YearPublished,
-   		db.QUOTE.IsOriginalLanguage)
+   		db.QUOTE.IsOriginalLanguage, db.QUOTE._id)
    langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
    return dict(results1=query1, langs=langs) 
 
@@ -194,10 +194,12 @@ def authors():
 		lang = 1  # default is english
 	# what author?
 	if request.args(0)=='all':
+		workcount = db.WORK_AUTHOR.AuthorID.count()
 		authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-					(db.AUTHOR_TR.LanguageID==lang)).select(db.AUTHOR_TR.DisplayName,
-					db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, 
-					orderby=db.AUTHOR_TR.LastName, limitby=(0,10))
+					(db.AUTHOR_TR.LanguageID==lang) &
+					(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id)).select(db.AUTHOR_TR.DisplayName,
+					db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, workcount, 
+					orderby=db.AUTHOR_TR.LastName, limitby=(0,10), groupby=db.AUTHOR_TR.DisplayName)
 		if request.vars['e']:
 			response.flash='Author ' + request.vars['e'] + ' was not found'
 		return locals()
@@ -205,17 +207,22 @@ def authors():
 	a = db.AUTHOR_TR(request.args(0))
 	# if author is invalid, show all authors and an error message
 	if not a:
-		redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
+		if not request.args(0):
+			redirect(URL('Pindar/default', 'authors', 'all'))
+		else:
+			redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
 	author = db((db.AUTHOR_TR._id==request.args(0)) & 
 			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
 			(db.AUTHOR_TR.LanguageID==lang)).select()
 	for a in author:
 		author_id = a.AUTHOR.id
+	quotecount = db.QUOTE_WORK.QuoteID.count()
 	works = db((db.WORK_AUTHOR.AuthorID==author_id) & 
 			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
 			(db.WORK._id==db.WORK_TR.WorkID) & 
-			(db.WORK_TR.LanguageID==lang)).select(orderby=db.WORK_TR.WorkName,
-			limitby=(0,10))
+			(db.WORK_TR.LanguageID==lang) & 
+			(db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
+			orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK_TR._id)
 	quotes = db((db.WORK_AUTHOR.AuthorID==author_id) & 
 			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
 			(db.WORK_TR.WorkID==db.WORK._id) & 
@@ -231,15 +238,17 @@ def works():
 		lang = auth.user.PrimaryLanguageID
 	else:
 		lang = 1  # default is english# what work?
+	quotecount = db.QUOTE_WORK.QuoteID.count()
+	works = db((db.WORK_TR.WorkID==db.WORK._id) & 
+				(db.WORK_TR.LanguageID==lang) & 
+				(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+				(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+				(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+				(db.AUTHOR_TR.LanguageID==lang) & 
+				(db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.AUTHOR_TR.DisplayName,
+				db.WORK.YearPublished, db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
+				orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK._id)
 	if request.args(0)=='all':
-		works = db((db.WORK_TR.WorkID==db.WORK._id) & 
-					(db.WORK_TR.LanguageID==lang) & 
-					(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-					(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-					(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-					(db.AUTHOR_TR.LanguageID==lang)).select(db.AUTHOR_TR.DisplayName,
-					db.WORK.YearPublished, db.WORK_TR.WorkName, db.WORK_TR._id, 
-					orderby=db.WORK_TR.WorkName, limitby=(0,10))
 		if request.vars['e']:
 			response.flash='Work ' + request.vars['e'] + ' was not found'
 		return locals()
@@ -250,9 +259,12 @@ def works():
 			redirect(URL('Pindar/default', 'works', 'all'))
 		else:
 			redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
+	quotecount = db.QUOTE_WORK.QuoteID.count()
 	work = db((db.WORK_TR._id==request.args(0)) & 
 			(db.WORK_TR.WorkID==db.WORK._id) & 
-			(db.WORK_TR.LanguageID==lang)).select()
+			(db.WORK_TR.LanguageID==lang) & 
+			(db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
+			groupby=db.WORK._id)
 	for w in work:
 		work_id = w.WORK.id
 	authors = db((db.WORK_AUTHOR.WorkID==work_id) & 

@@ -7,8 +7,17 @@
   
 <!-- DataTables -->
 <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
-<style>.dataTables_wrapper .dataTables_filter {float: left;}
-body {background-color: #eee;}</style>
+<style>
+.dataTables_wrapper .dataTables_filter {
+	float: left;
+}
+body {
+	background-color: #eee;
+}
+#mytable tr {
+	cursor: pointer;
+}
+</style>
 <form>
    <label for="query"><b>Search: </b></label>
    <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
@@ -19,7 +28,7 @@ body {background-color: #eee;}</style>
    {{ pass }}
 	</select>
 </form>
-<div id="target"></div>
+<div class="row" id="target"></div>
 <br/><br/>
 <hr>
 <h3>All Quotes</h3>
@@ -35,7 +44,7 @@ body {background-color: #eee;}</style>
 	</thead>
 	<tbody>
 		{{for row in results1:}}
-		<tr>
+		<tr data-id="{{=row.QUOTE.id}}">
 			<td>{{if len(row.QUOTE.Text) > 250:}}
 			{{=row.QUOTE.Text[:250]}}...
 			{{else:}}
@@ -70,6 +79,10 @@ $(document).ready(function(){
 		],
 		"ordering": false,
 		"dom": '<<"clear"f>p<t>ip>'
+	});
+	$('#mytable').on('click', 'tr', function(){
+		quoteid = $(this).data('id');
+		window.location.href = "/Pindar/default/quotes/" + quoteid;
 	});
 });
 </script>
