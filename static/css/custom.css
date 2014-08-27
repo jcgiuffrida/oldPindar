@@ -5,6 +5,17 @@
 	font-size: 24px;
 }
 
+.container {
+	margin-top: 120px;
+}
+
+.add-quote {
+	position: fixed;
+	top: 70px;
+	left: 10px;
+	z-index: 10;
+}
+
 /* fix an incompatibility with bootstrap 3  */
 ul.nav li.dropdown:hover ul.dropdown-menu {
    display: block;
