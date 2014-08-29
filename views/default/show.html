@@ -1,90 +1,63 @@
 {{extend 'layout.html'}}
-<!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.css">
-  
-<!-- jQuery -->
-<script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-  
-<!-- DataTables -->
-<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
+{{block head}}
 <style>
-.dataTables_wrapper .dataTables_filter {
-	float: left;
-}
-body {
-	background-color: #eee;
-}
-#mytable tr {
+.object .text {
 	cursor: pointer;
+	padding: 5px;
+}
+.object:hover .panel {
+	background-color: #f8f8f8;
 }
 </style>
-<form>
-   <label for="query"><b>Search: </b></label>
-   <input name="query" onkeyup="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')" />
-	<select name="lang" onchange="ajax('{{=URL('default', 'text_query')}}', ['query', 'lang'], 'target')">	
-		<option value="0">All languages</option>
-   {{ for row in langs:}}
-		<option value="{{=row.id}}">{{=row.NativeName}}</option>
-   {{ pass }}
-	</select>
-</form>
-<div class="row" id="target"></div>
-<br/><br/>
-<hr>
-<h3>All Quotes</h3>
-<table id="mytable" class="display" width="100%">
-	<thead>
-		<tr>
-			<td><b>Text</b></td>
-			<td><b>Author</b></td>
-			<td><b>Work</b></td>
-			<td><b>Year</b></td>
-			<td><b>Language</b></td>
-		</tr>
-	</thead>
-	<tbody>
-		{{for row in results1:}}
-		<tr data-id="{{=row.QUOTE.id}}">
-			<td>{{if len(row.QUOTE.Text) > 250:}}
-			{{=row.QUOTE.Text[:250]}}...
-			{{else:}}
-			{{=row.QUOTE.Text}}
-			{{pass}}
-			</td>
-			<td>{{=row.AUTHOR_TR.DisplayName}}</td>
-			<td>{{=row.WORK_TR.WorkName}}</td>
-			<td>{{if row.WORK.YearPublished==None:}}
-				{{=row.AUTHOR.YearDied}}
-				{{else:}}
-				{{=row.WORK.YearPublished}}
-				{{pass}}</td>
-			<td>{{=row.LANGUAGE.EnglishName}}</td>
-		</tr>
-		{{pass}}
-	</tbody>
-</table>
-<hr>
+{{end}}
 
+
+{{counter = 0}}
+	{{ for q in quotes:}}
+		{{if counter % 3 == 0:}}
+			<div class="row">
+		{{pass}}
+		<div class="col-md-4">
+			<div class="object" data-id="{{=q.QUOTE.id}}">
+				<div class="object-data panel panel-default">
+					<div class="panel-body">
+						<p class="text">
+							{{if len(q.QUOTE.Text) > 250:}}
+								{{=q.QUOTE.Text[:(q.QUOTE.Text).rfind(' ', 0, 250)]}} ...
+							{{else:}}
+								{{=q.QUOTE.Text}}
+							{{pass}}
+							</p>
+						<p>
+							<a class="btn btn-primary btn-sm" href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
+							{{=q.AUTHOR_TR.DisplayName}}</a>
+							<a class="btn btn-primary btn-sm" href="/Pindar/default/works/{{=q.WORK_TR.id}}">
+							{{=q.WORK_TR.WorkName}}</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{if (counter + 1) % 3 == 0:}}
+			</div>
+		{{pass}}
+		{{counter += 1}}
+	{{pass}}
+</div>
+
+
+
+<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+		{{=response.toolbar()}}
+	</div>
+</div>
+{{block extrajs}}
 <script>
 $(document).ready(function(){
-	$('#mytable').DataTable({
-		"order": [[ 3, "asc" ]],
-		"lengthMenu": [[5, 16, 32, -1], [5, 16, 32, "All"]],
-		"columns": [
-			{"width": "55%"},
-			{"width": "18%"},
-			{"width": "18%"},
-			null,
-			null
-		],
-		"ordering": false,
-		"dom": '<<"clear"f>p<t>ip>'
-	});
-	$('#mytable').on('click', 'tr', function(){
-		quoteid = $(this).data('id');
-		window.location.href = "/Pindar/default/quotes/" + quoteid;
+	$('.object').on('click', '.text', function(){
+		window.location.href = '/Pindar/default/quotes/' + $(this).closest('.object').data('id');
 	});
 });
 </script>
-
-{{=response.toolbar()}}
+{{end}}

@@ -6,18 +6,25 @@ def show():
    """
    test SQL query and display
    """
-   query1 = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+   # for ratings: 
+   # r = db.RATING.Rating.avg()
+   # and in the query:     & 
+   # 	(db.RATING.QuoteID==db.QUOTE._id)).select(db.QUOTE.Text,
+   # 		db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
+	 #    db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, r, 
+	 #    groupby=db.QUOTE._id, orderby=~r)
+
+   # this is the standard quotes query
+   quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
    	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
    	(db.WORK._id==db.WORK_TR.WorkID) & 
-   	(db.QUOTE.QuoteLanguageID==db.LANGUAGE._id) & 
    	(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
    	(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
    	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
-   		db.LANGUAGE.EnglishName, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
-   		db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.WORK.YearPublished,
-   		db.QUOTE.IsOriginalLanguage, db.QUOTE._id)
-   langs = db(db.LANGUAGE).select(db.LANGUAGE._id, db.LANGUAGE.NativeName)
-   return dict(results1=query1, langs=langs) 
+   		db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
+			db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, 
+			groupby=db.QUOTE._id, orderby=~db.QUOTE.created_on)
+   return dict(quotes=quotes)
 
 
 def text_query():
