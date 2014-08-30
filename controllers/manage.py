@@ -261,6 +261,15 @@ def ratings():
 	return locals()
 
 
+def comments():
+	"""
+	*** for testing purposes only***
+	"""
+	grid = SQLFORM.grid(db.COMMENT, user_signature=False,
+		selectable=[('Delete', lambda ids: delete_multiple('COMMENT', ids))])
+	return locals()
+
+
 def delete_multiple(table, ids):
 	if table == 'QUOTE':
 		to_delete = db(db.QUOTE.id.belongs(ids))
@@ -291,6 +300,9 @@ def delete_multiple(table, ids):
 		to_delete.delete()
 	elif table == 'RATING':
 		to_delete = db(db.RATING.id.belongs(ids))
+		to_delete.delete()
+	elif table == 'COMMENT':
+		to_delete = db(db.COMMENT.id.belongs(ids))
 		to_delete.delete()
 		
 

@@ -25,6 +25,7 @@ $.fn.quotify = function(){
 				quote.trigger('clear.quotify');
 			} else {
 				quote.trigger('clear.quotify');
+				quote.find('.btn-comments').removeClass('active');
 				quote.find('.object-action .edit').fadeIn('fast');
 				quote.find('.object-action').slideDown();
 			}
@@ -35,20 +36,73 @@ $.fn.quotify = function(){
 				quote.trigger('clear.quotify');
 			} else {
 				quote.trigger('clear.quotify');
+				quote.find('.btn-comments').removeClass('active');
 				quote.find('.object-action .flag-submit').fadeIn('fast');
 				quote.find('.object-action').slideDown();
 			}
 		};
 
+		var comments = function(){
+			if (quote.find('.object-action .comments').is(':visible')){
+				quote.trigger('clear.quotify');
+			} else {
+				quote.trigger('clear.quotify');
+				var commentsdiv = $('<div class="list-group col-md-8"></div>');
+				$.ajax({
+					url: '/Pindar/default/getcomments?QuoteID='+quote.data('id'),
+					type: 'GET',
+					contentType: 'application/json',
+					dataType: 'json',
+					success: function(response) {
+						// use fa icons to indicate to user what's going on
+						if (response.status===200){
+							comments = $('<div class="list-group col-md-8 col-md-offset-2"></div>');
+							for (q in response.comments){
+								c = response.comments[q];
+								comment = '<li class="list-group-item"><p>' + c.text + '</p>';
+								comment += '<p class="small"><a href="/Pindar/default/users/' + c.user + '">' + 
+									c.user + '</a>, ' + c.timestamp + '</p></li>';
+								comments.append(comment);
+							}
+							quote.find('.comments').html(comments);
+							quote.find('.object-action .comments').fadeIn('fast');
+							quote.find('.object-action').slideDown();
+						} else {
+							console.log(response);
+							quote.find('.comments').html(response.msg);
+						}
+					},
+					error: function(request, errorType, errorMessage) {
+						// don't do anything with server errors yet
+						quote.find('.comments').html('something went wrong');
+					},
+					timeout: 3000,
+					beforeSend: function(){
+						quote.find('.btn-comments').html('<i class="fa fa-spinner fa-spin"></i>');
+					},
+					complete: function(){
+						quote.find('.btn-comments').html('<i class="fa fa-comments"></i>');
+					}
+				});
+				
+			}
+		}
+
 		quote.on('hide.quotify', hide);
 		quote.on('clear.quotify', clear);
 		quote.on('edit.quotify', edit);
 		quote.on('flag.quotify', flag);
+		quote.on('comments.quotify', comments);
 
 		quote.on('click', '.button-edit', function(e){
 			e.preventDefault();
 			quote.trigger('edit.quotify');
 		});
+
+		quote.on('click', '.btn-comments', function(e){
+			e.preventDefault();
+			quote.trigger('comments.quotify');
+		});		
 		
 		// drop-down to flag quote
 		quote.on('click.quotify', '.btn-flag a', function(e){

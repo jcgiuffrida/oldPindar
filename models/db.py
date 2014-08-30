@@ -249,7 +249,8 @@ db.define_table('TRANSLATION',
 # help if a work if flagged as offensive when in fact the author name is offensive, etc.
 
 db.define_table('FLAGTYPE',
-            Field('FlagName', 'string', required=True))
+            Field('FlagName', 'string', required=True), 
+            format='%(FlagName)s')
 
 db.define_table('FLAG',
             Field('QuoteID', 'reference QUOTE'),  # this is not normal - suggestions?
@@ -281,9 +282,18 @@ db.RATING.modified_by.readable=True
 db.RATING.modified_on.readable=True
 
 
-###---------------------- TAG
-db.define_table('TAG',
-            Field('Name'),format='%(Name)s')
+###---------------------- COMMENTS
+db.define_table('COMMENT',
+            Field('Text', 'text', required=True),
+            Field('QuoteID', 'reference QUOTE', required=True),
+            Field('Active', 'boolean', default=True, readable=False, writable=False))
+
+db.COMMENT.Text.requires = IS_NOT_EMPTY()
+db.COMMENT.QuoteID.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.QUOTE.id, '%(Text)s')]
+db.RATING.created_by.readable=True
+db.RATING.created_on.readable=True
+
+
 
 
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from gluon.tools import prettydate
 
 
 def show(): 
@@ -329,3 +330,21 @@ def rate():
 	return json.dumps(response)
 
 
+# get comments
+def getcomments():
+	if not request.vars.QuoteID:
+		response = {'msg': 'no quote specified', 'status': 501,
+			'request': json.dumps(request.vars)}
+	else:
+		quoteid = request.vars.QuoteID
+		comments = db((db.COMMENT.QuoteID==quoteid) & (db.auth_user._id==db.COMMENT.created_by)).\
+			select(orderby=~db.COMMENT.created_on, limitby=(0,10))
+		response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars)}
+		commentslist = []
+		for q in comments:
+			commentslist.append({'text': q.COMMENT.Text, 'user': q.auth_user.username, 'timestamp': str(prettydate(q.COMMENT.created_on,T))})
+		response['comments'] = commentslist
+	return json.dumps(response)
+
+
+# add comment
