@@ -78,10 +78,10 @@ $.fn.quotify = function(){
 					},
 					timeout: 3000,
 					beforeSend: function(){
-						quote.find('.btn-comments').html('<i class="fa fa-spinner fa-spin"></i>');
+						quote.find('.btn-comments i').removeClass('fa-comments').addClass('fa-spinner fa-spin');
 					},
 					complete: function(){
-						quote.find('.btn-comments').html('<i class="fa fa-comments"></i>');
+						quote.find('.btn-comments i').removeClass('fa-spinner fa-spin').addClass('fa-comments');
 					}
 				});
 				

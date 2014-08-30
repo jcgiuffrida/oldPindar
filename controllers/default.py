@@ -218,6 +218,7 @@ def quotes():
 		lang = auth.user.PrimaryLanguageID
 	else:
 		lang = 1  # default is english
+	comment_count = db((db.COMMENT.QuoteID==request.args(0))).count()
 	quote = db((db.QUOTE._id==request.args(0)) & 
 			(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
 			(db.QUOTE_WORK.WorkID==db.WORK._id) & 

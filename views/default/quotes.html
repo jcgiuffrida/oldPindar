@@ -27,8 +27,6 @@
   content: "\f005";
   color: #175fdd;
 }
-
-
 </style>
 {{end}}
 
@@ -76,7 +74,7 @@
 							</li>
 						</ul>
 					</div>
-					<button type="button" class="btn btn-default btn-comments" data-toggle="button"><i class="fa fa-comments"></i></button>
+					<button type="button" class="btn btn-default btn-comments" data-toggle="button"><i class="fa fa-comments"></i> {{if comment_count > 0:}}<span class="badge">{{=comment_count}}{{pass}}</span>{{pass}}</button>
 				</div>
 			</div><!--/.object-data -->
 			<div class="panel object-action" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}" style="display:none;">
