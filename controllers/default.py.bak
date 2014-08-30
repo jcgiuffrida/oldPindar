@@ -171,10 +171,10 @@ def data():
 
 
 # show user profile page
-@auth.requires_login()
 def users():
     user = db.auth_user(username=request.args(0)) or redirect(URL('error'))
-    userid = user.id
+    for u in user:
+    	userid = u._id
     quotes_added = db((db.QUOTE.created_by==userid) & 
       (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
  		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
@@ -183,7 +183,7 @@ def users():
  		(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
  		(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
  		db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.QUOTE.created_on)
-    authors_added = db((db.AUTHOR_TR.created_by==userid) & 
+ 	authors_added = db((db.AUTHOR_TR.created_by==userid) & 
       	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR_TR.DisplayName,
  		db.AUTHOR_TR.created_on, db.AUTHOR.YearBorn, db.AUTHOR.YearDied)
     
