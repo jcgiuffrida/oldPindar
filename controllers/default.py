@@ -386,3 +386,35 @@ def getcomments():
 
 
 # add comment
+@auth.requires_login()
+def addcomment():
+	if not request.vars.Text:
+		response = {'msg': 'no text specified', 'status': 501, 
+			'request': json.dumps(request.vars)}
+	elif not request.vars.QuoteID:
+		response = {'msg': 'no quote specified', 'status': 501,
+			'request': json.dumps(request.vars)}
+	else:
+		commentID = db.COMMENT.insert(**db.COMMENT._filter_fields(request.vars))
+		if commentID:
+			response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars)}
+			comment = db(db.COMMENT._id==commentID).select()
+			for c in comment:
+				mycomment = { 'text': c.Text, 'user': auth.user.username, 'timestamp': str(prettydate(c.created_on,T)) }
+			response['mycomment'] = mycomment
+		else:
+			response = {'msg': "oops", 'status': 501, 'request': json.dumps(request.vars)}
+	return json.dumps(response)
+
+
+
+
+
+
+
+
+
+
+
+
+

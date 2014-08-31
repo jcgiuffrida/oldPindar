@@ -64,6 +64,11 @@ $.fn.quotify = function(){
 									c.user + '</a>, ' + c.timestamp + '</p></li>';
 								comments.append(comment);
 							}
+							addcomment = '<li class="list-group-item mycomment"><form role="form"><div class="form-group">';
+							addcomment += '<textarea class="form-control" id="commentfield" placeholder="Add your own comment..."></textarea>';
+							addcomment += '</div><div class="form-group"><button class="btn btn-primary submit" type="button">Submit</button>';
+							addcomment += ' <button class="btn btn-primary cancel" type="button">Cancel</button></div></form></li>';
+							comments.prepend(addcomment);
 							quote.find('.comments').html(comments);
 							quote.find('.object-action .comments').fadeIn('fast');
 							quote.find('.object-action').slideDown();
@@ -142,48 +147,102 @@ $.fn.quotify = function(){
 			}
 		});
 
-		// form to submit flag
-		quote.find('.flag-submit').on('click', 'button', function(e){
+		// cancel buttons
+		quote.find('.object-action').on('click', '.cancel', function(e){
 			e.preventDefault();
-			if ($(this).hasClass('cancel')){
-				quote.trigger('clear.quotify');;
+			quote.trigger('clear.quotify');
+			quote.find('.btn-comments').removeClass('active');
+		});
+
+		// form to submit flag
+		quote.find('.flag-submit').on('click', '.submit', function(e){
+			e.preventDefault();
+			var form = $(this).closest('.flag-submit');
+			var button = quote.find('.btn-flag>.btn');
+			$.ajax({
+				url: '/Pindar/default/flag?Type='+form.data('type')+'&FlagNote='+
+					form.find('textarea').val()+'&QuoteID='+quote.data('id'),
+				type: 'POST',
+				contentType: 'application/json',
+				dataType: 'json',
+				success: function(response) {
+					// use fa icons to indicate to user what's going on
+					if (response.status===200){
+						button.removeClass('btn-default').addClass('btn-danger').
+							html('<i class="fa fa-flag"></i>').addClass('disabled');
+					} else {
+						button.html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').
+							removeClass('btn-default').addClass('btn-warning').addClass('disabled'); 
+						console.log(response);
+						alert(response.msg);
+						// need to tell user what went wrong
+					}
+				},
+				error: function(request, errorType, errorMessage) {
+					// don't do anything with server errors yet
+					button.html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').
+						removeClass('btn-default').addClass('btn-warning').addClass('disabled');
+				},
+				timeout: 3000,
+				beforeSend: function(){
+					quote.trigger('clear.quotify');
+					button.find('ul').hide();
+					button.html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>');
+				}
+			});
+		});
+
+		// submit a comment
+		quote.on('click', '.mycomment .submit', function(e){
+			e.preventDefault();
+			if (user===0){
+				alert("You must log in to do that!")
+				var current = window.location;
+				window.location.href = "/Pindar/default/user/login?_next=" + current;
 			} else {
-				var form = $(this).closest('.flag-submit');
-				var button = quote.find('.btn-flag>.btn');
+				var text = $(this).closest('.mycomment').find('textarea').val();
+				var button = quote.find('.btn-comments');
+				var submitButton = $(this);
 				$.ajax({
-					url: '/Pindar/default/flag?Type='+form.data('type')+'&FlagNote='+
-						form.find('textarea').val()+'&QuoteID='+quote.data('id'),
+					url: '/Pindar/default/addcomment?Text='+text+'&QuoteID='+quote.data('id'),
 					type: 'POST',
 					contentType: 'application/json',
 					dataType: 'json',
 					success: function(response) {
-						// use fa icons to indicate to user what's going on
 						if (response.status===200){
-							button.removeClass('btn-default').addClass('btn-danger').
-								html('<i class="fa fa-flag"></i>').addClass('disabled');
+							var c = response.mycomment;
+							comment = '<li class="list-group-item"><p>' + c.text + '</p>';
+							comment += '<p class="small"><a href="/Pindar/default/users/' + c.user + '">' + 
+							c.user + '</a>, ' + c.timestamp + '</p></li>';
+							quote.find('.mycomment').fadeOut();
+							quote.find('.comments .list-group').prepend(comment).fadeIn();
+							var count = parseInt(button.find('span').html());
+							button.find('span').html(count + 1);
 						} else {
-							button.html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').
-								removeClass('btn-default').addClass('btn-warning').addClass('disabled'); 
-							console.log(response);
-							alert(response.msg);
-							// need to tell user what went wrong
+							submitButton.closest('.mycomment').append('<p class="text-warning">' + response.msg + '</p>');
+							submitButton.html('Submit');
 						}
 					},
 					error: function(request, errorType, errorMessage) {
-						// don't do anything with server errors yet
-						button.html('<i class="fa fa-flag"></i> <i class="fa fa-exclamation-circle"></i>').
-							removeClass('btn-default').addClass('btn-warning').addClass('disabled');
+							submitButton.html('<i class="fa fa-warning"></i>').removeClass('btn-primary').addClass('btn-warning');
 					},
 					timeout: 3000,
 					beforeSend: function(){
-						quote.trigger('clear.quotify');
-						button.find('ul').hide();
-						button.html('<i class="fa fa-circle-o-notch fa-spin"></i> <i class="fa fa-caret-down"></i>');
-					}
+						submitButton.html('<i class="fa fa-spinner fa-spin"></i> Working...');
+					},
 				});
 			}
-			
-		});
+
+		})
+
+
+
+
+		
+
+
+
+		
 
 		quote.find('.btn-rate').on('click', 'span.star', function(e){
 			e.preventDefault();
