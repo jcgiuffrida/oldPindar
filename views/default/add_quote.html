@@ -129,7 +129,7 @@ jQuery(document).ready(function(){
 			}
 		} else {
 			jQuery('#author_results').fadeIn('slow');
-			ajax('{{=URL('api', 'author_query')}}', 
+			ajax('{{=URL('manage', 'author_query')}}', 
 					['author_lookup'], 'author_results');
 		}
 	});
@@ -145,7 +145,7 @@ jQuery(document).ready(function(){
 			}
 		} else {
 			jQuery('#work_results').fadeIn('slow');
-			ajax('{{=URL('api', 'work_query')}}', 
+			ajax('{{=URL('manage', 'work_query')}}', 
 					['work_lookup', 'AuthorTrID'], 'work_results');
 		}
 	});
@@ -241,7 +241,7 @@ jQuery(document).ready(function(){
 		},
 		submitHandler: function(form) {
 			if (button == 'QUOTE_Author_Submit'){
-				ajax('{{=URL('api', 'author_submit')}}',
+				ajax('{{=URL('manage', 'author_submit')}}',
 					['FirstName', 'MiddleName', 'LastName', 'AKA', 'DisplayName',
 					 'Biography', 'AuthorWikipediaLink', 'YearBorn', 'YearDied', 
 					 'LanguageID'],
@@ -262,7 +262,7 @@ jQuery(document).ready(function(){
 				$('#QUOTE_Work_Lookup').focus();
 				clear_author();
 			} else if (button == 'QUOTE_Work_Submit'){
-				ajax('{{=URL('api', 'work_submit')}}',
+				ajax('{{=URL('manage', 'work_submit')}}',
 					['WorkName', 'WorkSubtitle', 'WorkDescription', 'WorkWikipediaLink',
 					 'WorkNote', 'YearPublished', 'YearWritten',  
 					 'LanguageID', 'AuthorTrID'],
@@ -282,7 +282,7 @@ jQuery(document).ready(function(){
 				$('#QUOTE_Quote_Submit__row').fadeIn('fast');
 				clear_work();
 			} else if (button == 'QUOTE_Quote_Submit'){
-				ajax('{{=URL('api', 'quote_submit')}}',
+				ajax('{{=URL('manage', 'quote_submit')}}',
 					['Text', 'QuoteLanguageID', 'IsOriginalLanguage',
 					 'Note', 'AuthorTrID', 'WorkTrID'],
 					 ':eval');

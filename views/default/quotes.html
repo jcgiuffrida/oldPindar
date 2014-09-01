@@ -1,83 +1,82 @@
 {{extend 'layout.html'}}
-{{block head}}
-<style>
-.btn-rate span.star {
-  font-family: FontAwesome;
-  font-weight: normal;
-  font-style: normal;
-  display: inline-block;
-  font-size:1.2em;
-  float:right;
-}
-.btn-rate li {
-  cursor: pointer;
-  min-width: 100px;
-}
-.btn-rate ul {
-	min-width: 115px;
-}
-.btn-rate span.star:before {
-  content: "\f006";
-  padding: 0 6px;
-  margin: 0 -4px;
-  color: #777777;
-}
-.btn-rate span.star:hover:before,
-.btn-rate span.star:hover ~ span.star:before {
-  content: "\f005";
-  color: #175fdd;
-}
-</style>
-{{end}}
+{{block head}}{{end}}
 
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
-		<div class="object" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}">
+		{{for q in quote:}}
+		<div class="object" data-id="{{=q.QUOTE.id}}">
 			<div class="object-data panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title">Quote</h3>
 				</div>
 				<div class="panel-body">
-					<p class="lead">{{for q in quote:}}{{=q.QUOTE.Text}}</p>
-					<p>
-						<a class="btn btn-primary" href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
-						{{=q.AUTHOR_TR.DisplayName}}</a>
-						<a class="btn btn-primary" href="/Pindar/default/works/{{=q.WORK_TR.id}}">
-						{{=q.WORK_TR.WorkName}}</a>
-						{{pass}}
+					<p class="lead">
+						{{=q.QUOTE.Text}}
 					</p>
-					<button class="btn btn-default button-edit">Edit</button>
-					<div class="btn-group btn-flag">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							<i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
-						</button>
-					  <ul class="dropdown-menu" role="menu">
-					    <li><a href="#" class="flag offensive">This quote is offensive</a></li>
-					    <li><a href="#" class="flag incorrect">This quote is not correct</a></li>
-					    <li><a href="#" class="flag duplicate">This quote is a duplicate</a></li>
-					    <li><a href="#" class="flag">Something else...</a></li>
-					  </ul>
-					</div>
-					<div class="btn-group btn-rate">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-							Rate <i class="fa fa-caret-down"></i>
-						</button>
-						<ul class="dropdown-menu" role="menu">
-							<li>
-								<div class="text-center">
-									<span data-star="5" class="star"></span>
-									<span data-star="4" class="star"></span>
-									<span data-star="3" class="star"></span>
-									<span data-star="2" class="star"></span>
-									<span data-star="1" class="star"></span>
-								</div>
-							</li>
-						</ul>
-					</div>
-					<button type="button" class="btn btn-default btn-comments" data-toggle="button"><i class="fa fa-comments"></i> {{if comment_count > 0:}}<span class="badge">{{=comment_count}}{{pass}}</span>{{pass}}</button>
+					<p class="text-center">
+						<a class="btn btn-primary" 
+						href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
+							{{=q.AUTHOR_TR.DisplayName}}
+						</a>
+						<a class="btn btn-primary" 
+						href="/Pindar/default/works/{{=q.WORK_TR.id}}">
+							{{=q.WORK_TR.WorkName}}
+						</a>
+					</p>
+
+					<div class="object-actions">
+						{{if auth.user:}}
+							<button class="btn btn-default button-edit">Edit</button>
+						{{pass}}
+						<div class="btn-group btn-flag">
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								<i class="fa fa-flag"></i> <i class="fa fa-caret-down"></i>
+							</button>
+						  <ul class="dropdown-menu" role="menu">
+						    <li><a href="#" class="flag offensive">
+						    	This quote is offensive
+						    </a></li>
+						    <li><a href="#" class="flag incorrect">
+						    	This quote is not correct
+						    </a></li>
+						    <li><a href="#" class="flag duplicate">
+						    	This quote is a duplicate
+						    </a></li>
+						    <li><a href="#" class="flag">
+						    	Something else...
+						    </a></li>
+						  </ul>
+						</div><!--/.btn-flag -->
+						<div class="btn-group btn-rate">
+							<button type="button" class="btn btn-default dropdown-toggle" 
+							data-toggle="dropdown">
+								Rate <i class="fa fa-caret-down"></i>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li>
+									<div class="text-center">
+										<span data-star="5" class="star"></span>
+										<span data-star="4" class="star"></span>
+										<span data-star="3" class="star"></span>
+										<span data-star="2" class="star"></span>
+										<span data-star="1" class="star"></span>
+									</div>
+								</li>
+							</ul>
+						</div><!--/.btn-rate -->
+						<button type="button" class="btn btn-default btn-comments" 
+						data-toggle="button">
+							<i class="fa fa-comments"></i> 
+								<span class="badge" 
+							{{if comment_count == 0:}}style="display:none"{{pass}}>
+							{{=comment_count}}</span>
+						</button><!--/.btn-comments -->
+					</div><!--/.object-actions -->
 				</div>
 			</div><!--/.object-data -->
-			<div class="panel object-action" data-id="{{for q in quote:}}{{=q.QUOTE.id}}{{pass}}" style="display:none;">
+
+			<div class="panel object-results" data-id="{{=q.QUOTE.id}}" 
+			style="display:none;">
 				<div class="edit">
 					{{=crud.update(db.QUOTE, q.QUOTE.id)}}
 				</div>
@@ -85,18 +84,45 @@
 					<form role="form">
 						<div class="form-group">
 							<label for="complaint"></label>
-							<textarea class="form-control" id="complaint" placeholder="Add a comment..."></textarea>
+							<textarea class="form-control" id="complaint" 
+							placeholder="Add a comment..."></textarea>
 						</div>
 						<div class="form-group">
-							<button class="btn btn-primary submit" type="button">Submit</button> 
-							<button class="btn btn-primary cancel" type="button">Cancel</button>
+							<button class="btn btn-primary submit" type="button">
+								Submit</button> 
+							<button class="btn btn-primary cancel" type="button">
+								Cancel</button>
 						</div>
 					</form>
-				</div>
+				</div><!--/.flag-submit -->
 				<div class="row comments">
-				</div>
+					<div class="list-group col-md-8 col-md-offset-2">
+						<li class="list-group-item mycomment">
+          		<form role="form">
+          			<div class="form-group">
+	        				<textarea class="form-control" id="commentfield"
+	          			placeholder="Add your own comment..."></textarea>
+        				</div>
+        				<div class="form-group">
+        					<button class="btn btn-primary submit" type="button">Submit
+        					</button>
+        					<button class="btn btn-primary cancel" type="button">Cancel
+        					</button>
+        				</div>
+        			</form>
+        		</li>
+					</div>
+				</div><!--/.comments -->
 			</div><!--/.object-action -->
 		</div><!--/.object -->
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		
+		{{pass}}
 		{{=response.toolbar()}}
 	</div>
 </div><!--/.row -->

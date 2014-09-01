@@ -4,82 +4,72 @@ from gluon.tools import prettydate
 
 
 def show(): 
-   """
-   test SQL query and display
-   """
    # for ratings: 
    # r = db.RATING.Rating.avg()
    # and in the query:     & 
-   # 	(db.RATING.QuoteID==db.QUOTE._id)).select(db.QUOTE.Text,
-   # 		db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
-	 #    db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, r, 
-	 #    groupby=db.QUOTE._id, orderby=~r)
+   #    (db.RATING.QuoteID==db.QUOTE._id)).select(db.QUOTE.Text,
+   #        db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
+     #    db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, r, 
+     #    groupby=db.QUOTE._id, orderby=~r)
 
    # this is the standard quotes query
    quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-   	(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-   	(db.WORK._id==db.WORK_TR.WorkID) & 
-   	(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-   	(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-   	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
-   		db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
-			db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, 
-			groupby=db.QUOTE._id, orderby=~db.QUOTE.created_on)
+    (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+    (db.WORK._id==db.WORK_TR.WorkID) & 
+    (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+    (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+    (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+        db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
+            db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, 
+            groupby=db.QUOTE._id, orderby=~db.QUOTE.created_on)
    return dict(quotes=quotes)
 
 
 def text_query():
-	lang = 1 if request.vars.lang=='' else int(request.vars.lang)
-	if len(request.vars.query) < 2:
-		return ''
-	query = '%' + request.vars.query + '%'
-	if lang == 0:
-		results = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-		(db.WORK._id==db.WORK_TR.WorkID) & 
-		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
-		(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-		(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
-											db.AUTHOR_TR.DisplayName, 
-											db.WORK_TR.WorkName, 
-											db.WORK_TR.id, 
-											groupby=db.QUOTE.Text)
-	else:
-		results = db((db.QUOTE.QuoteLanguageID==lang) & 
-		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-		(db.WORK._id==db.WORK_TR.WorkID) & 
-		(db.WORK._id==db.WORK_AUTHOR.WorkID) & 
-		(db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-		(db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
-											db.AUTHOR_TR.DisplayName, 
-											db.WORK_TR.WorkName, 
-											db.WORK_TR.id, 
-											groupby=db.QUOTE.Text)
-   	
-   	response = '<h3>Example query (text search)</h3>'
-   	if len(results) == 0:
-   		response += '<em>No results found.</em>'
-   	for row in results:
-		response += row.QUOTE.Text + '<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">'
-		response += row.AUTHOR_TR.DisplayName + ', <a href="data/read/WORK_TR/' + str(row.WORK_TR.id) + '"><em>'
-		response += row.WORK_TR.WorkName + '</em></a></span><br/><br/>'
-   	
-   	return response
+    lang = 1 if request.vars.lang=='' else int(request.vars.lang)
+    if len(request.vars.query) < 2:
+        return ''
+    query = '%' + request.vars.query + '%'
+    if lang == 0:
+        results = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+        (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+        (db.WORK._id==db.WORK_TR.WorkID) & 
+        (db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+        (db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+        (db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
+                                            db.AUTHOR_TR.DisplayName, 
+                                            db.WORK_TR.WorkName, 
+                                            db.WORK_TR.id, 
+                                            groupby=db.QUOTE.Text)
+    else:
+        results = db((db.QUOTE.QuoteLanguageID==lang) & 
+        (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+        (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+        (db.WORK._id==db.WORK_TR.WorkID) & 
+        (db.WORK._id==db.WORK_AUTHOR.WorkID) & 
+        (db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
+        (db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
+                                            db.AUTHOR_TR.DisplayName, 
+                                            db.WORK_TR.WorkName, 
+                                            db.WORK_TR.id, 
+                                            groupby=db.QUOTE.Text)
+    
+    response = '<h3>Example query (text search)</h3>'
+    if len(results) == 0:
+        response += '<em>No results found.</em>'
+    for row in results:
+        response += row.QUOTE.Text + '<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">'
+        response += row.AUTHOR_TR.DisplayName + ', <a href="data/read/WORK_TR/' + str(row.WORK_TR.id) + '"><em>'
+        response += row.WORK_TR.WorkName + '</em></a></span><br/><br/>'
+    
+    return response
 
 
 
 def index():
-    """
-    ***for testing purposes only***
-    
-    function to list data on the main page
-   
-    """
-    return dict(quotes=SQLFORM.grid(db.QUOTE), authors=SQLFORM.grid(db.AUTHOR),
-    	authors_tr=SQLFORM.grid(db.AUTHOR_TR), works=SQLFORM.grid(db.WORK),
-    	works_tr=SQLFORM.grid(db.WORK_TR), users=SQLFORM.grid(db.auth_user), 
-    	languages=SQLFORM.grid(db.LANGUAGE), translations=SQLFORM.grid(db.TRANSLATION))
+    # for now, just redirect to /show
+    response.view=redirect(URL('default', 'show'))
+    return locals()
 
 
 
@@ -97,38 +87,38 @@ def user():
         @auth.requires_membership('group name')
         @auth.requires_permission('read','table name',record_id)
     to decorate functions that need access control
-    """	    
+    """     
     # the below is from https://groups.google.com/forum/#!topic/web2py/okakKiDajNw
     if request.args[0]=='profile':
-    	response.view='default/profile.html'
-    	quotes_added = db((db.QUOTE.created_by==auth.user_id) & 
-        	(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-   			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-   			(db.WORK._id==db.WORK_TR.WorkID) & 
-   			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-   			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-   			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
-   			db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.QUOTE.created_on)
+        response.view='default/profile.html'
+        quotes_added = db((db.QUOTE.created_by==auth.user_id) & 
+            (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+            (db.WORK._id==db.WORK_TR.WorkID) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+            db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.QUOTE.created_on)
         authors_added = db((db.AUTHOR_TR.created_by==auth.user_id) & 
-        	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR_TR.DisplayName,
-   			db.AUTHOR_TR.created_on, db.AUTHOR.YearBorn, db.AUTHOR.YearDied)
+            (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR_TR.DisplayName,
+            db.AUTHOR_TR.created_on, db.AUTHOR.YearBorn, db.AUTHOR.YearDied)
         works_added = db((db.WORK_TR.created_by==auth.user_id) & 
-        	(db.WORK._id==db.WORK_TR.WorkID) & 
-   			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-   			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-   			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.WORK_TR.WorkName,
-   			db.WORK.YearPublished, db.AUTHOR_TR.DisplayName, db.WORK_TR.created_on)
+            (db.WORK._id==db.WORK_TR.WorkID) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.WORK_TR.WorkName,
+            db.WORK.YearPublished, db.AUTHOR_TR.DisplayName, db.WORK_TR.created_on)
         quotes_edited = db((db.QUOTE.modified_by==auth.user_id) & 
-        	(db.QUOTE.modified_on!=db.QUOTE.created_on) & # not the first edit
-   			(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-   			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-   			(db.WORK._id==db.WORK_TR.WorkID) & 
-   			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-   			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-   			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
-   			db.QUOTE.modified_on, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName)
-    	return dict(form=auth(), quotes_added=quotes_added, authors_added=authors_added,
-        	works_added=works_added, quotes_edited=quotes_edited)
+            (db.QUOTE.modified_on!=db.QUOTE.created_on) & # not the first edit
+            (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+            (db.WORK._id==db.WORK_TR.WorkID) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+            db.QUOTE.modified_on, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName)
+        return dict(form=auth(), quotes_added=quotes_added, authors_added=authors_added,
+            works_added=works_added, quotes_edited=quotes_edited)
     return dict(form=auth())  
 
 
@@ -177,234 +167,232 @@ def users():
     userid = user.id
     quotes_added = db((db.QUOTE.created_by==userid) & 
       (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
- 		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
- 		(db.WORK._id==db.WORK_TR.WorkID) & 
- 		(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
- 		(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
- 		(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
- 		db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.QUOTE.created_on)
+        (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+        (db.WORK._id==db.WORK_TR.WorkID) & 
+        (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+        (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+        (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+        db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName, db.QUOTE.created_on)
     authors_added = db((db.AUTHOR_TR.created_by==userid) & 
-      	(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR_TR.DisplayName,
- 		db.AUTHOR_TR.created_on, db.AUTHOR.YearBorn, db.AUTHOR.YearDied)
+        (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.AUTHOR_TR.DisplayName,
+        db.AUTHOR_TR.created_on, db.AUTHOR.YearBorn, db.AUTHOR.YearDied)
     
     works_added = db((db.WORK_TR.created_by==userid) & 
-      	(db.WORK._id==db.WORK_TR.WorkID) & 
- 		(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
- 		(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
- 		(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.WORK_TR.WorkName,
- 		db.WORK.YearPublished, db.AUTHOR_TR.DisplayName, db.WORK_TR.created_on)
+        (db.WORK._id==db.WORK_TR.WorkID) & 
+        (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+        (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+        (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.WORK_TR.WorkName,
+        db.WORK.YearPublished, db.AUTHOR_TR.DisplayName, db.WORK_TR.created_on)
     
     quotes_edited = db((db.QUOTE.modified_by==userid) & 
-      	(db.QUOTE.modified_on!=db.QUOTE.created_on) & # not the first edit
- 		(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
- 		(db.QUOTE_WORK.WorkID==db.WORK._id) & 
- 		(db.WORK._id==db.WORK_TR.WorkID) & 
- 		(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
- 		(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
- 		(db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
- 		db.QUOTE.modified_on, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName)
+        (db.QUOTE.modified_on!=db.QUOTE.created_on) & # not the first edit
+        (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+        (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+        (db.WORK._id==db.WORK_TR.WorkID) & 
+        (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+        (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+        (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
+        db.QUOTE.modified_on, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName)
     return dict(user=user, quotes_added=quotes_added, authors_added=authors_added,
-        	works_added=works_added, quotes_edited=quotes_edited)
+            works_added=works_added, quotes_edited=quotes_edited)
 
 
 # show the page for a quote
 def quotes():
-	# figure out what quote to display
-	q = db.QUOTE(request.args(0))
-	# if quote is invalid, return to home
-	if not q:
-		redirect(URL('default', 'show'))
-	if auth.user:
-		lang = auth.user.PrimaryLanguageID
-	else:
-		lang = 1  # default is english
-	comment_count = db((db.COMMENT.QuoteID==request.args(0))).count()
-	quote = db((db.QUOTE._id==request.args(0)) & 
-			(db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-			(db.WORK._id==db.WORK_TR.WorkID) & 
-			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-			(db.AUTHOR_TR.LanguageID==lang) & 
-			(db.WORK_TR.LanguageID==lang)).select(
-			db.QUOTE.Text, db.QUOTE._id, db.WORK_TR.WorkName, db.AUTHOR_TR.DisplayName,
-			db.WORK_TR._id, db.AUTHOR_TR._id)
-	return locals()
+    # figure out what quote to display
+    q = db.QUOTE(request.args(0))
+    # if quote is invalid, return to home
+    if not q:
+        redirect(URL('default', 'show'))
+    if auth.user:
+        lang = auth.user.PrimaryLanguageID
+    else:
+        lang = 1  # default is english
+    comment_count = db((db.COMMENT.QuoteID==request.args(0))).count()
+    quote = db((db.QUOTE._id==request.args(0)) & 
+            (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+            (db.WORK._id==db.WORK_TR.WorkID) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR_TR.LanguageID==lang) & 
+            (db.WORK_TR.LanguageID==lang)).select(
+            db.QUOTE.Text, db.QUOTE._id, db.WORK_TR.WorkName, db.AUTHOR_TR.DisplayName,
+            db.WORK_TR._id, db.AUTHOR_TR._id)
+    return locals()
+
 
 # unique page for each author
 def authors():
-	if auth.user:
-		lang = auth.user.PrimaryLanguageID
-	else:
-		lang = 1  # default is english
-	# what author?
-	if request.args(0)=='all':
-		workcount = db.WORK_AUTHOR.AuthorID.count()
-		authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-					(db.AUTHOR_TR.LanguageID==lang) &
-					(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id)).select(db.AUTHOR_TR.DisplayName,
-					db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, workcount, 
-					orderby=db.AUTHOR_TR.LastName, limitby=(0,10), groupby=db.AUTHOR_TR.DisplayName)
-		if request.vars['e']:
-			response.flash='Author ' + request.vars['e'] + ' was not found'
-		return locals()
-		return locals()
-	a = db.AUTHOR_TR(request.args(0))
-	# if author is invalid, show all authors and an error message
-	if not a:
-		if not request.args(0):
-			redirect(URL('Pindar/default', 'authors', 'all'))
-		else:
-			redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
-	author = db((db.AUTHOR_TR._id==request.args(0)) & 
-			(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-			(db.AUTHOR_TR.LanguageID==lang)).select()
-	for a in author:
-		author_id = a.AUTHOR.id
-	quotecount = db.QUOTE_WORK.QuoteID.count()
-	works = db((db.WORK_AUTHOR.AuthorID==author_id) & 
-			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-			(db.WORK._id==db.WORK_TR.WorkID) & 
-			(db.WORK_TR.LanguageID==lang) & 
-			(db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
-			orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK_TR._id)
-	quotes = db((db.WORK_AUTHOR.AuthorID==author_id) & 
-			(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-			(db.WORK_TR.WorkID==db.WORK._id) & 
-			(db.WORK_TR.LanguageID==lang) & 
-			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
-			limitby=(0,10))
-	return locals()
+    if auth.user:
+        lang = auth.user.PrimaryLanguageID
+    else:
+        lang = 1  # default is english
+    # what author?
+    if request.args(0)=='all':
+        workcount = db.WORK_AUTHOR.AuthorID.count()
+        authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+                    (db.AUTHOR_TR.LanguageID==lang) &
+                    (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id)).select(db.AUTHOR_TR.DisplayName,
+                    db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, workcount, 
+                    orderby=db.AUTHOR_TR.LastName, limitby=(0,10), groupby=db.AUTHOR_TR.DisplayName)
+        if request.vars['e']:
+            response.flash='Author ' + request.vars['e'] + ' was not found'
+        return locals()
+        return locals()
+    a = db.AUTHOR_TR(request.args(0))
+    # if author is invalid, show all authors and an error message
+    if not a:
+        if not request.args(0):
+            redirect(URL('Pindar/default', 'authors', 'all'))
+        else:
+            redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
+    author = db((db.AUTHOR_TR._id==request.args(0)) & 
+            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR_TR.LanguageID==lang)).select()
+    for a in author:
+        author_id = a.AUTHOR.id
+    quotecount = db.QUOTE_WORK.QuoteID.count()
+    works = db((db.WORK_AUTHOR.AuthorID==author_id) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK._id==db.WORK_TR.WorkID) & 
+            (db.WORK_TR.LanguageID==lang) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
+            orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK_TR._id)
+    quotes = db((db.WORK_AUTHOR.AuthorID==author_id) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_TR.WorkID==db.WORK._id) & 
+            (db.WORK_TR.LanguageID==lang) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+            (db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
+            limitby=(0,10))
+    return locals()
+
 
 # unique page for each work
 def works():
-	if auth.user:
-		lang = auth.user.PrimaryLanguageID
-	else:
-		lang = 1  # default is english# what work?
-	quotecount = db.QUOTE_WORK.QuoteID.count()
-	works = db((db.WORK_TR.WorkID==db.WORK._id) & 
-				(db.WORK_TR.LanguageID==lang) & 
-				(db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-				(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-				(db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-				(db.AUTHOR_TR.LanguageID==lang) & 
-				(db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.AUTHOR_TR.DisplayName,
-				db.WORK.YearPublished, db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
-				orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK._id)
-	if request.args(0)=='all':
-		if request.vars['e']:
-			response.flash='Work ' + request.vars['e'] + ' was not found'
-		return locals()
-	w = db.WORK_TR(request.args(0))
-	# if work is invalid, show all works and an error message
-	if not w:
-		if not request.args(0):
-			redirect(URL('Pindar/default', 'works', 'all'))
-		else:
-			redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
-	quotecount = db.QUOTE_WORK.QuoteID.count()
-	work = db((db.WORK_TR._id==request.args(0)) & 
-			(db.WORK_TR.WorkID==db.WORK._id) & 
-			(db.WORK_TR.LanguageID==lang) & 
-			(db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
-			groupby=db.WORK._id)
-	for w in work:
-		work_id = w.WORK.id
-	authors = db((db.WORK_AUTHOR.WorkID==work_id) & 
-			(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-			(db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
-			(db.AUTHOR_TR.LanguageID==lang)).select(orderby=db.AUTHOR_TR.DisplayName,
-			limitby=(0,10))
-	quotes = db((db.WORK_TR._id==work_id) & 
-			(db.WORK_TR.WorkID==db.WORK._id) & 
-			(db.QUOTE_WORK.WorkID==db.WORK._id) & 
-			(db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
-			limitby=(0,10))
-	return locals()
+    if auth.user:
+        lang = auth.user.PrimaryLanguageID
+    else:
+        lang = 1  # default is english# what work?
+    quotecount = db.QUOTE_WORK.QuoteID.count()
+    works = db((db.WORK_TR.WorkID==db.WORK._id) & 
+                (db.WORK_TR.LanguageID==lang) & 
+                (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+                (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+                (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+                (db.AUTHOR_TR.LanguageID==lang) & 
+                (db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.AUTHOR_TR.DisplayName,
+                db.WORK.YearPublished, db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
+                orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK._id)
+    if request.args(0)=='all':
+        if request.vars['e']:
+            response.flash='Work ' + request.vars['e'] + ' was not found'
+        return locals()
+    w = db.WORK_TR(request.args(0))
+    # if work is invalid, show all works and an error message
+    if not w:
+        if not request.args(0):
+            redirect(URL('Pindar/default', 'works', 'all'))
+        else:
+            redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
+    quotecount = db.QUOTE_WORK.QuoteID.count()
+    work = db((db.WORK_TR._id==request.args(0)) & 
+            (db.WORK_TR.WorkID==db.WORK._id) & 
+            (db.WORK_TR.LanguageID==lang) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
+            groupby=db.WORK._id)
+    for w in work:
+        work_id = w.WORK.id
+    authors = db((db.WORK_AUTHOR.WorkID==work_id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
+            (db.AUTHOR_TR.LanguageID==lang)).select(orderby=db.AUTHOR_TR.DisplayName,
+            limitby=(0,10))
+    quotes = db((db.WORK_TR._id==work_id) & 
+            (db.WORK_TR.WorkID==db.WORK._id) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+            (db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
+            limitby=(0,10))
+    return locals()
 
 
-# flag quote
-# need to make this more extensible
-def flag():
-	if not request.vars.Type:
-		response = {'msg': 'no flag type specified', 'status': 501, 
-			'request': json.dumps(request.vars)}
-	elif not request.vars.QuoteID:
-		response = {'msg': 'no quote specified', 'status': 501,
-			'request': json.dumps(request.vars)}
-	elif not auth.user and request.vars.Type==3:
-		response = {'msg': 'no user specified', 'status': 501,
-			'request': json.dumps(request.vars)}
-	else:
-		flagID = db.FLAG.insert(**db.FLAG._filter_fields(request.vars))
-		if flagID:
-			response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars), 'id': flagID}
-		else:
-			response = {'msg': "oops", 'status': 501, 'request': json.dumps(request.vars)}
-	return json.dumps(response)
-
-
-# rate quote
 @auth.requires_login()
-def rate():
-	if not request.vars.Rating:
-		response = {'msg': 'no rating specified', 'status': 501, 
-			'request': json.dumps(request.vars)}
-	elif not request.vars.QuoteID:
-		response = {'msg': 'no quote specified', 'status': 501,
-			'request': json.dumps(request.vars)}
-	elif not auth.user:
-		response = {'msg': 'no user specified', 'status': 501,
-			'request': json.dumps(request.vars)}
-	else:
-		ratingID = db.RATING.insert(**db.RATING._filter_fields(request.vars))
-		if ratingID:
-			response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars), 'id': ratingID}
-		else:
-			response = {'msg': "oops", 'status': 501, 'request': json.dumps(request.vars)}
-	return json.dumps(response)
+def add_quote():
+    form_quote = SQLFORM.factory(
+        Field('Text', 'text', requires = [IS_NOT_EMPTY(), 
+                IS_NOT_IN_DB(db, db.QUOTE.Text)], label=''),
+        Field('QuoteLanguageID', 'reference LANGUAGE', 
+                default=1, label='', 
+                requires = IS_IN_DB(db, db.LANGUAGE.id, '%(LanguageCode)s', 
+                orderby=db.LANGUAGE.id)), 
+        Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
+        Field('DisplayName', 'string', label=''), 
+        Field('FirstName', 'string', label=''), 
+        Field('MiddleName', 'string', label=''),
+        Field('LastName', 'string', label=''),
+        Field('AKA', 'list:string', label=''),
+        Field('Biography', 'text', label=''), 
+        Field('AuthorWikipediaLink', 'string', label=''),# requires = 
+        Field('YearBorn', 'integer', label=''), 
+        Field('YearDied', 'integer', label=''),
+        Field('WorkName', 'string', label=''),
+        Field('WorkSubtitle', 'string', label=''),
+        Field('WorkDescription', 'text', label=''),
+        Field('WorkWikipediaLink', 'string', label=''),
+        Field('WorkNote', 'text', label=''),
+        Field('YearPublished', 'integer', label=''),
+        Field('YearWritten', 'integer', label=''),
+        Field('Note', 'string', label=''),
+        Field('AuthorTrID', 'integer'),
+        Field('WorkTrID', 'integer'),
+        col3={'AuthorWikipediaLink': \
+            A(INPUT(_type="button",value="?"), _href='', 
+                _id='authorWikiLink', _target='blank'),
+              'WorkWikipediaLink': \
+            A(INPUT(_type="button",value="?"), _href='', 
+                _id='workWikiLink', _target='blank'),
+              'YearBorn': 'Year born',
+              'YearDied': 'Year died',
+              'YearPublished': 'Publication year',
+              'YearWritten': 'Year written (if different)'},
+        submit_button='Add quote!', table_name='QUOTE')
+    
+    author_lookup = TR(LABEL(''),
+                    INPUT(_name="author_lookup", _type="text", 
+                    _id='QUOTE_Author_Lookup', _placeholder='Author'), _id='QUOTE_Author_Lookup__row')
+    form_quote[0].insert(6, author_lookup)
+    
+    work_lookup = TR(LABEL(''),
+                    INPUT(_name="work_lookup", _type="text", 
+                    _id='QUOTE_Work_Lookup', _placeholder='Source'), _id='QUOTE_Work_Lookup__row')
+    form_quote[0].insert(16, work_lookup)
+    
+    author_submit = TR(LABEL(''),TD(INPUT(_name='Author_Submit', _value='Add author', 
+            _id='QUOTE_Author_Submit', _type='submit'), 
+            INPUT(_name='Author_Cancel', _value='Cancel', 
+            _id='QUOTE_Author_Cancel', _type='button')), _id='QUOTE_Author_Submit__row'),
+    form_quote[0].insert(16, author_submit)
+    
+    work_submit = TR(LABEL(''),TD(INPUT(_name='Work_Submit', _value='Add work', 
+            _id='QUOTE_Work_Submit', _type='submit'), 
+            INPUT(_name='Work_Cancel', _value='Cancel', 
+            _id='QUOTE_Work_Cancel', _type='button')), _id='QUOTE_Work_Submit__row')
+    form_quote[0].insert(25, work_submit)
+    
+    quote_submit = TR(LABEL(''),INPUT(_name='Quote_Submit', _value='Add quote!', 
+            _id='QUOTE_Quote_Submit', _type='submit'), _id='QUOTE_Quote_Submit__row')
+    form_quote[0].insert(26, quote_submit)
+    
+    # intentionally no way to submit the data here
+    
+    debug=''
+        
+    return dict(form_quote=form_quote, debug=debug)
 
 
-# get comments
-def getcomments():
-	if not request.vars.QuoteID:
-		response = {'msg': 'no quote specified', 'status': 501,
-			'request': json.dumps(request.vars)}
-	else:
-		quoteid = request.vars.QuoteID
-		comments = db((db.COMMENT.QuoteID==quoteid) & (db.auth_user._id==db.COMMENT.created_by)).\
-			select(orderby=~db.COMMENT.created_on, limitby=(0,10))
-		response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars)}
-		commentslist = []
-		for q in comments:
-			commentslist.append({'text': q.COMMENT.Text, 'user': q.auth_user.username, 'timestamp': str(prettydate(q.COMMENT.created_on,T))})
-		response['comments'] = commentslist
-	return json.dumps(response)
 
-
-# add comment
-@auth.requires_login()
-def addcomment():
-	if not request.vars.Text:
-		response = {'msg': 'no text specified', 'status': 501, 
-			'request': json.dumps(request.vars)}
-	elif not request.vars.QuoteID:
-		response = {'msg': 'no quote specified', 'status': 501,
-			'request': json.dumps(request.vars)}
-	else:
-		commentID = db.COMMENT.insert(**db.COMMENT._filter_fields(request.vars))
-		if commentID:
-			response = {'msg': 'yey', 'status': 200, 'request': json.dumps(request.vars)}
-			comment = db(db.COMMENT._id==commentID).select()
-			for c in comment:
-				mycomment = { 'text': c.Text, 'user': auth.user.username, 'timestamp': str(prettydate(c.created_on,T)) }
-			response['mycomment'] = mycomment
-		else:
-			response = {'msg': "oops", 'status': 501, 'request': json.dumps(request.vars)}
-	return json.dumps(response)
 
 
 

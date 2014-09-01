@@ -24,3 +24,43 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 pre {
 	white-space: pre-wrap;
 }
+
+
+/* for quotes */
+.btn-rate span.star {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  font-size:1.2em;
+  float:right;
+}
+.btn-rate li {
+  cursor: pointer;
+  min-width: 100px;
+}
+.btn-rate ul {
+  min-width: 115px;
+  margin-top: 0;
+}
+.btn-rate span.star:before {
+  content: "\f006";
+  padding: 0 6px;
+  margin: 0 -4px;
+  color: #777777;
+}
+.btn-rate span.star.starred:before {
+  content: "\f005";
+  color: #377ffd;
+}
+.btn-rate span.star:hover:before,
+.btn-rate span.star:hover ~ span.star:before {
+  content: "\f005";
+  color: #175fdd;
+}
+
+
+
+
+
+
