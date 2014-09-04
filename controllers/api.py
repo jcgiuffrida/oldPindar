@@ -15,6 +15,7 @@
 
 
 import json
+import gluon.http
 
 
 def check_response(request_vars, check={}, user=False):
@@ -24,12 +25,12 @@ def check_response(request_vars, check={}, user=False):
     if user:
         if not auth.user:
             response['msg'] += 'no user logged in'
-            response['status'] = 501
+            response['status'] = 401
     for object in check.keys():
         if not request_vars[object]:
             if response['msg']: response['msg'] += '; '
             response['msg'] += 'no ' + check[object] + ' specified'
-            response['status'] = 501
+            response['status'] = 400
     if not response['msg']: response['msg'] = 'yey'
     return response
 
@@ -145,12 +146,16 @@ def quote_submit():
 def flag():
     response = check_response(request.vars, 
         {'Type': 'flag type', 'QuoteID': 'quote'})
-    if not response['status'] == 501:
+    if response['status'] == 200:
         flagID = db.FLAG.insert(**db.FLAG._filter_fields(request.vars))
         if flagID:
             response.update({'msg': 'yey', 'id': flagID})
         else:
-            response.update({'msg': 'oops', 'status': 501})
+            response.update({'msg': 'oops', 'status': 503})
+    status = response['status']
+    response.pop('status', None)
+    if not status == 200:
+        raise HTTP(status, json.dumps(response))
     return json.dumps(response)
 
 
@@ -160,12 +165,16 @@ def rate():
     response = check_response(request.vars, 
         {'Rating': 'rating', 'QuoteID': 'quote'}, 
         user=True)
-    if not response['status'] == 501:
+    if response['status'] == 200:
         ratingID = db.RATING.insert(**db.RATING._filter_fields(request.vars))
         if ratingID:
             response['id'] = ratingID
         else:
-            response.update({'msg': 'oops', 'status': 501})
+            response.update({'msg': 'oops', 'status': 503})
+    status = response['status']
+    response.pop('status', None)
+    if not status == 200:
+        raise HTTP(status, json.dumps(response))
     return json.dumps(response)
 
 
@@ -173,7 +182,7 @@ def rate():
 def get_comments():
     response = check_response(request.vars,
         {'QuoteID': 'quote'})
-    if not response['status'] == 501:
+    if response['status'] == 200:
         quoteid = request.vars.QuoteID
         comments = db((db.COMMENT.QuoteID==quoteid) & 
             (db.auth_user._id==db.COMMENT.created_by)).select(
@@ -185,6 +194,11 @@ def get_comments():
                 'user': q.auth_user.username, 
                 'timestamp': str(prettydate(q.COMMENT.created_on,T)) })
         response['comments'] = commentslist
+    else:
+        status = response['status']
+        response.pop('status', None)
+        raise HTTP(status, json.dumps(response))
+    response.pop('status', None)
     return json.dumps(response)
 
 
@@ -194,7 +208,7 @@ def comment():
     response = check_response(request.vars,
         {'Text': 'text', 'QuoteID': 'quote'},
         user=True)
-    if not response['status'] == 501:
+    if response['status'] == 200:
         commentID = db.COMMENT.insert(**db.COMMENT._filter_fields(request.vars))
         if commentID:
             response['mycomment'] = {
@@ -202,7 +216,11 @@ def comment():
             'user': auth.user.username,
             'timestamp': 'Just now'}
         else:
-            response.update({'msg': "oops", 'status': 501})
+            response.update({'msg': "oops", 'status': 503})
+    status = response['status']
+    response.pop('status', None)
+    if not status == 200:
+        raise HTTP(status, json.dumps(response))
     return json.dumps(response)
 
 
