@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from gluon.tools import prettydate
+import gluon.http
 
 
 def show(): 

@@ -94,26 +94,18 @@ $.fn.quotify = function(){
           contentType: 'application/json',
           dataType: 'json',
           success: function(response) {
-            if (response.status===200){
-              for (q in response.comments){
-                c = response.comments[q];
-                comment = $('<li class="list-group-item"><p>' + c.text + 
-                  '</p><p class="small"><a href="/Pindar/default/users/' + 
-                  c.user + '">' + c.user + '</a>, ' + c.timestamp + 
-                  '</p></li>');
-                comments.append(comment);
-              }
-              comments.find('li').eq(1).remove();
-              commentsLoaded = true;
-              console.log(response.request_method);
-              console.log(response.post_vars);
-            } else {
-              console.log(response);
-              quote.find('.comments div li:last').html(response.msg);
+            for (q in response.comments){
+              c = response.comments[q];
+              comment = $('<li class="list-group-item"><p>' + c.text + 
+                '</p><p class="small"><a href="/Pindar/default/users/' + 
+                c.user + '">' + c.user + '</a>, ' + c.timestamp + 
+                '</p></li>');
+              comments.append(comment);
             }
+            comments.find('li').eq(1).remove();
+            commentsLoaded = true;
           },
           error: function(request, errorType, errorMessage) {
-            // don't do anything with server errors yet
             quote.find('.comments div li:last').html(errorType + ": " + 
               errorMessage);
           },
@@ -145,21 +137,15 @@ $.fn.quotify = function(){
           contentType: 'application/json',
           dataType: 'json',
           success: function(response) {
-            if (response.status===200){
-              var c = response.mycomment;
-              comment = '<li class="list-group-item"><p>' + c.text + '</p>';
-              comment += '<p class="small"><a href="/Pindar/default/users/' + 
-                c.user + '">' + c.user + '</a>, ' + c.timestamp + '</p></li>';
-              quote.find('.mycomment').hide();
-              quote.find('.comments .list-group').prepend(comment).show();
-              numComments += 1;
-              button.find('span').html(numComments).show();
-              commentAdded = true;
-            } else {
-              submitButton.closest('.mycomment').
-                append('<p class="text-warning">' + response.msg + '</p>');
-              submitButton.html('Submit');
-            }
+            var c = response.mycomment;
+            comment = '<li class="list-group-item"><p>' + c.text + '</p>';
+            comment += '<p class="small"><a href="/Pindar/default/users/' + 
+              c.user + '">' + c.user + '</a>, ' + c.timestamp + '</p></li>';
+            quote.find('.mycomment').hide();
+            quote.find('.comments .list-group').prepend(comment).show();
+            numComments += 1;
+            button.find('span').html(numComments).show();
+            commentAdded = true;
           },
           error: function(request, errorType, errorMessage) {
               submitButton.closest('.mycomment').
@@ -222,19 +208,12 @@ $.fn.quotify = function(){
         contentType: 'application/json',
         dataType: 'json',
         success: function(response) {
-          if (response.status===200){
-            button.removeClass('btn-default').addClass('btn-danger').
-              html('<i class="fa fa-flag"></i>');
-            button.closest('.btn-flag').attr('title', 'You flagged this quote');
-          } else {
-            button.html('<i class="fa fa-flag"></i> ' + 
-              '<i class="fa fa-exclamation-circle"></i>').
-              removeClass('btn-default').addClass('btn-warning');
-            console.log(response);
-          }
+          button.removeClass('btn-default').addClass('btn-danger').
+            html('<i class="fa fa-flag"></i>');
+          button.closest('.btn-flag').attr('title', 'You flagged this quote');
         },
         error: function(request, errorType, errorMessage) {
-          // don't do anything with server errors yet
+          console.log(errorType + ': ' + errorMessage);
           button.html('<i class="fa fa-flag"></i> ' + 
             '<i class="fa fa-exclamation-circle"></i>').
             removeClass('btn-default').addClass('btn-warning');
@@ -274,27 +253,20 @@ $.fn.quotify = function(){
           contentType: 'application/json',
           dataType: 'json',
           success: function(response) {
-            if (response.status===200){
-              button.removeClass('btn-default').addClass('btn-success');
-              button.html('Rate <i class="fa fa-caret-down"></i>');
-              quote.find('.btn-rate span.star').removeClass('starred');
-              for (i = 1; i <= rating; i++){
-                quote.find('.btn-rate span.star[data-star=' + i + 
-                  ']').addClass('starred');
-              }
-              quote.find('.btn-rate').off('click'); // turn off
-            } else {
-              button.html('Rate <i class="fa fa-exclamation-circle"></i>').
-                removeClass('btn-default').addClass('btn-warning').
-                  addClass('disabled'); 
-              console.log(response);
+            button.removeClass('btn-default').addClass('btn-success');
+            button.html('Rate <i class="fa fa-caret-down"></i>');
+            quote.find('.btn-rate span.star').removeClass('starred');
+            for (i = 1; i <= rating; i++){
+              quote.find('.btn-rate span.star[data-star=' + i + 
+                ']').addClass('starred');
             }
+            quote.find('.btn-rate').off('click'); // turn off
           },
           error: function(request, errorType, errorMessage) {
-            // don't do anything with server errors yet
             button.html('Rate <i class="fa fa-exclamation-circle"></i>').
                 removeClass('btn-default').addClass('btn-warning').
                   addClass('disabled');
+            console.log(errorType + ': ' + errorMessage);
           },
           timeout: 3000,
           beforeSend: function(){
