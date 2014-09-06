@@ -33,6 +33,14 @@ response.generic_patterns = ['*'] if request.is_local else []
 # response.static_version = '0.0.0'
 
 
+# extra function
+def plural(num):
+    if num == 1:
+        return ''
+    else:
+        return 's'
+
+
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
 auth = Auth(db)
 crud, service, plugins = Crud(db), Service(), PluginManager()

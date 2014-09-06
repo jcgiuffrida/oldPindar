@@ -25,6 +25,18 @@ pre {
 	white-space: pre-wrap;
 }
 
+/*****
+/*  ~object
+/*****/
+
+/* main page */
+.object .text {
+  cursor: pointer;
+  padding: 5px;
+}
+.object:hover .panel {
+  background-color: #f8f8f8;
+}
 
 /* for quotes */
 .btn-rate span.star {
@@ -58,6 +70,9 @@ pre {
   content: "\f005";
   color: #175fdd;
 }
+
+
+/* search bar */
 
 
 

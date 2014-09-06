@@ -14,16 +14,34 @@ def show():
      #    groupby=db.QUOTE._id, orderby=~r)
 
    # this is the standard quotes query
-   quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-    (db.QUOTE_WORK.WorkID==db.WORK._id) & 
-    (db.WORK._id==db.WORK_TR.WorkID) & 
-    (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
-    (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-    (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(db.QUOTE.Text,
-        db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
+    quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id) & 
+            (db.WORK._id==db.WORK_TR.WorkID) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(
+            db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
             db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, 
-            groupby=db.QUOTE._id, orderby=~db.QUOTE.created_on)
-   return dict(quotes=quotes)
+            groupby=db.QUOTE._id, orderby=~db.QUOTE.created_on,
+            limitby=(0,10))
+    workcount = db.WORK_AUTHOR.AuthorID.count()
+    authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id)).select(
+            db.AUTHOR_TR.DisplayName, db.AUTHOR.YearBorn, 
+            db.AUTHOR.YearDied, db.AUTHOR_TR._id, workcount, 
+            orderby=~workcount, limitby=(0,5), 
+            groupby=db.AUTHOR_TR.DisplayName)
+    quotecount = db.QUOTE_WORK.QuoteID.count()
+    works = db((db.WORK_TR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
+            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
+            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
+            (db.QUOTE_WORK.WorkID==db.WORK._id)).select(
+            db.AUTHOR_TR.DisplayName, db.WORK.YearPublished, 
+            db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
+            orderby=~quotecount, limitby=(0,5), 
+            groupby=db.WORK._id)
+    return locals()
 
 
 def text_query():
@@ -219,8 +237,8 @@ def quotes():
             (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
             (db.AUTHOR_TR.LanguageID==lang) & 
             (db.WORK_TR.LanguageID==lang)).select(
-            db.QUOTE.Text, db.QUOTE._id, db.WORK_TR.WorkName, db.AUTHOR_TR.DisplayName,
-            db.WORK_TR._id, db.AUTHOR_TR._id)
+            db.QUOTE.Text, db.QUOTE._id, db.WORK_TR.WorkName, 
+            db.AUTHOR_TR.DisplayName, db.WORK_TR._id, db.AUTHOR_TR._id)
     return locals()
 
 
@@ -240,7 +258,6 @@ def authors():
                     orderby=db.AUTHOR_TR.LastName, limitby=(0,10), groupby=db.AUTHOR_TR.DisplayName)
         if request.vars['e']:
             response.flash='Author ' + request.vars['e'] + ' was not found'
-        return locals()
         return locals()
     a = db.AUTHOR_TR(request.args(0))
     # if author is invalid, show all authors and an error message
