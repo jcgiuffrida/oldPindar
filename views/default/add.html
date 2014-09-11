@@ -1,0 +1,247 @@
+{{extend 'layout.html'}}
+
+<div class="row">
+	<div class="col-md-6 col-md-offset-2 col-sm-8 col-sm-offset-2 
+	col-xs-10 col-xs-offset-1">
+		<form class="form-horizontal add-form" role="form" autocomplete="off">
+			
+			<div class="form-group">
+				<div class="col-md-9 col-md-offset-3">
+					<textarea class="form-control" placeholder="Enter the quote..."
+					rows="6" id="QUOTE-Text"></textarea>
+				</div>
+			</div>
+			
+			<div class="col-md-8 col-md-offset-3 lookup-author">
+				<div class="form-group">
+					<input type="search" class="form-control" id="QUOTE-author-lookup" 
+					placeholder="Name of author"></input>
+					<div class="results"></div>
+				</div>
+			</div><!--/.lookup-author-->
+
+			<div class="add-author">
+				<div class="form-group">
+					<label for="AUTHOR_TR-DisplayName" class="col-md-3 control-label">
+						Name to display
+					</label>
+					<div class="col-md-9">
+						<input type="text" class="form-control" id="AUTHOR_TR-DisplayName"
+						placeholder="The Bard" autocomplete="off"></input>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="AUTHOR_TR-FirstName" class="col-md-3 control-label">
+						Full name
+					</label>
+					<div class="col-md-3">
+						<input type="text" class="form-control" id="AUTHOR_TR-FirstName"
+						placeholder="William" autocomplete="off"></input>
+					</div>
+					<div class="col-md-2">
+						<input type="text" class="form-control" id="AUTHOR_TR-MiddleName"
+						placeholder="X" autocomplete="off"></input>
+					</div>
+					<div class="col-md-4">
+						<input type="text" class="form-control" id="AUTHOR_TR-LastName"
+						placeholder="Shakespeare" autocomplete="off"></input>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="AUTHOR_TR-AKA" class="col-md-3 control-label">
+							Also known as
+					</label>
+					<div class="col-md-8">
+							<input type="text" class="form-control" id="AUTHOR_TR-AKA"
+							placeholder="Edward de Vere" autocomplete="off"></input>
+					</div>
+					<div class="col-md-1">
+						<button class="btn btn-info" type="button">
+							<i class="fa fa-plus"></i>
+						</button>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="AUTHOR_TR-Biography" class="col-md-3 control-label">
+							Biography
+					</label>
+					<div class="col-md-9">
+						<textarea class="form-control" id="AUTHOR_TR-Biography" rows="3"
+						placeholder="William Shakespeare was the shit."></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="AUTHOR_TR-WikipediaLink" class="col-md-3 control-label">
+							Wikipedia page
+					</label>
+					<div class="col-md-9">
+						<div class="input-group">
+							<input type="url" class="form-control" id="AUTHOR_TR-WikipediaLink"
+							placeholder="http://en.wikipedia.org/wiki/William_Shakespeare"></input>
+							<span class="input-group-btn">
+								<button class="btn btn-info" type="button">
+									<i class="fa fa-external-link"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="AUTHOR-YearBorn" class="col-md-3 col-sm-3 control-label">Dates</label>
+					<div class="col-md-2 col-sm-3">
+						<input type="number" class="form-control" id="AUTHOR-YearBorn"
+						placeholder="1564"></input>
+					</div>
+					<label for="AUTHOR-YearDied" class="col-md-1 col-sm-1 control-label"
+						style="text-align:center;">&mdash;</label>
+					<div class="col-md-2 col-sm-3">
+						<input type="number" class="form-control" id="AUTHOR-YearDied"
+						placeholder="1616"></input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 col-md-offset-3">
+						<button type="submit" class="btn btn-primary" id="author-submit">
+						Add author</button> 
+					</div>
+					<div class="col-md-2 col-md-offset-1">
+						<button type="button" class="btn btn-default" id="author-cancel">
+						Cancel</button> 
+					</div>
+				</div>
+			</div><!--/.add-author -->
+
+			<div class="col-md-8 col-md-offset-3 lookup-work">
+				<div class="form-group">
+					<input type="search" class="form-control" id="QUOTE-work-lookup" 
+					placeholder="Source"></input>
+					<div class="results"></div>
+				</div>
+			</div><!--/.lookup-work -->
+
+			<div class="add-work">
+				<div class="form-group">
+					<label for="WORK_TR-WorkName" class="col-md-3 control-label">
+						Name of work
+					</label>
+					<div class="col-md-9">
+						<input type="text" class="form-control" id="WORK_TR-WorkName"
+						placeholder="Romeo and Juliet" autocomplete="off"></input>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="WORK_TR-WorkSubtitle" class="col-md-3 control-label">
+						Subtitle
+					</label>
+					<div class="col-md-9">
+						<input type="text" class="form-control" id="WORK_TR-WorkSubtitle"
+						placeholder="A Tragic Tale"></input>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="WORK_TR-WorkDescription" class="col-md-3 control-label">
+						Description of work
+					</label>
+					<div class="col-md-9">
+						<textarea class="form-control" id="WORK_TR-WorkDescription"
+						placeholder="Romeo and Juliet is a sadfest." rows="3"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="WORK_TR-WikipediaLink" class="col-md-3 control-label">
+							Wikipedia page
+					</label>
+					<div class="col-md-9">
+						<div class="input-group">
+							<input type="url" class="form-control" id="WORK_TR-WikipediaLink"
+							placeholder="http://en.wikipedia.org/wiki/Romeo_and_Juliet"></input>
+							<span class="input-group-btn">
+								<button class="btn btn-info" type="button">
+									<i class="fa fa-external-link"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="WORK-YearPublished" class="col-md-3 control-label">
+						Publication year</label>
+					<div class="col-md-2">
+						<input type="number" class="form-control" id="WORK-YearPublished"
+						placeholder="1597"></input>
+					</div>
+					<label for="WORK-YearWritten" class="col-md-5 control-label">
+						Year written (if different)</label>
+					<div class="col-md-2">
+						<input type="number" class="form-control" id="WORK-YearWritten"
+						placeholder="1595"></input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 col-md-offset-3">
+						<button type="submit" class="btn btn-primary" id="work-submit">
+						Add work</button> 
+					</div>
+					<div class="col-md-2 col-md-offset-1">
+						<button type="button" class="btn btn-default" id="work-cancel">
+						Cancel</button> 
+					</div>
+				</div>
+			</div><!--/.add-work -->
+
+			<div class="add-quote">
+				<div class="form-group">					
+					<label for="QUOTE-QuoteLanguageID" class="col-md-3 control-label">Language</label>
+					<div class="col-md-4">
+						<select class="form-control" id="QUOTE-QuoteLanguageID">
+							{{for lang in langs:}}
+						  <option data-id="{{=lang['id']}}">
+						  	{{=lang['NativeName']}}
+						  </option>
+						  {{pass}}
+						</select>
+					</div>
+					<div class="col-md-4 col-md-offset-1 checkbox">
+					  <label>
+					    <input type="checkbox" id="QUOTE-IsOriginalLanguage">
+					    Original language?
+					  </label>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-8 col-md-offset-3">
+						<textarea class="form-control" id="QUOTE-Note" rows="2"
+							placeholder="Context or additional information about this quote"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 col-md-offset-3">
+						<button type="submit" class="btn btn-primary" id="quote-submit">
+						Add quote</button> 
+					</div>
+					<div class="col-md-2 col-md-offset-1">
+						<button type="button" class="btn btn-default" id="quote-cancel">
+						Cancel</button> 
+					</div>
+				</div>
+			</div><!--/.add-quote -->
+
+		</form>
+	</div>
+</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+{{block tail}}
+<script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+<script src="{{=URL('static','js/add.js')}}"></script>
+{{end}}

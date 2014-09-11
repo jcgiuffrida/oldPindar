@@ -337,81 +337,11 @@ def works():
 
 
 @auth.requires_login()
-def add_quote():
-    form_quote = SQLFORM.factory(
-        Field('Text', 'text', requires = [IS_NOT_EMPTY(), 
-                IS_NOT_IN_DB(db, db.QUOTE.Text)], label=''),
-        Field('QuoteLanguageID', 'reference LANGUAGE', 
-                default=1, label='', 
-                requires = IS_IN_DB(db, db.LANGUAGE.id, '%(LanguageCode)s', 
-                orderby=db.LANGUAGE.id)), 
-        Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
-        Field('DisplayName', 'string', label=''), 
-        Field('FirstName', 'string', label=''), 
-        Field('MiddleName', 'string', label=''),
-        Field('LastName', 'string', label=''),
-        Field('AKA', 'list:string', label=''),
-        Field('Biography', 'text', label=''), 
-        Field('AuthorWikipediaLink', 'string', label=''),# requires = 
-        Field('YearBorn', 'integer', label=''), 
-        Field('YearDied', 'integer', label=''),
-        Field('WorkName', 'string', label=''),
-        Field('WorkSubtitle', 'string', label=''),
-        Field('WorkDescription', 'text', label=''),
-        Field('WorkWikipediaLink', 'string', label=''),
-        Field('WorkNote', 'text', label=''),
-        Field('YearPublished', 'integer', label=''),
-        Field('YearWritten', 'integer', label=''),
-        Field('Note', 'string', label=''),
-        Field('AuthorTrID', 'integer'),
-        Field('WorkTrID', 'integer'),
-        col3={'AuthorWikipediaLink': \
-            A(INPUT(_type="button",value="?"), _href='', 
-                _id='authorWikiLink', _target='blank'),
-              'WorkWikipediaLink': \
-            A(INPUT(_type="button",value="?"), _href='', 
-                _id='workWikiLink', _target='blank'),
-              'YearBorn': 'Year born',
-              'YearDied': 'Year died',
-              'YearPublished': 'Publication year',
-              'YearWritten': 'Year written (if different)'},
-        submit_button='Add quote!', table_name='QUOTE')
-    
-    author_lookup = TR(LABEL(''),
-                    INPUT(_name="author_lookup", _type="text", 
-                    _id='QUOTE_Author_Lookup', _placeholder='Author'), _id='QUOTE_Author_Lookup__row')
-    form_quote[0].insert(6, author_lookup)
-    
-    work_lookup = TR(LABEL(''),
-                    INPUT(_name="work_lookup", _type="text", 
-                    _id='QUOTE_Work_Lookup', _placeholder='Source'), _id='QUOTE_Work_Lookup__row')
-    form_quote[0].insert(16, work_lookup)
-    
-    author_submit = TR(LABEL(''),TD(INPUT(_name='Author_Submit', _value='Add author', 
-            _id='QUOTE_Author_Submit', _type='submit'), 
-            INPUT(_name='Author_Cancel', _value='Cancel', 
-            _id='QUOTE_Author_Cancel', _type='button')), _id='QUOTE_Author_Submit__row'),
-    form_quote[0].insert(16, author_submit)
-    
-    work_submit = TR(LABEL(''),TD(INPUT(_name='Work_Submit', _value='Add work', 
-            _id='QUOTE_Work_Submit', _type='submit'), 
-            INPUT(_name='Work_Cancel', _value='Cancel', 
-            _id='QUOTE_Work_Cancel', _type='button')), _id='QUOTE_Work_Submit__row')
-    form_quote[0].insert(25, work_submit)
-    
-    quote_submit = TR(LABEL(''),INPUT(_name='Quote_Submit', _value='Add quote!', 
-            _id='QUOTE_Quote_Submit', _type='submit'), _id='QUOTE_Quote_Submit__row')
-    form_quote[0].insert(26, quote_submit)
-    
-    # intentionally no way to submit the data here
-    
-    debug=''
-        
-    return dict(form_quote=form_quote, debug=debug)
-
-
-
-
+def add():
+    langs = db((db.LANGUAGE._id > 0)).select(
+        db.LANGUAGE.NativeName, db.LANGUAGE._id,
+        orderby=db.LANGUAGE._id).as_list()       
+    return locals()
 
 
 
