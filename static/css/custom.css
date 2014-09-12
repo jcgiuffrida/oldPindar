@@ -4,7 +4,7 @@
 /*****/
 
 body {
-  background-color: #f8f8f8;
+  background-color: #e8e8e8;
 }
 
 body>.container {
@@ -51,11 +51,11 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 /*****/
 
 /* main page */
-.object .text {
+.tiles .object .text {
   cursor: pointer;
   padding: 5px;
 }
-.object:hover .panel {
+.tiles .object:hover .panel {
   background-color: #f8f8f8;
 }
 
@@ -100,50 +100,25 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 /*  ~add page
 /*****/
 
-.add-form #QUOTE-text {
+.add-form #QUOTE-Text {
   font-size: 1.4em;
   line-height: 1.4em;
 }
 .error {
   color: #AC1F24;
-} 
-#author_results {
-  width:40%; 
-  margin:0 auto;
 }
-#work_results {
-  width:40%; 
-  margin:0 auto;
-}
-#target {
-  margin-bottom:250px;
-}
-#QUOTE_QuoteLanguageID { 
-  width: 50px; 
-  position:relative; 
-  top:2px; 
-  opacity: 0.7;
-}
-#author_results tbody tr {
+.author-results a {
   cursor: pointer;
 }
-#author_results tbody tr:hover {
-  background-color: #ddd;
-}
-#author_results tbody tr:active {
-  background-color: #ccc;
-}
-#work_results tbody tr {
+.work-results a {
   cursor: pointer;
 }
-#work_results tbody tr:hover {
-  background-color: #ddd;
+.author-results a.disabled {
+  cursor: default;
 }
-#work_results tbody tr:active {
-  background-color: #ccc;
+.work-results a.disabled {
+  cursor: default;
 }
-
-
 
 
 

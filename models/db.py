@@ -278,7 +278,7 @@ db.FLAG.created_on.readable=True
 ###---------------------- RATING
 
 db.define_table('RATING',
-            Field('Rating', 'decimal(2,1)', required=True),
+            Field('Rating', 'decimal(3,2)', required=True),
             Field('QuoteID', 'reference QUOTE', required=True),
             auth_signature)
 

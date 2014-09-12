@@ -5,84 +5,103 @@
 	<div class="col-md-12">
 		<form class="form-inline search-bar" role="form">
 			<div class="form-group">
-				<input type="search" class="form-control" id="textQuery" 
+				<input type="search" class="form-control text-search" id="textQuery" 
 				placeholder="Search everything">
 			</div>
 		</form>
 	</div>
 </div>
 
-<div class="row">
+<div class="row default-content">
 	<!-- ======== QUOTES ====== -->
 	<div class="col-md-8">
 		<h3>Quotes</h3>
-	{{counter = 0}}
-	{{ for q in quotes:}}
-		{{if counter % 2 == 0:}}
-			<div class="row">
-		{{pass}}
-		<div class="col-md-6">
-			<div class="object" data-id="{{=q.QUOTE.id}}">
-				<div class="object-data panel panel-default">
-					<div class="panel-body">
-						<p class="text">
-							{{if len(q.QUOTE.Text) > 250:}}
-								{{=q.QUOTE.Text[:(q.QUOTE.Text).rfind(' ', 0, 250)]}} ...
-							{{else:}}
-								{{=q.QUOTE.Text}}
-							{{pass}}
+		<div class="show-quotes default">
+		{{counter = 0}}
+		{{ for q in quotes:}}
+			{{if counter % 2 == 0:}}
+				<div class="row">
+			{{pass}}
+			<div class="col-md-6">
+				<div class="object" data-id="{{=q.QUOTE.id}}">
+					<div class="object-data panel panel-default">
+						<div class="panel-body">
+							<p class="text">
+								{{if len(q.QUOTE.Text) > 250:}}
+									{{=q.QUOTE.Text[:(q.QUOTE.Text).rfind(' ', 0, 250)]}} ...
+								{{else:}}
+									{{=q.QUOTE.Text}}
+								{{pass}}
+								</p>
+							<p>
+								<a class="btn btn-primary btn-sm" href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
+								{{=q.AUTHOR_TR.DisplayName}}</a>
+								<a class="btn btn-primary btn-sm" href="/Pindar/default/works/{{=q.WORK_TR.id}}">
+								{{=q.WORK_TR.WorkName}}</a>
+								{{if not q[r] == None:}}{{=q[r]}}/{{=q[s]}}{{pass}}
 							</p>
-						<p>
-							<a class="btn btn-primary btn-sm" href="/Pindar/default/authors/{{=q.AUTHOR_TR.id}}">
-							{{=q.AUTHOR_TR.DisplayName}}</a>
-							<a class="btn btn-primary btn-sm" href="/Pindar/default/works/{{=q.WORK_TR.id}}">
-							{{=q.WORK_TR.WorkName}}</a>
-						</p>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		{{if (counter + 1) % 2 == 0:}}
-		</div><!--/.row -->
+			{{if (counter + 1) % 2 == 0:}}
+			</div><!--/.row -->
+			{{pass}}
+			{{counter += 1}} <!-- number of quotes entered -->
 		{{pass}}
-		{{counter += 1}} <!-- number of quotes entered -->
-	{{pass}}
-	{{if counter % 2 != 0:}}
+		{{if counter % 2 != 0:}}
+			</div>
+		{{pass}}
 		</div>
-	{{pass}}
+		<div class="search-quotes search"></div>
 	</div>
 	<!-- ======== AUTHORS AND WORKS ====== -->
 	<div class="col-md-4">
 		{{if len(authors) > 0:}}
 		<h3>Authors</h3>
-		<div class="row">
-			<div class="list-group">
-				{{for a in authors:}}
-				<a class="list-group-item" href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">
-					{{=a.AUTHOR_TR.DisplayName}} ({{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}})
-					<span class="badge">{{=a[workcount]}} work{{=plural(a[workcount])}}</span>
-				</a>
-				{{pass}}
+		<div class="show-authors default">
+			<div class="row">
+				<div class="list-group">
+					{{for a in authors:}}
+					<a class="list-group-item" href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">
+						{{=a.AUTHOR_TR.DisplayName}} 
+						{{if not a.AUTHOR.YearBorn==None:}}
+							{{if not a.AUTHOR.YearDied==None:}}
+								({{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}})
+							{{else:}}
+								(b. {{=a.AUTHOR.YearBorn}})
+							{{pass}}
+						{{pass}}
+						{{if a[workcount]>0:}}<span class="badge">{{=a[workcount]}}
+						 work{{=plural(a[workcount])}}</span>{{pass}}
+					</a>
+					{{pass}}
+				</div>
 			</div>
 		</div>
 		{{pass}}
+		<div class="search-authors search"></div>
 		{{if len(works) > 0:}}
 		<h3>Works</h3>
-		<div class="row">
-			<div class="list-group">
-				{{for w in works:}}
-					<a class="list-group-item" href="/Pindar/default/works/{{=w.WORK_TR.id}}">
-						{{=w.WORK_TR.WorkName}} ({{=w.WORK.YearPublished}})
-						<span class="badge">{{=w[quotecount]}} quote{{=plural(w[quotecount])}}</span>
-						<p class="small">{{=w.AUTHOR_TR.DisplayName}}</p>
-					</a>
-				{{pass}}
+		<div class="show-works default">
+			<div class="row">
+				<div class="list-group">
+					{{for w in works:}}
+						<a class="list-group-item" 
+						href="/Pindar/default/works/{{=w.WORK_TR.id}}">
+							{{=w.WORK_TR.WorkName}} {{if not w.WORK.YearPublished == None:}}
+							({{=w.WORK.YearPublished}}){{pass}}
+							{{if w[quotecount]>0:}}<span class="badge">{{=w[quotecount]}} quote{{=plural(w[quotecount])}}</span>{{pass}}
+							<p class="small">{{=w.AUTHOR_TR.DisplayName}}</p>
+						</a>
+					{{pass}}
+				</div>
 			</div>
 		</div>
 		{{pass}}
-	</div><!-- authors and works -->
+		<div class="search-works search"></div>
+	</div>
 </div>
-
 
 
 <div class="row">
@@ -98,4 +117,5 @@ $(document).ready(function(){
 	});
 });
 </script>
+<script src="{{=URL('static','js/search.js')}}"></script>
 {{end}}

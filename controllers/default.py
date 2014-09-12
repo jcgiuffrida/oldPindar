@@ -2,6 +2,7 @@
 import json
 from gluon.tools import prettydate
 import gluon.http
+import random
 
 
 def show(): 
@@ -13,7 +14,9 @@ def show():
      #    db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, r, 
      #    groupby=db.QUOTE._id, orderby=~r)
 
-   # this is the standard quotes query
+   # this is the standard quotes query, ordered by rating
+    r = db.RATING.Rating.avg()
+    s = db.RATING.Rating.count()
     quotes = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
             (db.QUOTE_WORK.WorkID==db.WORK._id) & 
             (db.WORK._id==db.WORK_TR.WorkID) & 
@@ -21,67 +24,27 @@ def show():
             (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
             (db.AUTHOR._id==db.AUTHOR_TR.AuthorID)).select(
             db.QUOTE.Text, db.AUTHOR_TR.DisplayName, db.WORK_TR.WorkName,
-            db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, 
-            groupby=db.QUOTE._id, orderby=~db.QUOTE.created_on,
-            limitby=(0,10))
+            db.QUOTE._id, db.AUTHOR_TR._id, db.WORK_TR._id, r, s, 
+            left=db.RATING.on(db.RATING.QuoteID==db.QUOTE._id),
+            groupby=db.QUOTE._id, orderby=~r|~s, limitby=(0,10))
     workcount = db.WORK_AUTHOR.AuthorID.count()
-    authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-            (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id)).select(
+    authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id)).select(
             db.AUTHOR_TR.DisplayName, db.AUTHOR.YearBorn, 
             db.AUTHOR.YearDied, db.AUTHOR_TR._id, workcount, 
-            orderby=~workcount, limitby=(0,5), 
-            groupby=db.AUTHOR_TR.DisplayName)
+            left=db.WORK_AUTHOR.on(db.WORK_AUTHOR.AuthorID==db.AUTHOR._id),
+            orderby=~workcount|db.AUTHOR_TR.LastName, limitby=(0,5), 
+            groupby=db.AUTHOR.id)
     quotecount = db.QUOTE_WORK.QuoteID.count()
     works = db((db.WORK_TR.WorkID==db.WORK._id) & 
             (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
             (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
-            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-            (db.QUOTE_WORK.WorkID==db.WORK._id)).select(
+            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id)).select(
             db.AUTHOR_TR.DisplayName, db.WORK.YearPublished, 
             db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
-            orderby=~quotecount, limitby=(0,5), 
+            left=db.QUOTE_WORK.on(db.QUOTE_WORK.WorkID==db.WORK._id),
+            orderby=~quotecount|db.WORK_TR.WorkName, limitby=(0,5), 
             groupby=db.WORK._id)
     return locals()
-
-
-def text_query():
-    lang = 1 if request.vars.lang=='' else int(request.vars.lang)
-    if len(request.vars.query) < 2:
-        return ''
-    query = '%' + request.vars.query + '%'
-    if lang == 0:
-        results = db((db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-        (db.QUOTE_WORK.WorkID==db.WORK._id) & 
-        (db.WORK._id==db.WORK_TR.WorkID) & 
-        (db.WORK._id==db.WORK_AUTHOR.WorkID) & 
-        (db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-        (db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
-                                            db.AUTHOR_TR.DisplayName, 
-                                            db.WORK_TR.WorkName, 
-                                            db.WORK_TR.id, 
-                                            groupby=db.QUOTE.Text)
-    else:
-        results = db((db.QUOTE.QuoteLanguageID==lang) & 
-        (db.QUOTE._id==db.QUOTE_WORK.QuoteID) & 
-        (db.QUOTE_WORK.WorkID==db.WORK._id) & 
-        (db.WORK._id==db.WORK_TR.WorkID) & 
-        (db.WORK._id==db.WORK_AUTHOR.WorkID) & 
-        (db.WORK_AUTHOR.AuthorID==db.AUTHOR_TR.AuthorID) & 
-        (db.QUOTE.Text.like(query))).select(db.QUOTE.Text, 
-                                            db.AUTHOR_TR.DisplayName, 
-                                            db.WORK_TR.WorkName, 
-                                            db.WORK_TR.id, 
-                                            groupby=db.QUOTE.Text)
-    
-    response = '<h3>Example query (text search)</h3>'
-    if len(results) == 0:
-        response += '<em>No results found.</em>'
-    for row in results:
-        response += row.QUOTE.Text + '<br/>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#888;">'
-        response += row.AUTHOR_TR.DisplayName + ', <a href="data/read/WORK_TR/' + str(row.WORK_TR.id) + '"><em>'
-        response += row.WORK_TR.WorkName + '</em></a></span><br/><br/>'
-    
-    return response
 
 
 
@@ -252,10 +215,12 @@ def authors():
     if request.args(0)=='all':
         workcount = db.WORK_AUTHOR.AuthorID.count()
         authors = db((db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-                    (db.AUTHOR_TR.LanguageID==lang) &
-                    (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id)).select(db.AUTHOR_TR.DisplayName,
-                    db.AUTHOR.YearBorn, db.AUTHOR.YearDied, db.AUTHOR_TR._id, workcount, 
-                    orderby=db.AUTHOR_TR.LastName, limitby=(0,10), groupby=db.AUTHOR_TR.DisplayName)
+                    (db.AUTHOR_TR.LanguageID==lang)).select(
+                    db.AUTHOR_TR.DisplayName, db.AUTHOR_TR._id, 
+                    db.AUTHOR.YearBorn, db.AUTHOR.YearDied, workcount, 
+                    left=db.WORK_AUTHOR.on(db.AUTHOR.id==db.WORK_AUTHOR.AuthorID),
+                    groupby=db.AUTHOR.id,
+                    orderby=~workcount|db.AUTHOR_TR.LastName, limitby=(0,10))
         if request.vars['e']:
             response.flash='Author ' + request.vars['e'] + ' was not found'
         return locals()
@@ -266,25 +231,30 @@ def authors():
             redirect(URL('Pindar/default', 'authors', 'all'))
         else:
             redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
-    author = db((db.AUTHOR_TR._id==request.args(0)) & 
-            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-            (db.AUTHOR_TR.LanguageID==lang)).select()
-    for a in author:
-        author_id = a.AUTHOR.id
+    try:
+        author = db((db.AUTHOR_TR._id==request.args(0)) & 
+            (db.AUTHOR_TR.AuthorID==db.AUTHOR._id)).select()
+        author_id = author[0]['AUTHOR']['id']
+    except KeyError:
+        redirect(URL('Pindar/default', 'authors', 'all?e='+request.args(0)))
     quotecount = db.QUOTE_WORK.QuoteID.count()
     works = db((db.WORK_AUTHOR.AuthorID==author_id) & 
             (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
             (db.WORK._id==db.WORK_TR.WorkID) & 
-            (db.WORK_TR.LanguageID==lang) & 
-            (db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
-            orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK_TR._id)
+            (db.WORK_TR.LanguageID==lang)).select(
+            db.WORK.YearPublished, db.WORK.YearWritten, db.WORK.id,
+            db.WORK_TR.id, db.WORK_TR.WorkName, db.WORK_TR.WorkSubtitle, 
+            quotecount, 
+            left=db.QUOTE_WORK.on(db.WORK.id==db.QUOTE_WORK.WorkID),
+            groupby=db.WORK.id, orderby=~quotecount|db.WORK_TR.WorkName, 
+            limitby=(0,10))
     quotes = db((db.WORK_AUTHOR.AuthorID==author_id) & 
             (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
             (db.WORK_TR.WorkID==db.WORK._id) & 
-            (db.WORK_TR.LanguageID==lang) & 
             (db.QUOTE_WORK.WorkID==db.WORK._id) & 
-            (db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
-            limitby=(0,10))
+            (db.QUOTE_WORK.QuoteID==db.QUOTE._id) & 
+            (db.QUOTE.QuoteLanguageID==lang)).select(
+            orderby=~db.QUOTE.created_on, limitby=(0,10))
     return locals()
 
 
@@ -300,10 +270,11 @@ def works():
                 (db.WORK_AUTHOR.WorkID==db.WORK._id) & 
                 (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
                 (db.AUTHOR_TR.AuthorID==db.AUTHOR._id) & 
-                (db.AUTHOR_TR.LanguageID==lang) & 
-                (db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.AUTHOR_TR.DisplayName,
-                db.WORK.YearPublished, db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
-                orderby=db.WORK_TR.WorkName, limitby=(0,10), groupby=db.WORK._id)
+                (db.AUTHOR_TR.LanguageID==lang)).select(
+                db.AUTHOR_TR.DisplayName, db.WORK.YearPublished, 
+                db.WORK_TR.WorkName, db.WORK_TR._id, quotecount, 
+                left=db.QUOTE_WORK.on(db.WORK.id==db.QUOTE_WORK.WorkID),
+                groupby=db.WORK.id, orderby=~quotecount, limitby=(0,10))
     if request.args(0)=='all':
         if request.vars['e']:
             response.flash='Work ' + request.vars['e'] + ' was not found'
@@ -315,24 +286,24 @@ def works():
             redirect(URL('Pindar/default', 'works', 'all'))
         else:
             redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
-    quotecount = db.QUOTE_WORK.QuoteID.count()
-    work = db((db.WORK_TR._id==request.args(0)) & 
+    try:
+        work = db((db.WORK_TR._id==request.args(0)) & 
             (db.WORK_TR.WorkID==db.WORK._id) & 
-            (db.WORK_TR.LanguageID==lang) & 
-            (db.QUOTE_WORK.WorkID==db.WORK._id)).select(db.WORK.ALL, db.WORK_TR.ALL, quotecount, 
-            groupby=db.WORK._id)
-    for w in work:
-        work_id = w.WORK.id
+            (db.WORK_TR.LanguageID==lang)).select(
+            db.WORK.ALL, db.WORK_TR.ALL, groupby=db.WORK._id)
+        work_id = work[0]['WORK_TR']['id']
+    except KeyError:
+        redirect(URL('Pindar/default', 'works', 'all?e='+request.args(0)))
     authors = db((db.WORK_AUTHOR.WorkID==work_id) & 
             (db.WORK_AUTHOR.AuthorID==db.AUTHOR._id) & 
             (db.AUTHOR._id==db.AUTHOR_TR.AuthorID) & 
-            (db.AUTHOR_TR.LanguageID==lang)).select(orderby=db.AUTHOR_TR.DisplayName,
-            limitby=(0,10))
+            (db.AUTHOR_TR.LanguageID==lang)).select(
+            orderby=db.AUTHOR_TR.DisplayName, limitby=(0,10))
     quotes = db((db.WORK_TR._id==work_id) & 
             (db.WORK_TR.WorkID==db.WORK._id) & 
             (db.QUOTE_WORK.WorkID==db.WORK._id) & 
-            (db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(orderby=~db.QUOTE.created_on,
-            limitby=(0,10))
+            (db.QUOTE_WORK.QuoteID==db.QUOTE._id)).select(
+            orderby=~db.QUOTE.created_on, limitby=(0,10))
     return locals()
 
 
@@ -340,7 +311,25 @@ def works():
 def add():
     langs = db((db.LANGUAGE._id > 0)).select(
         db.LANGUAGE.NativeName, db.LANGUAGE._id,
-        orderby=db.LANGUAGE._id).as_list()       
+        orderby=db.LANGUAGE._id).as_list()
+    if request.vars.author:
+        init_author = request.vars.author
+        init_author_name = db((db.AUTHOR.id==init_author) & 
+            (db.AUTHOR_TR.AuthorID==db.AUTHOR.id)).select(
+            db.AUTHOR_TR.DisplayName, limitby=(0,1))[0].DisplayName
+    if request.vars.work:
+        init_work = request.vars.work
+        init_work_name = db((db.WORK.id==init_work) & 
+            (db.WORK_TR.WorkID==db.WORK.id)).select(
+            db.WORK_TR.WorkName, limitby=(0,1))[0].WorkName
+        if not request.vars.author:
+            search = db((db.WORK_AUTHOR.WorkID==init_work) & 
+                (db.AUTHOR.id==db.WORK_AUTHOR.AuthorID) & 
+                (db.AUTHOR_TR.AuthorID==db.AUTHOR.id)).select(
+                db.AUTHOR_TR.DisplayName, db.AUTHOR.id, 
+                limitby=(0,1))[0]
+            init_author = search.AUTHOR.id
+            init_author_name = search.AUTHOR_TR.DisplayName
     return locals()
 
 

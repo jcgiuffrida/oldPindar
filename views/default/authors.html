@@ -3,7 +3,7 @@
 
 <div class="row">
 	<div class="col-md-8 col-md-offset-2">
-		{{if 'works' in locals():}}
+		{{if 'author' in locals():}}
 		<br>
 		{{for a in author:}}
 		<div class="object" data-id="{{=a.AUTHOR_TR.id}}">
@@ -36,13 +36,20 @@
 				{{for w in works:}}
 				<a class="list-group-item" href="/Pindar/default/works/{{=w.WORK_TR.id}}">
 					{{=w.WORK_TR.WorkName}} ({{=w.WORK.YearPublished}})
-					<span class="badge">{{=w[quotecount]}} quote{{if w[quotecount]==1:}} {{else:}}s{{pass}}</span>
+					{{if w[quotecount]>0:}}<span class="badge">{{=w[quotecount]}} quote{{if w[quotecount]==1:}} {{else:}}s{{pass}}</span>{{pass}}
 				</a>
 				{{pass}}
 			</div>
 		</div>
 
-		<h4>Quotes by {{for a in author:}}{{=a.AUTHOR_TR.DisplayName}}{{pass}}</h4>
+		<div class="row">
+			<div class="col-md-8">
+				<h4>Quotes by {{for a in author:}}{{=a.AUTHOR_TR.DisplayName}}{{pass}}
+					<a href="/Pindar/default/add?author={{=a.AUTHOR.id}}" 
+					class="btn btn-primary btn-sm pull-right">Add a quote</a>
+				</h4>
+			</div>
+		</div>
 		<div class="row">
 			<div class="list-group col-md-8">
 				{{for q in quotes:}}
@@ -64,7 +71,7 @@
 				{{for a in authors:}}
 				<a class="list-group-item" href="/Pindar/default/authors/{{=a.AUTHOR_TR.id}}">
 					{{=a.AUTHOR_TR.DisplayName}} ({{=a.AUTHOR.YearBorn}} - {{=a.AUTHOR.YearDied}})
-					<span class="badge">{{=a[workcount]}} work{{if a[workcount]==1:}} {{else:}}s{{pass}}</span>
+					{{if a[workcount]>0:}}<span class="badge">{{=a[workcount]}} work{{if a[workcount]==1:}} {{else:}}s{{pass}}</span>{{pass}}
 				</a>
 				{{pass}}
 			</div>

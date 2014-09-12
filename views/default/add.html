@@ -1,24 +1,58 @@
+{{block head}}
+<script>
+{{if 'init_author' in locals():}}
+var initAuthor = '{{=init_author}}';
+var initAuthorName = '{{=init_author_name}}';
+{{else:}}
+var initAuthor = '';
+var initAuthorName = '';
+{{pass}}
+{{if 'init_work' in locals():}}
+var initWork = '{{=init_work}}';
+var initWorkName = '{{=init_work_name}}';
+{{else:}}
+var initWork = '';
+var initWorkName = '';
+{{pass}}
+</script>
+{{end}}
 {{extend 'layout.html'}}
 
 <div class="row">
 	<div class="col-md-6 col-md-offset-2 col-sm-8 col-sm-offset-2 
 	col-xs-10 col-xs-offset-1">
-		<form class="form-horizontal add-form" role="form" autocomplete="off">
+		<form class="form-horizontal add-form" role="form" autocomplete="off"
+		style="display:none;">
 			
-			<div class="form-group">
+			<div class="form-group enter-quote">
 				<div class="col-md-9 col-md-offset-3">
-					<textarea class="form-control" placeholder="Enter the quote..."
-					rows="6" id="QUOTE-Text"></textarea>
+					<textarea class="form-control input-lg" rows="6" name="Text"
+					placeholder="Enter the quote..." id="QUOTE-Text"></textarea>
 				</div>
 			</div>
 			
-			<div class="col-md-8 col-md-offset-3 lookup-author">
-				<div class="form-group">
-					<input type="search" class="form-control" id="QUOTE-author-lookup" 
-					placeholder="Name of author"></input>
-					<div class="results"></div>
+			<div class="author-lookup">
+				<div class="col-md-8 col-md-offset-3">
+					<div class="form-group">
+						<input type="search" class="form-control input-lg" 
+						id="QUOTE-author-lookup" placeholder="Author"></input>
+						<div class="results"></div>
+					</div>
 				</div>
-			</div><!--/.lookup-author-->
+				<div class="col-md-1 searching text-center">
+				</div>
+			</div><!--/.lookup-author -->
+
+			<div class="col-md-8 col-md-offset-3 author-results">
+				<div class="row">
+					<h4>Search results <span class="searching pull-right"></span></h4>
+				</div>
+				<div class="row">
+					<div class="list-group">
+						<a class="list-group-item new-item" data-author-id="0"></a>
+					</div>
+				</div>
+			</div><!--/.author-results -->
 
 			<div class="add-author">
 				<div class="form-group">
@@ -27,7 +61,7 @@
 					</label>
 					<div class="col-md-9">
 						<input type="text" class="form-control" id="AUTHOR_TR-DisplayName"
-						placeholder="The Bard" autocomplete="off"></input>
+						placeholder="The Bard" autocomplete="off" name="DisplayName"></input>
 					</div>
 				</div>
 				<div class="form-group">
@@ -36,15 +70,15 @@
 					</label>
 					<div class="col-md-3">
 						<input type="text" class="form-control" id="AUTHOR_TR-FirstName"
-						placeholder="William" autocomplete="off"></input>
+						placeholder="William" autocomplete="off" name="FirstName"></input>
 					</div>
 					<div class="col-md-2">
 						<input type="text" class="form-control" id="AUTHOR_TR-MiddleName"
-						placeholder="X" autocomplete="off"></input>
+						placeholder="X" autocomplete="off" name="MiddleName"></input>
 					</div>
 					<div class="col-md-4">
 						<input type="text" class="form-control" id="AUTHOR_TR-LastName"
-						placeholder="Shakespeare" autocomplete="off"></input>
+						placeholder="Shakespeare" autocomplete="off" name="LastName"></input>
 					</div>
 				</div>
 				<div class="form-group">
@@ -53,7 +87,7 @@
 					</label>
 					<div class="col-md-8">
 							<input type="text" class="form-control" id="AUTHOR_TR-AKA"
-							placeholder="Edward de Vere" autocomplete="off"></input>
+							placeholder="Edward de Vere" autocomplete="off" name="AKA"></input>
 					</div>
 					<div class="col-md-1">
 						<button class="btn btn-info" type="button">
@@ -67,7 +101,7 @@
 					</label>
 					<div class="col-md-9">
 						<textarea class="form-control" id="AUTHOR_TR-Biography" rows="3"
-						placeholder="William Shakespeare was the shit."></textarea>
+						placeholder="William Shakespeare was the shit." name="Biography"></textarea>
 					</div>
 				</div>
 				<div class="form-group">
@@ -77,9 +111,10 @@
 					<div class="col-md-9">
 						<div class="input-group">
 							<input type="url" class="form-control" id="AUTHOR_TR-WikipediaLink"
-							placeholder="http://en.wikipedia.org/wiki/William_Shakespeare"></input>
+							placeholder="http://en.wikipedia.org/wiki/William_Shakespeare"
+							name="AuthorWikipediaLink"></input>
 							<span class="input-group-btn">
-								<button class="btn btn-info" type="button">
+								<button class="btn btn-info wiki-link" type="button">
 									<i class="fa fa-external-link"></i>
 								</button>
 							</span>
@@ -89,14 +124,14 @@
 				<div class="form-group">
 					<label for="AUTHOR-YearBorn" class="col-md-3 col-sm-3 control-label">Dates</label>
 					<div class="col-md-2 col-sm-3">
-						<input type="number" class="form-control" id="AUTHOR-YearBorn"
-						placeholder="1564"></input>
+						<input type="text" class="form-control" id="AUTHOR-YearBorn"
+						placeholder="1564" name="YearBorn"></input>
 					</div>
 					<label for="AUTHOR-YearDied" class="col-md-1 col-sm-1 control-label"
 						style="text-align:center;">&mdash;</label>
 					<div class="col-md-2 col-sm-3">
-						<input type="number" class="form-control" id="AUTHOR-YearDied"
-						placeholder="1616"></input>
+						<input type="text" class="form-control" id="AUTHOR-YearDied"
+						placeholder="1616" name="YearDied"></input>
 					</div>
 				</div>
 				<div class="form-group">
@@ -111,13 +146,28 @@
 				</div>
 			</div><!--/.add-author -->
 
-			<div class="col-md-8 col-md-offset-3 lookup-work">
-				<div class="form-group">
-					<input type="search" class="form-control" id="QUOTE-work-lookup" 
-					placeholder="Source"></input>
-					<div class="results"></div>
+			<div class="work-lookup">
+				<div class="col-md-8 col-md-offset-3">
+					<div class="form-group">
+						<input type="search" class="form-control input-lg" 
+						id="QUOTE-work-lookup" placeholder="Source"></input>
+						<div class="results"></div>
+					</div>
+				</div>
+				<div class="col-md-1 searching text-center">
 				</div>
 			</div><!--/.lookup-work -->
+
+			<div class="col-md-8 col-md-offset-3 work-results">
+				<div class="row">
+					<h4>Search results<span class="searching pull-right"></span></h4>
+				</div>
+				<div class="row">
+					<div class="list-group">
+						<a class="list-group-item new-item" data-work-id="0"></a>
+					</div>
+				</div>
+			</div><!--/.author-results -->
 
 			<div class="add-work">
 				<div class="form-group">
@@ -126,7 +176,8 @@
 					</label>
 					<div class="col-md-9">
 						<input type="text" class="form-control" id="WORK_TR-WorkName"
-						placeholder="Romeo and Juliet" autocomplete="off"></input>
+						placeholder="Romeo and Juliet" autocomplete="off" name="WorkName">
+						</input>
 					</div>
 				</div>
 				<div class="form-group">
@@ -135,7 +186,7 @@
 					</label>
 					<div class="col-md-9">
 						<input type="text" class="form-control" id="WORK_TR-WorkSubtitle"
-						placeholder="A Tragic Tale"></input>
+						placeholder="A Tragic Tale" name="WorkSubtitle"></input>
 					</div>
 				</div>
 				<div class="form-group">
@@ -144,7 +195,8 @@
 					</label>
 					<div class="col-md-9">
 						<textarea class="form-control" id="WORK_TR-WorkDescription"
-						placeholder="Romeo and Juliet is a sadfest." rows="3"></textarea>
+						placeholder="Romeo and Juliet is a sadfest." rows="3"
+						name="WorkDescription"></textarea>
 					</div>
 				</div>
 				<div class="form-group">
@@ -154,9 +206,10 @@
 					<div class="col-md-9">
 						<div class="input-group">
 							<input type="url" class="form-control" id="WORK_TR-WikipediaLink"
-							placeholder="http://en.wikipedia.org/wiki/Romeo_and_Juliet"></input>
+							placeholder="http://en.wikipedia.org/wiki/Romeo_and_Juliet"
+							name="WorkWikipediaLink"></input>
 							<span class="input-group-btn">
-								<button class="btn btn-info" type="button">
+								<button class="btn btn-info wiki-link" type="button">
 									<i class="fa fa-external-link"></i>
 								</button>
 							</span>
@@ -167,14 +220,14 @@
 					<label for="WORK-YearPublished" class="col-md-3 control-label">
 						Publication year</label>
 					<div class="col-md-2">
-						<input type="number" class="form-control" id="WORK-YearPublished"
-						placeholder="1597"></input>
+						<input type="text" class="form-control" id="WORK-YearPublished"
+						placeholder="1597" name="YearPublished"></input>
 					</div>
 					<label for="WORK-YearWritten" class="col-md-5 control-label">
 						Year written (if different)</label>
 					<div class="col-md-2">
-						<input type="number" class="form-control" id="WORK-YearWritten"
-						placeholder="1595"></input>
+						<input type="text" class="form-control" id="WORK-YearWritten"
+						placeholder="1595" name="YearWritten"></input>
 					</div>
 				</div>
 				<div class="form-group">
@@ -193,9 +246,10 @@
 				<div class="form-group">					
 					<label for="QUOTE-QuoteLanguageID" class="col-md-3 control-label">Language</label>
 					<div class="col-md-4">
-						<select class="form-control" id="QUOTE-QuoteLanguageID">
+						<select class="form-control" id="QUOTE-QuoteLanguageID"
+						 name="QuoteLanguageID">
 							{{for lang in langs:}}
-						  <option data-id="{{=lang['id']}}">
+						  <option value="{{=lang['id']}}">
 						  	{{=lang['NativeName']}}
 						  </option>
 						  {{pass}}
@@ -203,15 +257,15 @@
 					</div>
 					<div class="col-md-4 col-md-offset-1 checkbox">
 					  <label>
-					    <input type="checkbox" id="QUOTE-IsOriginalLanguage">
-					    Original language?
-					  </label>
+					    <input type="checkbox" id="QUOTE-IsOriginalLanguage"
+					     name="IsOriginalLanguage">Original language</label>
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-md-8 col-md-offset-3">
 						<textarea class="form-control" id="QUOTE-Note" rows="2"
-							placeholder="Context or additional information about this quote"></textarea>
+							placeholder="Context or additional information about this quote"
+							 name="Note"></textarea>
 					</div>
 				</div>
 				<div class="form-group">
@@ -220,7 +274,8 @@
 						Add quote</button> 
 					</div>
 					<div class="col-md-2 col-md-offset-1">
-						<button type="button" class="btn btn-default" id="quote-cancel">
+						<button type="button" class="btn btn-default disabled" 
+						id="quote-cancel">
 						Cancel</button> 
 					</div>
 				</div>
