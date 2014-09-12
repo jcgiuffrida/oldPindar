@@ -37,7 +37,7 @@ $(document).ready(function(){
         dataType: 'json',
         success: function(response) {
           quotesDiv.empty();
-          var quotes = '<p>No quotes found</p>';
+          var quotes = '<p>No quotes found.</p>';
           if (response.quotes.length > 0){
             quotes = '';
             for (c in response.quotes){
@@ -67,8 +67,8 @@ $(document).ready(function(){
               }
               quotes += object;
             }
-            quotesDiv.append(quotes);
           }
+          quotesDiv.append(quotes);
           quotesDiv.addClass('searchable');
         },
         error: function(request, errorType, errorMessage) {
@@ -86,11 +86,38 @@ $(document).ready(function(){
         dataType: 'json',
         success: function(response) {
           authorsDiv.empty();
+          var authors = '<p>No authors found.</p>';
           if (response.authors.length > 0){
-            var authors = '<p>' + response.authors.length + 
-              ' authors found</p>';
-            authorsDiv.append(authors);
+            authors = '<div class="row"><div class="list-group">';
+            for (c in response.authors){
+              a = response.authors[c];
+              object = '<a class="list-group-item" ' + 
+                'href="/Pindar/default/authors/' + a.AUTHOR_TR.id + '">';
+              object += a.AUTHOR_TR.DisplayName;
+              if (a.AUTHOR.YearBorn != null){
+                if (a.AUTHOR.YearDied != null){
+                  object += ' (' + a.AUTHOR.YearBorn + ' - ' + 
+                    a.AUTHOR.YearDied + ')';
+                } else {
+                  object += ' (b. ' + a.AUTHOR.YearBorn + ')';
+                }
+              }
+              workcount = a['_extra']['COUNT(WORK_AUTHOR.WorkID)'];
+              if (workcount > 0){
+                object += '<span class="badge">';
+                object += workcount;
+                if (workcount == 1){
+                  object += ' work</span>';
+                } else {
+                  object += ' works</span>';
+                }
+              }
+              object += '</a>'
+              authors += object;
+            }
+            object += '</div></div>';
           }
+          authorsDiv.append(authors);
           authorsDiv.addClass('searchable');
         },
         error: function(request, errorType, errorMessage) {
@@ -104,11 +131,36 @@ $(document).ready(function(){
       $.getJSON('/Pindar/api/work_query?work_lookup=' + query, 
         function(response) {
         worksDiv.empty();
+        var works = '<p>No works found.</p>';
         if (response.works.length > 0){
-          var works = '<p>' + response.works.length + 
-            ' works found</p>';
-          worksDiv.append(works);
+          works = '<div class="row"><div class="list-group">';
+          for (c in response.works){
+            w = response.works[c];
+            object = '<a class="list-group-item" ' + 
+              'href="/Pindar/default/works/' + w.WORK_TR.id + '">';
+            object += w.WORK_TR.WorkName;
+            if (w.WORK.YearPublished != null){
+              object += ' (' + w.WORK.YearPublished + ')';
+            } else if (w.WORK.YearWritten != null){
+              object += ' (' + w.WORK.YearWritten + ')';
+            }
+            quotecount = w['_extra']['COUNT(QUOTE_WORK.QuoteID)'];
+            if (quotecount > 0){
+              object += '<span class="badge">';
+              object += quotecount;
+              if (quotecount == 1){
+                object += ' quote</span>';
+              } else {
+                object += ' quotes</span>';
+              }
+            }
+            object += '<p class="small">' + w.AUTHOR_TR.DisplayName + '</p>';
+            object += '</a>'
+            works += object;
+          }
+          object += '</div></div>';
         }
+        worksDiv.append(works);
         worksDiv.addClass('searchable');
       });
     }
