@@ -51,11 +51,18 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
 /*****/
 
 /* main page */
-.tiles .object .text {
+.show-quotes .object .text {
   cursor: pointer;
   padding: 5px;
 }
-.tiles .object:hover .panel {
+.show-quotes .object:hover .panel {
+  background-color: #f8f8f8;
+}
+.search-quotes .object .text {
+  cursor: pointer;
+  padding: 5px;
+}
+.search-quotes .object:hover .panel {
   background-color: #f8f8f8;
 }
 

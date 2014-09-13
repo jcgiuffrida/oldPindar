@@ -111,11 +111,8 @@
 </div>
 {{block extrajs}}
 <script>
-$(document).ready(function(){
-	$('.object').on('click', '.text', function(){
-		window.location.href = '/Pindar/default/quotes/' + $(this).closest('.object').data('id');
-	});
-});
+
 </script>
+<script src="{{=URL('static','js/tools.js')}}"></script>
 <script src="{{=URL('static','js/search.js')}}"></script>
 {{end}}
