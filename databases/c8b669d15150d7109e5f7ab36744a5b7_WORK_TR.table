@@ -22,7 +22,7 @@ sS'type'
 p10
 S'reference auth_user'
 p11
-ssS'WorkSubtitle'
+ssS'worksubtitle'
 p12
 (dp13
 g4
@@ -39,7 +39,7 @@ I00
 sg10
 S'string'
 p15
-ssS'LanguageID'
+ssS'languageid'
 p16
 (dp17
 g4
@@ -49,14 +49,14 @@ I00
 sg6
 I3
 sg7
-S'INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE'
+S'INTEGER REFERENCES LANGUAGE (id) ON DELETE SET NULL'
 p18
 sg9
 I00
 sg10
 S'reference LANGUAGE'
 p19
-ssS'WikipediaLink'
+ssS'wikipedialink'
 p20
 (dp21
 g4
@@ -72,43 +72,9 @@ sg9
 I00
 sg10
 g15
-ssS'created_on'
+ssS'workname'
 p23
 (dp24
-g4
-I512
-sg5
-I00
-sg6
-I9
-sg7
-S'TIMESTAMP'
-p25
-sg9
-I00
-sg10
-S'datetime'
-p26
-ssS'WorkID'
-p27
-(dp28
-g4
-I512
-sg5
-I00
-sg6
-I2
-sg7
-S'INTEGER REFERENCES WORK (id) ON DELETE CASCADE'
-p29
-sg9
-I00
-sg10
-S'reference WORK'
-p30
-ssS'WorkName'
-p31
-(dp32
 g4
 I1024
 sg5
@@ -117,12 +83,46 @@ sg6
 I4
 sg7
 S'CHAR(1024)'
-p33
+p25
 sg9
 I00
 sg10
 g15
-ssS'WorkDescription'
+ssS'workid'
+p26
+(dp27
+g4
+I512
+sg5
+I00
+sg6
+I2
+sg7
+S'INTEGER REFERENCES WORK (id) ON DELETE CASCADE'
+p28
+sg9
+I00
+sg10
+S'reference WORK'
+p29
+ssS'created_on'
+p30
+(dp31
+g4
+I512
+sg5
+I00
+sg6
+I9
+sg7
+S'TIMESTAMP'
+p32
+sg9
+I00
+sg10
+S'datetime'
+p33
+ssS'workdescription'
 p34
 (dp35
 g4
@@ -171,7 +171,7 @@ p44
 sg9
 I00
 sg10
-g26
+g33
 ssS'id'
 p45
 (dp46
@@ -187,10 +187,11 @@ p47
 sg9
 I00
 sg10
-g45
-ssS'WorkNote'
+S'id'
 p48
-(dp49
+ssS'worknote'
+p49
+(dp50
 g4
 I32768
 sg5
@@ -199,7 +200,7 @@ sg6
 I8
 sg7
 S'TEXT'
-p50
+p51
 sg9
 I00
 sg10

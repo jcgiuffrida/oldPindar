@@ -29,9 +29,9 @@
   <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
 
   <script src="{{=URL('static','js/modernizr.custom.js')}}"></script>
-
-  <!-- is there a user? -->
-<script>var user = {{if auth.user:}}{{=auth.user.id}}{{else:}}0{{pass}};</script>
+  <script>
+  var user = {{if auth.user:}}{{=auth.user.id}}{{else:}}0{{pass}};
+  </script>
   <!-- include stylesheets -->
   {{
   response.files.insert(0,URL('static','css/bootstrap.css'))
@@ -73,7 +73,7 @@
             <a href="/Pindar/default/works/all">Works</a>
           </li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Manage</a>
+            <a href="/Pindar/default/data/tables" class="dropdown-toggle" data-toggle="dropdown">Manage</a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="/Pindar/manage/quotes">Quotes</a></li>
               <li><a href="/Pindar/manage/authors">Authors</a></li>
@@ -92,9 +92,13 @@
         </ul>
         <form class="navbar-form navbar-left" role="search">
           <div class="form-group">
-            <input type="text" class="form-control input-sm" placeholder="Search">
+            <div class="btn-group search-box">
+              <input type="search" class="form-control" 
+              placeholder="Search everything">
+              <span class="glyphicon glyphicon-remove" style="display:none;"></span>
+            </div>
           </div>
-          <a class="btn btn-primary btn-sm disabled">Submit</a>
+          <button type="submit" class="btn btn-primary" style="display:none;">Search</button>
         </form>
         <!-- to customize this, look at tools.py:1467 -->
         <ul class="nav navbar-nav navbar-right">
@@ -138,10 +142,24 @@
        (Placed at the end of the document so the pages load faster) -->
   <script src="{{=URL('static','js/bootstrap.js')}}"></script>
   <script src="{{=URL('static','js/web2py_bootstrap.js')}}"></script>
+  <script src="{{=URL('static','js/tools.js')}}"></script>
+  <script src="{{=URL('static','js/searchify.js')}}"></script>
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.2/css/jquery.dataTables.css">
+  <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
   <!--[if lt IE 7 ]>
       <script src="{{=URL('static','js/dd_belatedpng.js')}}"></script>
       <script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>
       <![endif]-->
+  {{if 'search' in locals():}}
+  <script>
+    $(document).ready(function(){
+      var input = $('#textQuery');
+      input.val('{{=search}}');
+      input.trigger('input');
+      input.focus();
+    });
+  </script>
+  {{pass}}
   {{block tail}}{{end}}
   {{if response.google_analytics_id:}}
   <script src="{{=URL('static','js/analytics.min.js')}}"></script>

@@ -20,7 +20,7 @@ p9
 I00
 sS'type'
 p10
-S'decimal(3,2)'
+S'decimal(4,3)'
 p11
 ssS'created_on'
 p12

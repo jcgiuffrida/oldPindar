@@ -9,10 +9,15 @@
 <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.2/js/jquery.dataTables.js"></script>
 
 <h2>{{=T( request.args(0).replace('_',' ').capitalize() )}}</h2>
+{{ if auth.user and 'form' in locals():}}
+<div id="web2py_user_form">
+{{=form}}
+</div>
+{{pass}}
 <p class="lead">{{=user.UserBiography}}</p>
 <p>Joined {{=user.DateJoined}}</p>
 <h3>Quotes added by {{=user.username}}</h3>
-<table id="mytable" class="display" width="100%">
+<table id="mytable" class="display stripe row-border" width="100%">
 	<thead>
 		<tr>
 			<td><b>Text</b></td>
@@ -25,9 +30,9 @@
 		{{for row in quotes_added:}}
 		<tr>
 			<td>{{if len(row.QUOTE.Text) > 500:}}
-			{{=row.QUOTE.Text[:500]}}...
+			{{=sanitize(row.QUOTE.Text)[:500]}}...
 			{{else:}}
-			{{=row.QUOTE.Text}}
+			{{=sanitize(row.QUOTE.Text)}}
 			{{pass}}
 			</td>
 			<td>{{=row.AUTHOR_TR.DisplayName}}</td>
@@ -39,7 +44,7 @@
 </table>
 <hr>
 <h3>Authors added by {{=user.username}}</h3>
-<table id="mytable" class="display" width="100%">
+<table id="mytable" class="display stripe row-border" width="100%">
 	<thead>
 		<tr>
 			<td><b>Name</b></td>
@@ -61,7 +66,7 @@
 </table>
 <hr>
 <h3>Works added by {{=user.username}}</h3>
-<table id="mytable" class="display" width="100%">
+<table id="mytable" class="display stripe row-border" width="100%">
 	<thead>
 		<tr>
 			<td><b>Work</b></td>
@@ -83,7 +88,7 @@
 </table>
 <hr>
 <h3>Quotes edited by {{=user.username}}</h3>
-<table id="mytable" class="display" width="100%">
+<table id="mytable" class="display stripe row-border" width="100%">
 	<thead>
 		<tr>
 			<td><b>Text</b></td>
@@ -114,7 +119,8 @@ $(document).ready(function(){
 			null
 		],
 		"ordering": false,
-		"dom": '<<"clear"f>p<t>ip>'
+		"dom": '<<"clear"f>p<t>ip>',
+		"iDisplayLength": 5
 	});
 });
 </script>

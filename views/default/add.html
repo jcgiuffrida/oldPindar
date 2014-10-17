@@ -2,14 +2,14 @@
 <script>
 {{if 'init_author' in locals():}}
 var initAuthor = '{{=init_author}}';
-var initAuthorName = '{{=init_author_name}}';
+var initAuthorName = "{{=sanitize(init_author_name)}}";
 {{else:}}
 var initAuthor = '';
 var initAuthorName = '';
 {{pass}}
 {{if 'init_work' in locals():}}
 var initWork = '{{=init_work}}';
-var initWorkName = '{{=init_work_name}}';
+var initWorkName = "{{=sanitize(init_work_name)}}";
 {{else:}}
 var initWork = '';
 var initWorkName = '';

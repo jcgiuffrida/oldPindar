@@ -25,6 +25,10 @@ pre {
   padding-right: 5px;
 }
 
+.list-group {
+  padding-left: 15px;
+}
+
 /*****
 /*  ~navbar
 /*****/
@@ -45,62 +49,183 @@ ul.nav li.dropdown:hover ul.dropdown-menu {
    display: block;
 }
 
+.search-box {
+  position:relative;
+}
+
+.search-box .glyphicon-remove {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.search-box .glyphicon-remove:hover {
+  color: #777;
+}
+
 
 /*****
 /*  ~object
 /*****/
 
 /* main page */
-.show-quotes .object .text {
+.object .text {
   cursor: pointer;
   padding: 5px;
 }
-.show-quotes .object:hover .panel {
-  background-color: #f8f8f8;
+
+/* object panels */
+.object .panel {
+  border-radius: 6px;
 }
-.search-quotes .object .text {
+
+.object-actions {
+  min-height: 23px;
+}
+
+.object-actions>div,
+.object-actions>button{
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.object-actions .btn-goto-comments,
+.object-actions .btn-goto-flag>a {
   cursor: pointer;
-  padding: 5px;
+  color: #000;
 }
-.search-quotes .object:hover .panel {
-  background-color: #f8f8f8;
+.object-actions .btn-goto-comments:hover,
+.object-actions .btn-goto-flag>a:hover {
+  color: #175fdd;
+}
+.object-actions .btn-goto-flag>a:hover,
+.object-actions .btn-goto-flag>a:active {
+  text-decoration: none;
+}
+.object-actions .btn-goto-flag.open .dropdown-toggle {
+  box-shadow: none;
 }
 
 /* rating stars */
-.btn-rate span.star {
+
+
+span.star {
   font-family: FontAwesome;
   font-weight: normal;
   font-style: normal;
-  display: inline-block;
-  font-size:1.2em;
-  float:right;
+  font-size: 1.5em;
+  margin-left: -4px;
+  padding-left: 4px;
 }
-.btn-rate li {
-  cursor: pointer;
-  min-width: 100px;
+
+.sum-ratings.small span.star {
+  font-size: 1.2em;
 }
-.btn-rate ul {
-  min-width: 115px;
-  margin-top: 0;
-}
-.btn-rate span.star:before {
+
+span.star:before {
   content: "\f006";
-  padding: 0 6px;
-  margin: 0 -4px;
-  color: #777777;
+  color: #777;
 }
-.btn-rate span.star.starred:before {
+
+.sum-ratings {
+  height: 15px;
+  margin: 4px 12px;
+  white-space: nowrap;
+  line-height: 1.42857143;
+}
+
+.sum-ratings.small {
+  margin: 0;
+}
+
+.ratings-box {
+  float: left;
+  position: relative;
+}
+
+.star-ratings-top span.star:before {
   content: "\f005";
-  color: #377ffd;
+  color: #175fdd;
 }
-.btn-rate span.star:hover:before,
-.btn-rate span.star:hover ~ span.star:before {
+
+.star-ratings-top {
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+  display: block;
+  overflow: hidden;
+}
+.star-ratings-bottom {
+  z-index: 0;
+  padding: 0;
+}
+
+.sum-ratings .ratings-count {
+  float: left;
+  margin-left: 5px;
+  margin-top: 4px;
+  color: #777;
+}
+
+/* user ratings */
+.star-ratings-user {
+  z-index: -1;
+  padding: 0;
+  position: absolute;
+  display: block;
+  cursor: pointer;
+  width: 100%;
+  background-color: #fff;
+}
+
+.star-ratings-user span.star {
+  float: right;
+  position: relative;
+  left: 0px;
+}
+
+.star-ratings-user span.star:first-child {
+  padding-left: 4px;
+  left: 0px;
+}
+
+.star-ratings-user span.star.starred:before {
+  text-shadow: 3px 3px 5px #175fdd;
+}
+
+.star-ratings-user span.star:hover:before,
+.star-ratings-user span.star:hover ~ span.star:before {
   content: "\f005";
   color: #175fdd;
 }
 
 
+
+
 /* search bar */
+
+.search-icon {
+  position:absolute;
+  left:0;
+  right:0;
+  margin-left:auto;
+  margin-right:auto;
+  z-index:2;
+  color: #999;
+}
+
+/* advanced search */
+.advanced-search .select2-container-multi .select2-choices {
+ max-height: 5em;
+ overflow: auto;
+ font-size: 0.8em;
+}
 
 
 /*****

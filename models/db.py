@@ -12,7 +12,8 @@ from datetime import datetime
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
-    db = DAL('sqlite://storage.sqlite',pool_size=1,check_reserved=['mysql', 'postgres'])
+    db = DAL('sqlite://storage.sqlite',pool_size=1,
+      check_reserved=['mysql', 'postgres'])
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
     db = DAL('google:datastore')
@@ -33,12 +34,16 @@ response.generic_patterns = ['*'] if request.is_local else []
 # response.static_version = '0.0.0'
 
 
-# extra function
+# extra functions
 def plural(num):
     if num == 1:
         return ''
     else:
         return 's'
+
+def sanitize(q):
+    return XML(q.replace('\n', '<br/>').\
+          replace('    ', '&nbsp;&nbsp;&nbsp;&nbsp;'), sanitize=True)
 
 
 from gluon.tools import Auth, Crud, Service, PluginManager, prettydate
@@ -67,8 +72,6 @@ auth_signature = db.Table(db,'auth_signature',
 	Field('modified_by',auth.settings.table_user,
 		default=auth.user_id,update=auth.user_id,
 		writable=False,readable=False,ondelete='SET NULL')) 
-            
-db._common_fields.append(auth_signature)
 
 
 ## configure email
@@ -106,6 +109,7 @@ use_janrain(auth, filename='private/janrain.key')
 
 ###---------------------- LANGUAGE
 
+# this is limited to admin
 db.define_table('LANGUAGE',
 			Field('LanguageCode', 'string', length=3, label='Two-letter code'),
 			Field('EnglishName', 'string', length=64, label='English name'),
@@ -126,10 +130,11 @@ db.auth_user.PrimaryLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(Native
 db.define_table('QUOTE',
             Field('Text', 'text', required=True),
             Field('QuoteLanguageID', 'reference LANGUAGE', required=True, 
-            		default=1, label='Language'), # temporary default for testing purposes
+            		default=1, label='Language', ondelete='SET NULL'), # temporary default for testing purposes
             Field('IsOriginalLanguage', 'boolean', label='Quote is in original language'),
             Field('IsDeleted', 'boolean', default=False, readable=False, writable=False),
-            Field('Note', 'text', label='Context or additional information'))
+            Field('Note', 'text', label='Context or additional information'),
+            auth_signature)
 
 db.QUOTE.Text.requires = [IS_NOT_EMPTY(), IS_NOT_IN_DB(db, db.QUOTE.Text)]
 db.QUOTE.QuoteLanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
@@ -138,12 +143,15 @@ db.QUOTE.Note.requires = IS_LENGTH(maxsize=4096)
 
 ###---------------------- WORK
 
-### note: it should not be possible to enter a WORK without joining it to a WORK_TR. same with authors
+### note: it should not be possible to enter a WORK without joining it 
+### to a WORK_TR. same with authors
 
 db.define_table('WORK',
             Field('YearPublished', 'integer', label='Year published'),
             Field('YearWritten', 'integer', label='Year written (if different)'),
-            Field('IsHidden', 'boolean', default=False, readable=False, writable=False))
+            Field('IsHidden', 'boolean', default=False, readable=False, 
+              writable=False),
+            auth_signature)
 
 db.WORK.YearPublished.requires = IS_INT_IN_RANGE(-5000,2050)
 db.WORK.YearWritten.requires = IS_INT_IN_RANGE(-5000,2050)
@@ -154,7 +162,7 @@ db.WORK.YearWritten.requires = IS_INT_IN_RANGE(-5000,2050)
 db.define_table('WORK_TR',
 			Field('WorkID', 'reference WORK', required=True),
 			Field('LanguageID', 'reference LANGUAGE', required=True, 
-					label='Language of this work or translation'),
+					label='Language of this work or translation', ondelete='SET NULL'),
 			Field('WorkName', 'string', length=1024, required=True,
 					label='Name of work'),
 			Field('WorkSubtitle', 'string', length=1024, 
@@ -164,7 +172,8 @@ db.define_table('WORK_TR',
 			Field('WikipediaLink', 'string', length=256,
 					label='Link to Wikipedia page'),
 			Field('WorkNote', 'text',
-					label='Context or additional information'))
+					label='Context or additional information'),
+      auth_signature)
 
 db.WORK_TR.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublished)s)')
 db.WORK_TR.LanguageID.requires = IS_IN_DB(db, db.LANGUAGE.id, '%(NativeName)s')
@@ -182,7 +191,9 @@ db.WORK_TR.WorkNote.requires = IS_LENGTH(maxsize=4096)
 db.define_table('AUTHOR',
 			Field('YearBorn', 'integer'),
 			Field('YearDied', 'integer'),
-			Field('IsHidden', 'boolean', default=False, readable=False, writable=False))
+			Field('IsHidden', 'boolean', default=False, readable=False, 
+        writable=False),
+      auth_signature)
 
 db.AUTHOR.YearBorn.requires = IS_INT_IN_RANGE(-5000,2050)
 db.AUTHOR.YearDied.requires = IS_INT_IN_RANGE(-5000,2050)
@@ -193,7 +204,7 @@ db.AUTHOR.YearDied.requires = IS_INT_IN_RANGE(-5000,2050)
 db.define_table('AUTHOR_TR',
 			Field('AuthorID', 'reference AUTHOR', required=True),
 			Field('LanguageID', 'reference LANGUAGE', required=True,
-					label='Your language'),
+					label='Your language', ondelete='SET NULL'),
 			Field('FirstName', 'string', length=128,
 					label='First name'),
 			Field('MiddleName', 'string', length=128,
@@ -206,7 +217,8 @@ db.define_table('AUTHOR_TR',
 					label='Default name'),
 			Field('Biography', 'text'),
 			Field('WikipediaLink', 'string', length=256, 
-					label='Link to Wikipedia page'))
+					label='Link to Wikipedia page'),
+      auth_signature)
 
 db.AUTHOR_TR.AuthorID.requires = IS_IN_DB(
 						db, db.AUTHOR.id, '%(id)s (%(YearBorn)s-%(YearDied)s)')
@@ -248,7 +260,7 @@ db.WORK_AUTHOR.WorkID.requires = IS_IN_DB(db, db.WORK.id, '%(id)s (%(YearPublish
 db.define_table('TRANSLATION',
 			Field('OriginalQuoteID', 'reference QUOTE'),
 			Field('TranslatedQuoteID', 'reference QUOTE'),
-			Field('TranslatorID', 'reference AUTHOR'))
+			Field('TranslatorID', 'reference AUTHOR', ondelete='SET NULL'))
 
 
 ###---------------------- FLAG
@@ -262,13 +274,12 @@ db.define_table('FLAGTYPE',
 
 db.define_table('FLAG',
             Field('QuoteID', 'reference QUOTE'),  # this is not normal - suggestions?
-            Field('AuthorID', 'reference AUTHOR'),
-            Field('AuthorTrID', 'reference AUTHOR_TR'),
-            Field('WorkID', 'reference WORK'),
-            Field('WorkTrID', 'reference WORK_TR'),
+            Field('AuthorID', 'reference AUTHOR_TR'),
+            Field('WorkID', 'reference WORK_TR'),
             Field('Type', 'reference FLAGTYPE', required=True),
-            Field('Active', 'boolean', default=True),
-            Field('FlagNote', 'string'))
+            Field('IsActive', 'boolean', default=True),
+            Field('FlagNote', 'string'),
+            auth_signature)
 
 db.FLAG.Type.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.FLAGTYPE.id, '%(FlagName)s')]
 db.FLAG.created_by.readable=True
@@ -278,7 +289,7 @@ db.FLAG.created_on.readable=True
 ###---------------------- RATING
 
 db.define_table('RATING',
-            Field('Rating', 'decimal(3,2)', required=True),
+            Field('Rating', 'decimal(4,3)', required=True),
             Field('QuoteID', 'reference QUOTE', required=True),
             auth_signature)
 
@@ -294,7 +305,9 @@ db.RATING.modified_on.readable=True
 db.define_table('COMMENT',
             Field('Text', 'text', required=True),
             Field('QuoteID', 'reference QUOTE', required=True),
-            Field('Active', 'boolean', default=True, readable=False, writable=False))
+            Field('Active', 'boolean', default=True, readable=False, 
+              writable=False),
+            auth_signature)
 
 db.COMMENT.Text.requires = IS_NOT_EMPTY()
 db.COMMENT.QuoteID.requires = [IS_NOT_EMPTY(), IS_IN_DB(db, db.QUOTE.id, '%(Text)s')]
@@ -305,14 +318,11 @@ db.RATING.created_on.readable=True
 
 
 
-
-
-
-
-
-
-
-
-
-## !! we need to enable record versioning only on important tables (quotes, authors, works)
-auth.enable_record_versioning(db)
+## enable record versioning only on important tables
+db.QUOTE._enable_record_versioning()
+db.AUTHOR._enable_record_versioning()
+db.AUTHOR_TR._enable_record_versioning()
+db.WORK._enable_record_versioning()
+db.WORK_TR._enable_record_versioning()
+db.FLAG._enable_record_versioning()
+db.COMMENT._enable_record_versioning()

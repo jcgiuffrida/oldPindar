@@ -1,5 +1,5 @@
 (dp1
-S'current_record'
+S'modified_by'
 p2
 (dp3
 S'length'
@@ -10,21 +10,38 @@ p5
 I00
 sS'sortable'
 p6
-I1
+I13
 sS'sql'
 p7
-S'INTEGER REFERENCES WORK_TR (id) ON DELETE CASCADE'
+S'INTEGER REFERENCES auth_user (id) ON DELETE SET NULL'
 p8
 sS'notnull'
 p9
 I00
 sS'type'
 p10
-S'reference WORK_TR'
+S'reference auth_user'
 p11
-ssS'WorkSubtitle'
+ssS'current_record'
 p12
 (dp13
+g4
+I512
+sg5
+I00
+sg6
+I1
+sg7
+S'INTEGER REFERENCES WORK_TR (id) ON DELETE CASCADE'
+p14
+sg9
+I00
+sg10
+S'reference WORK_TR'
+p15
+ssS'worksubtitle'
+p16
+(dp17
 g4
 I1024
 sg5
@@ -33,30 +50,13 @@ sg6
 I6
 sg7
 S'CHAR(1024)'
-p14
-sg9
-I00
-sg10
-S'string'
-p15
-ssS'LanguageID'
-p16
-(dp17
-g4
-I512
-sg5
-I00
-sg6
-I4
-sg7
-S'INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE'
 p18
 sg9
 I00
 sg10
-S'reference LANGUAGE'
+S'string'
 p19
-ssS'WikipediaLink'
+ssS'wikipedialink'
 p20
 (dp21
 g4
@@ -71,44 +71,10 @@ p22
 sg9
 I00
 sg10
-g15
-ssS'created_on'
+g19
+ssS'workname'
 p23
 (dp24
-g4
-I512
-sg5
-I00
-sg6
-I10
-sg7
-S'TIMESTAMP'
-p25
-sg9
-I00
-sg10
-S'datetime'
-p26
-ssS'WorkID'
-p27
-(dp28
-g4
-I512
-sg5
-I00
-sg6
-I3
-sg7
-S'INTEGER REFERENCES WORK (id) ON DELETE CASCADE'
-p29
-sg9
-I00
-sg10
-S'reference WORK'
-p30
-ssS'WorkName'
-p31
-(dp32
 g4
 I1024
 sg5
@@ -117,12 +83,46 @@ sg6
 I5
 sg7
 S'CHAR(1024)'
-p33
+p25
 sg9
 I00
 sg10
-g15
-ssS'WorkDescription'
+g19
+ssS'workid'
+p26
+(dp27
+g4
+I512
+sg5
+I00
+sg6
+I3
+sg7
+S'INTEGER REFERENCES WORK (id) ON DELETE CASCADE'
+p28
+sg9
+I00
+sg10
+S'reference WORK'
+p29
+ssS'languageid'
+p30
+(dp31
+g4
+I512
+sg5
+I00
+sg6
+I4
+sg7
+S'INTEGER REFERENCES LANGUAGE (id) ON DELETE SET NULL'
+p32
+sg9
+I00
+sg10
+S'reference LANGUAGE'
+p33
+ssS'workdescription'
 p34
 (dp35
 g4
@@ -156,9 +156,26 @@ I00
 sg10
 S'reference auth_user'
 p41
-ssS'modified_on'
+ssS'created_on'
 p42
 (dp43
+g4
+I512
+sg5
+I00
+sg6
+I10
+sg7
+S'TIMESTAMP'
+p44
+sg9
+I00
+sg10
+S'datetime'
+p45
+ssS'modified_on'
+p46
+(dp47
 g4
 I512
 sg5
@@ -167,28 +184,11 @@ sg6
 I12
 sg7
 S'TIMESTAMP'
-p44
-sg9
-I00
-sg10
-g26
-ssS'modified_by'
-p45
-(dp46
-g4
-I512
-sg5
-I00
-sg6
-I13
-sg7
-S'INTEGER REFERENCES auth_user (id) ON DELETE SET NULL'
-p47
-sg9
-I00
-sg10
-S'reference auth_user'
 p48
+sg9
+I00
+sg10
+g45
 ssS'id'
 p49
 (dp50
@@ -204,10 +204,11 @@ p51
 sg9
 I00
 sg10
-g49
-ssS'WorkNote'
+S'id'
 p52
-(dp53
+ssS'worknote'
+p53
+(dp54
 g4
 I32768
 sg5
@@ -216,7 +217,7 @@ sg6
 I9
 sg7
 S'TEXT'
-p54
+p55
 sg9
 I00
 sg10

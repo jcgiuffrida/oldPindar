@@ -1,5 +1,5 @@
 (dp1
-S'DisplayName'
+S'displayname'
 p2
 (dp3
 S'length'
@@ -22,7 +22,7 @@ sS'type'
 p10
 S'string'
 p11
-ssS'FirstName'
+ssS'firstname'
 p12
 (dp13
 g4
@@ -38,7 +38,7 @@ sg9
 I00
 sg10
 g11
-ssS'LanguageID'
+ssS'languageid'
 p15
 (dp16
 g4
@@ -48,14 +48,14 @@ I00
 sg6
 I4
 sg7
-S'INTEGER REFERENCES LANGUAGE (id) ON DELETE CASCADE'
+S'INTEGER REFERENCES LANGUAGE (id) ON DELETE SET NULL'
 p17
 sg9
 I00
 sg10
 S'reference LANGUAGE'
 p18
-ssS'MiddleName'
+ssS'middlename'
 p19
 (dp20
 g4
@@ -71,7 +71,7 @@ sg9
 I00
 sg10
 g11
-ssS'LastName'
+ssS'lastname'
 p22
 (dp23
 g4
@@ -104,7 +104,7 @@ I00
 sg10
 S'reference AUTHOR_TR'
 p28
-ssS'WikipediaLink'
+ssS'wikipedialink'
 p29
 (dp30
 g4
@@ -120,7 +120,7 @@ sg9
 I00
 sg10
 g11
-ssS'created_on'
+ssS'authorid'
 p32
 (dp33
 g4
@@ -128,14 +128,14 @@ I512
 sg5
 I00
 sg6
-I12
+I3
 sg7
-S'TIMESTAMP'
+S'INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE'
 p34
 sg9
 I00
 sg10
-S'datetime'
+S'reference AUTHOR'
 p35
 ssS'created_by'
 p36
@@ -154,7 +154,7 @@ I00
 sg10
 S'reference auth_user'
 p39
-ssS'AuthorID'
+ssS'created_on'
 p40
 (dp41
 g4
@@ -162,14 +162,14 @@ I512
 sg5
 I00
 sg6
-I3
+I12
 sg7
-S'INTEGER REFERENCES AUTHOR (id) ON DELETE CASCADE'
+S'TIMESTAMP'
 p42
 sg9
 I00
 sg10
-S'reference AUTHOR'
+S'datetime'
 p43
 ssS'modified_on'
 p44
@@ -186,7 +186,7 @@ p46
 sg9
 I00
 sg10
-g35
+g43
 ssS'modified_by'
 p47
 (dp48
@@ -204,7 +204,7 @@ I00
 sg10
 S'reference auth_user'
 p50
-ssS'AKA'
+ssS'aka'
 p51
 (dp52
 g4
@@ -236,10 +236,11 @@ p57
 sg9
 I00
 sg10
-g55
-ssS'Biography'
+S'id'
 p58
-(dp59
+ssS'biography'
+p59
+(dp60
 g4
 I32768
 sg5
@@ -248,10 +249,10 @@ sg6
 I10
 sg7
 S'TEXT'
-p60
+p61
 sg9
 I00
 sg10
 S'text'
-p61
+p62
 ss.
